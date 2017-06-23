@@ -2,6 +2,7 @@
 
 import rospy
 from sensor_msgs.msg import PointCloud2
+from didi_pipeline.msg import Andres
 
 
 def handle_velodyne_msg(msg, arg):
@@ -14,9 +15,19 @@ def handle_velodyne_msg(msg, arg):
     
     # publish message (resend msg)
     publisher = rospy.Publisher(name='my_topic', 
-                    data_class=PointCloud2, 
+                    data_class=Andres, 
                     queue_size=1)
-    publisher.publish(msg)
+    my_msg = Andres()
+    my_msg.header = msg.header
+    my_msg.detection = 0
+    my_msg.cloud = msg
+    my_msg.length = 1
+    my_msg.width = 2.
+    my_msg.height = 3.
+    my_msg.cx = 4.
+    my_msg.cy = 5.
+    my_msg.cz = 6.
+    publisher.publish(my_msg)
     
 
 if __name__ == '__main__':

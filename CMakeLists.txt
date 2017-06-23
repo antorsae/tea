@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   roslaunch
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -58,11 +59,10 @@ add_definitions(${PCL_DEFINITIONS})
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+	FILES
+	Andres.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -79,10 +79,11 @@ add_definitions(${PCL_DEFINITIONS})
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   sensor_msgs#   std_msgs
-# )
+generate_messages(
+	DEPENDENCIES
+    std_msgs
+    sensor_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -116,7 +117,7 @@ add_definitions(${PCL_DEFINITIONS})
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES didi_pipeline
-#  CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs
+  CATKIN_DEPENDS message_runtime
 #  DEPENDS system_lib
 )
 
@@ -153,6 +154,10 @@ add_executable(${PROJECT_NAME}_detector
 	src/detector.cpp
 	src/tracklet.cpp
 	src/detector_node.cpp)
+	
+add_executable(gt_extractor
+	src/gt_extractor.cpp
+)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -168,6 +173,11 @@ roslaunch_add_file_check(launch)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_detector
+  ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES}
+)
+
+target_link_libraries(gt_extractor
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
 )

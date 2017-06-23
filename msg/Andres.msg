@@ -1,0 +1,9 @@
+Header header
+uint8 detection
+sensor_msgs/PointCloud2 cloud
+float32 length
+float32 width
+float32 height
+float32 cx
+float32 cy
+float32 cz
