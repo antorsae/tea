@@ -136,11 +136,11 @@ if __name__ == '__main__':
     assert len(sys.argv) >= 4
     
     bag_path = sys.argv[1]
-    bag_type = sys.argv[2] # 'ped' or 'car'
+    is_ped = sys.argv[2] in {'1', 'true'}
     
     bag_dir = os.path.dirname(bag_path)
     
-    if bag_type == 'car':
+    if not is_ped:
         # compose path to metadata file
         md_path = os.path.join(bag_dir, 'metadata.csv')
         if not os.path.isfile(md_path):
