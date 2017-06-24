@@ -123,10 +123,36 @@ def handle_msg_car(msg, who):
         
         
 def handle_msg_ped(msg, who):
-    ped = rtk_position_to_numpy(msg)
+    # from bag_to_kitti.py
+    ped_radius = 0.8
+    ped_height = 1.708
+    
+    ped_cnt = rtk_position_to_numpy(msg) - (0, 0, ped_height/2)
 
     br = tf.TransformBroadcaster()
-    br.sendTransform(tuple(ped), (0,0,0,1), rospy.Time.now(), 'ped', 'world')
+    br.sendTransform(tuple(ped_cnt), (0,0,0,1), rospy.Time.now(), 'ped_cnt', 'world')
+    
+    # publish obstacle bounding box
+    marker = Marker()
+    marker.header.frame_id = "ped_cnt"
+    marker.header.stamp = rospy.Time.now()
+
+    marker.type = Marker.CYLINDER
+    marker.action = Marker.ADD
+
+    marker.scale.x = ped_radius
+    marker.scale.y = ped_radius
+    marker.scale.z = ped_height
+
+    marker.color.r = 0.2
+    marker.color.g = 0.5
+    marker.color.b = 0.2
+    marker.color.a = 0.5
+
+    marker.lifetime = rospy.Duration()
+
+    pub = rospy.Publisher("ped_bbox", Marker, queue_size=10)
+    pub.publish(marker)
 
 
 if __name__ == '__main__':
@@ -136,11 +162,11 @@ if __name__ == '__main__':
     assert len(sys.argv) >= 4
     
     bag_path = sys.argv[1]
-    bag_type = sys.argv[2] # 'ped' or 'car'
+    is_ped = sys.argv[2] in {'1', 'true'}
     
     bag_dir = os.path.dirname(bag_path)
     
-    if bag_type == 'car':
+    if not is_ped:
         # compose path to metadata file
         md_path = os.path.join(bag_dir, 'metadata.csv')
         if not os.path.isfile(md_path):
