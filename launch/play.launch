@@ -1,7 +1,8 @@
 <launch>	
 	<arg name="bag"/>
-		
-	<node name="obs_centroid_publisher" pkg="didi_pipeline" type="cap_to_obs_tf.py" output="screen" args="$(arg bag)"/>
+	<arg name="type"/>
+	
+	<node name="obs_centroid_publisher" pkg="didi_pipeline" type="cap_to_obs_tf.py" output="screen" args="$(arg bag) $(arg type)"/>
 	
 	<node name="player" pkg="rosbag" type="play" output="screen" args="-l --clock --skip-empty=1 $(arg bag)"/>
 </launch>

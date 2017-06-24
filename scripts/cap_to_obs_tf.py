@@ -9,11 +9,14 @@ import rospy
 import tf
 from nav_msgs.msg import Odometry
 from visualization_msgs.msg import Marker
+from geometry_msgs.msg import PoseStamped
 
 
 last_cap_r = None
 last_cap_f = None
 last_cap_yaw = None
+
+metadata = None
 
 
 def load_metadata(md_path):
@@ -34,9 +37,14 @@ def load_metadata(md_path):
 
 
 def rtk_position_to_numpy(msg):
-    assert isinstance(msg, Odometry)
-    p = msg.pose.pose.position
-    return np.array([p.x, p.y, p.z])
+    if isinstance(msg, Odometry):
+        p = msg.pose.pose.position
+        return np.array([p.x, p.y, p.z])
+    elif isinstance(msg, PoseStamped) or isinstance(msg, NavSatFix):
+        p = msg.pose.position
+        return np.array([p.x, p.y, p.z])
+    else:
+        raise ValueError
 
 
 def get_yaw(p1, p2):
@@ -55,7 +63,7 @@ def rotMatZ(a):
     ])
 
 
-def handle_msg(msg, who):
+def handle_msg_car(msg, who):
     assert isinstance(msg, Odometry)
 
     global last_cap_r, last_cap_f, last_cap_yaw
@@ -112,6 +120,13 @@ def handle_msg(msg, who):
 
         pub = rospy.Publisher("obs_bbox", Marker, queue_size=10)
         pub.publish(marker)
+        
+        
+def handle_msg_ped(msg, who):
+    ped = rtk_position_to_numpy(msg)
+
+    br = tf.TransformBroadcaster()
+    br.sendTransform(tuple(ped), (0,0,0,1), rospy.Time.now(), 'ped', 'world')
 
 
 if __name__ == '__main__':
@@ -120,25 +135,43 @@ if __name__ == '__main__':
     # [filepath, argument1, argument2, ..., argumentN, nodename, logpath]
     assert len(sys.argv) >= 4
     
-    # compose path to metadata file
     bag_path = sys.argv[1]
+    bag_type = sys.argv[2] # 'ped' or 'car'
+    
     bag_dir = os.path.dirname(bag_path)
-    md_path = os.path.join(bag_dir, 'metadata.csv')
-    assert os.path.isfile(md_path), 'Metadata file %s does not exists' % md_path
     
-    metadata = load_metadata(md_path)
+    if bag_type == 'car':
+        # compose path to metadata file
+        md_path = os.path.join(bag_dir, 'metadata.csv')
+        if not os.path.isfile(md_path):
+            print 'Metadata file %s does not exists, is it a test bag?' % md_path
+            exit(0)
+    
+        global metadata
+        metadata = load_metadata(md_path)
 
-    obj_topics = {
-        'cap_r': '/objects/capture_vehicle/rear/gps/rtkfix',
-        'cap_f': '/objects/capture_vehicle/front/gps/rtkfix',
-        'obs_r': '/objects/obs1/rear/gps/rtkfix'
-    }
+        obj_topics = {
+            'cap_r': '/objects/capture_vehicle/rear/gps/rtkfix',
+            'cap_f': '/objects/capture_vehicle/front/gps/rtkfix',
+            'obs_r': '/objects/obs1/rear/gps/rtkfix'
+        }
+        
+        for obj in obj_topics:
+            rospy.Subscriber(obj_topics[obj],
+                             Odometry,
+                             handle_msg_car,
+                             obj)
+    else:
+        obj_topics = {
+            'ped': ('/obstacle/ped/pose', PoseStamped)
+            }
+        
+        for obj in obj_topics:
+            rospy.Subscriber(obj_topics[obj][0],
+                             obj_topics[obj][1],
+                             handle_msg_ped,
+                             obj)
     
-    for obj in obj_topics:
-        rospy.Subscriber(obj_topics[obj],
-                         Odometry,
-                         handle_msg,
-                         obj)
 
     rospy.spin()
 
