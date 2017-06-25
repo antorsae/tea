@@ -18,10 +18,12 @@ from keras.models import load_model
 from diditracklet import *
 import point_utils
 import re
+import time
 
 if K._backend == 'tensorflow':
     import tensorflow as tf
     tf_segmenter_graph = None
+    tf_localizer_graph = None
 
 segmenter_model = None
 localizer_model = None
@@ -29,8 +31,11 @@ points_per_ring = None
 clip_distance = None
 sectors = None
 pointnet_points = None
+segmenter_threshold = None
 POINT_LIMIT = 65536
 cloud = np.empty((POINT_LIMIT, 5), dtype=np.float32)
+
+POINTS_THRESHOLD = 10 # miniimum number of points to do regression
 
 def angle_loss(y_true, y_pred):
     if K._BACKEND == 'theano':
@@ -48,7 +53,7 @@ def handle_velodyne_msg(msg, arg):
     # PointCloud2 reference http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html
      
     print 'stamp: %s' % msg.header.stamp
-    print 'number of points: %i' % msg.width * msg.height
+    #print 'number of points: %i' % msg.width * msg.height
 
     # PERFORMANCE WARNING START
     # this preparation code is super slow b/c it uses generator, ideally the code should receive two arrays:
@@ -75,15 +80,60 @@ def handle_velodyne_msg(msg, arg):
         s_start = s_end
     # PERFORMANCE WARNING END
 
-    print(tf_segmenter_graph)
     with tf_segmenter_graph.as_default():
+        time_seg_infe_start = time.time()
         class_predictions_by_angle = segmenter_model.predict([lidar_d, lidar_i], batch_size = sectors)
+        time_seg_infe_end   = time.time()
 
-    class_predictions_by_angle = class_predictions_by_angle.reshape((-1, points_per_ring, len(rings)))
+    print ' Seg inference: %0.3f ms' % ((time_seg_infe_end - time_seg_infe_start)   * 1000.0)
 
-    print(class_predictions_by_angle.shape)
-    # lidar_int is an array that can be accessed (points_per*ring
+    class_predictions_by_angle = np.squeeze(class_predictions_by_angle.reshape((-1, points_per_ring, len(rings))), axis=0)
 
+    segmented_points = lidar_int[class_predictions_by_angle.flatten() >= segmenter_threshold]
+
+    print(segmented_points.shape[0])
+
+    detection = 0
+    centroid  = np.zeros((3))
+    box_size  = np.zeros((3))
+    yaw       = np.zeros((1))
+
+    segmented_points_cloud_msg = pc2.create_cloud_xyz32(msg.header, segmented_points[:,:3])
+
+    if segmented_points.shape[0] >= POINTS_THRESHOLD:
+
+        detection = 1
+
+        segmented_points_mean = np.mean(segmented_points[:, :3], axis=0)
+        angle = np.arctan2(segmented_points_mean[1], segmented_points_mean[0])
+        segmented_points = point_utils.rotZ(segmented_points, angle)
+
+        segmented_and_aligned_points_mean = np.mean(segmented_points[:, :3], axis=0)
+        segmented_points[:, :3] -= segmented_and_aligned_points_mean
+        segmented_points[:,  3] /= 128.
+
+        distance_to_segmented_and_aligned_points = np.linalg.norm(segmented_and_aligned_points_mean[:2])
+
+        segmented_points_resampled = DidiTracklet.resample_lidar(segmented_points[:,:4], pointnet_points)
+
+        segmented_points_resampled = np.expand_dims(segmented_points_resampled, axis=0)
+        distance_to_segmented_and_aligned_points = np.expand_dims(distance_to_segmented_and_aligned_points, axis=0)
+
+        with tf_localizer_graph.as_default():
+            time_loc_infe_start = time.time()
+            centroid, box_size, yaw = localizer_model.predict_on_batch([segmented_points_resampled, distance_to_segmented_and_aligned_points])
+            time_loc_infe_end   = time.time()
+
+        centroid = np.squeeze(centroid, axis=0)
+        box_size = np.squeeze(box_size, axis=0)
+        yaw      = np.squeeze(yaw     , axis=0)
+
+        print ' Reg inference: %0.3f ms' % ((time_loc_infe_end - time_loc_infe_start) * 1000.0)
+
+        centroid += segmented_and_aligned_points_mean
+        centroid  = point_utils.rotZ(centroid, -angle)
+        yaw       = point_utils.remove_orientation(yaw + angle)
+        print(centroid, box_size, yaw)
 
     # publish message (resend msg)
     publisher = rospy.Publisher(name='my_topic', 
@@ -91,14 +141,14 @@ def handle_velodyne_msg(msg, arg):
                     queue_size=1)
     my_msg = Andres()
     my_msg.header = msg.header
-    my_msg.detection = 0
-    my_msg.cloud = msg
-    my_msg.length = 1
-    my_msg.width = 2.
-    my_msg.height = 3.
-    my_msg.cx = 4.
-    my_msg.cy = 5.
-    my_msg.cz = 6.
+    my_msg.detection = detection
+    my_msg.cloud = segmented_points_cloud_msg
+    my_msg.length = box_size[2]
+    my_msg.width  = box_size[1]
+    my_msg.height = box_size[0]
+    my_msg.cx = centroid[0]
+    my_msg.cy = centroid[1]
+    my_msg.cz = centroid[2]
     publisher.publish(my_msg)
     
 
@@ -108,6 +158,7 @@ if __name__ == '__main__':
     parser.add_argument('-lm', '--localizer-model', required=True, help='path to hdf5 model')
     parser.add_argument('-cd', '--clip-distance', default=50., type=float, help='Clip distance (needs to be consistent with trained model!)')
     parser.add_argument('-c', '--cpu', action='store_true', help='force CPU inference')
+    parser.add_argument('-st', '--segmenter-threshold', default=0.5, type=float, help='Segmenter classification threshold')
 
     args = parser.parse_args()
 
@@ -115,37 +166,49 @@ if __name__ == '__main__':
         os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-    clip_distance = args.clip_distance
+    clip_distance       = args.clip_distance
+    segmenter_threshold = args.segmenter_threshold
 
-    # segmenter model
-    segmenter_model = load_model(args.segmenter_model)
-    print("segmenter model")
-    segmenter_model.summary()
-    points_per_ring = segmenter_model.get_input_shape_at(0)[0][1]
-    match = re.search(r'lidarnet-seg-rings_(\d+)_(\d+)-sectors_(\d+)-.*\.hdf5', args.segmenter_model)
-    rings = range(int(match.group(1)), int(match.group(2)))
-    sectors = int(match.group(3))
-    points_per_ring *= sectors
-    assert len(rings) == segmenter_model.get_input_shape_at(0)[0][2]
+    import keras.losses
+    keras.losses.angle_loss = angle_loss
 
-    if K._backend == 'tensorflow':
-        tf_segmenter_graph = tf.get_default_graph()
-        print(tf_segmenter_graph)
+    if True:
+        # segmenter model
+        segmenter_model = load_model(args.segmenter_model, compile=False)
+        segmenter_model._make_predict_function() # https://github.com/fchollet/keras/issues/6124
+        print("segmenter model")
+        segmenter_model.summary()
+        points_per_ring = segmenter_model.get_input_shape_at(0)[0][1]
+        match = re.search(r'lidarnet-seg-rings_(\d+)_(\d+)-sectors_(\d+)-.*\.hdf5', args.segmenter_model)
+        rings = range(int(match.group(1)), int(match.group(2)))
+        sectors = int(match.group(3))
+        points_per_ring *= sectors
+        assert len(rings) == segmenter_model.get_input_shape_at(0)[0][2]
+        print('Loaded segmenter model with ' + str(points_per_ring) + ' points per ring and ' + str(len(rings)) + ' rings')
+
+
+        if K._backend == 'tensorflow':
+            tf_segmenter_graph = tf.get_default_graph()
+            print(tf_segmenter_graph)
 
     # localizer model
 
-    if False:
-        import keras.losses
-
-        # keras.losses.null_loss = null_loss
-        keras.losses.angle_loss = angle_loss
+    if True:
 
         print("localizer model")
         #'lidarnet-pointnet-rings_10_28-epoch78-val_loss0.0269.hdf5'
-        localizer_model = load_model(args.localizer_model)
+        localizer_model = load_model(args.localizer_model, compile=False)
+        segmenter_model._make_predict_function() # https://github.com/fchollet/keras/issues/6124
         localizer_model.summary()
         # TODO: check consistency against segmenter model (rings)
-        pointnet_points = localizer_model.get_input_shape_at(0)[0]
+        pointnet_points = localizer_model.get_input_shape_at(0)[0][1]
+        print('Loaded localizer model with ' + str(pointnet_points) + ' points')
+
+        if K._backend == 'tensorflow':
+            tf_localizer_graph = tf.get_default_graph()
+            print(tf_localizer_graph)
+
+
 
     node_name = 'ros_node'
     
