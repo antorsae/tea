@@ -29,9 +29,14 @@ def load_metadata(md_path):
             row['l'] = float(row['l'])
             row['w'] = float(row['w'])
             row['h'] = float(row['h'])
-            row['rear_gps_l'] = float(row['rear_gps_l'])
-            row['rear_gps_w'] = float(row['rear_gps_w'])
-            row['rear_gps_h'] = float(row['rear_gps_h'])
+            if 'rear_gps_l' in row.keys(): # release 3 format
+                row['rear_gps_l'] = float(row['rear_gps_l'])
+                row['rear_gps_w'] = float(row['rear_gps_w'])
+                row['rear_gps_h'] = float(row['rear_gps_h'])
+            else: # release2 format
+                row['rear_gps_l'] = float(row['gps_l'])
+                row['rear_gps_w'] = float(row['gps_w'])
+                row['rear_gps_h'] = float(row['gps_h'])
             data.append(row)
     return data
 
