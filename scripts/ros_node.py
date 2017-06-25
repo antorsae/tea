@@ -5,8 +5,11 @@ import os
 import sys
 from sensor_msgs.msg import PointCloud2
 import sensor_msgs.point_cloud2 as pc2
+from std_msgs.msg import ColorRGBA
 from didi_pipeline.msg import Andres
 from sensor_msgs.msg._PointCloud import PointCloud
+from visualization_msgs.msg import Marker
+import tf as ros_tf
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(BASE_DIR)
@@ -162,12 +165,40 @@ def handle_velodyne_msg(msg, arg):
     my_msg.cz = centroid[2]
     publisher.publish(my_msg)
     
-    # FIXME publish segmented points just for now
-    seg_pnt_pub = rospy.Publisher(name='segmented_car',
-                                  data_class=PointCloud2,
-                                  queue_size=1)
-    seg_msg = PointCloud2()
-    seg_pnt_pub.publish(segmented_points_cloud_msg)
+    # publish car prediction data as separate regular ROS messages just for vizualization (dunno how to visualize custom messages in rviz)
+    publish_rviz_topics = True
+    
+    if publish_rviz_topics and detection > 0:
+        # point cloud
+        seg_pnt_pub = rospy.Publisher(name='segmented_car',
+                                      data_class=PointCloud2,
+                                      queue_size=1)
+        seg_msg = PointCloud2()
+        seg_pnt_pub.publish(segmented_points_cloud_msg)
+        
+        # car centroid frame
+        br = ros_tf.TransformBroadcaster()
+        br.sendTransform(tuple(centroid), (0,0,0,1), rospy.Time.now(), 'car_pred_centroid', 'velodyne')
+        
+        # give bbox different color, depending on the predicted object class
+        if detection == 1: # car
+            bbox_color = ColorRGBA(r=1., g=1., b=0., a=0.5)
+        else: # ped
+            bbox_color = ColorRGBA(r=0., g=0., b=1., a=0.5)
+        
+        # bounding box
+        marker = Marker()
+        marker.header.frame_id = "car_pred_centroid"
+        marker.header.stamp = rospy.Time.now()
+        marker.type = Marker.CUBE
+        marker.action = Marker.ADD
+        marker.scale.x = box_size[2]
+        marker.scale.y = box_size[1]
+        marker.scale.z = box_size[0]
+        marker.color = bbox_color
+        marker.lifetime = rospy.Duration()
+        pub = rospy.Publisher("car_pred_bbox", Marker, queue_size=10)
+        pub.publish(marker)
     
 
 if __name__ == '__main__':
