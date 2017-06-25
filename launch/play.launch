@@ -1,12 +1,13 @@
 <launch>	
 	<arg name="bag"/>
 	<arg name="is_ped"/>
+	<arg name="obst_tf" default="true"/>
 	
 	<include file="$(find velodyne_pointcloud)/launch/32e_points.launch" if="$(arg is_ped)"/>
 	
 	<include file="$(find didi_pipeline)/launch/tf.launch" unless="$(arg is_ped)"/>
 	
-	<node name="obs_centroid_publisher" pkg="didi_pipeline" type="cap_to_obs_tf.py" output="screen" args="$(arg bag) $(arg is_ped)"/>
+	<node name="obs_centroid_publisher" pkg="didi_pipeline" type="cap_to_obs_tf.py" output="screen" args="$(arg bag) $(arg is_ped)" if="$(arg obst_tf)"/>
 	
 	<node name="player" pkg="rosbag" type="play" output="screen" args="-l --clock --skip-empty=1 $(arg bag)"/>
 </launch>
