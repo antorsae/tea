@@ -25,7 +25,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: pc_original
+    SyncSource: VELO_CLOUD
 Visualization Manager:
   Class: ""
   Displays:
@@ -62,9 +62,9 @@ Visualization Manager:
       Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 138
+      Max Intensity: 129
       Min Color: 0; 0; 0
-      Min Intensity: 1
+      Min Intensity: 0
       Name: VELO_CLOUD
       Position Transformer: XYZ
       Queue Size: 10
@@ -77,10 +77,48 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: false
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 85; 255; 0
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 0; 0
+      Max Intensity: 4096
+      Min Color: 255; 0; 0
+      Min Intensity: 0
+      Name: CAR_SEG_PRED
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.400000006
+      Style: Boxes
+      Topic: /segmented_car
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: false
+      Value: true
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: obs_bbox
       Name: CAR_BBOX_GT
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /car_pred_bbox
+      Name: CAR_BBOX_PRED
       Namespaces:
         "": true
       Queue Size: 100
@@ -105,6 +143,8 @@ Visualization Manager:
         base_link:
           Value: true
         camera:
+          Value: true
+        car_pred_centroid:
           Value: true
         gps_antenna_front:
           Value: true
@@ -145,38 +185,9 @@ Visualization Manager:
           radar:
             {}
           velodyne:
-            {}
+            car_pred_centroid:
+              {}
       Update Interval: 0
-      Value: true
-    - Alpha: 1
-      Autocompute Intensity Bounds: false
-      Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
-        Value: true
-      Axis: Z
-      Channel Name: intensity
-      Class: rviz/PointCloud2
-      Color: 85; 255; 0
-      Color Transformer: FlatColor
-      Decay Time: 0
-      Enabled: true
-      Invert Rainbow: false
-      Max Color: 255; 0; 0
-      Max Intensity: 4096
-      Min Color: 255; 0; 0
-      Min Intensity: 0
-      Name: CAR_SEG_PRED
-      Position Transformer: XYZ
-      Queue Size: 10
-      Selectable: true
-      Size (Pixels): 3
-      Size (m): 0.400000006
-      Style: Boxes
-      Topic: /segmented_car
-      Unreliable: false
-      Use Fixed Frame: true
-      Use rainbow: false
       Value: true
   Enabled: true
   Global Options:
@@ -202,24 +213,24 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 142.509933
+      Distance: 26.0860958
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 17.6139126
-        Y: -0.318867505
-        Z: 6.44358397
+        X: 3.04998779
+        Y: 2.08356738
+        Z: 1.46443427
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.08479691
+      Pitch: 0.919797301
       Target Frame: ped
       Value: Orbit (rviz)
-      Yaw: 3.72185349
+      Yaw: 3.79184365
     Saved: ~
 Window Geometry:
   CAMERA_IMAGE:
