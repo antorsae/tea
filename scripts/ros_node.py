@@ -5,11 +5,12 @@ import os
 import sys
 from sensor_msgs.msg import PointCloud2
 import sensor_msgs.point_cloud2 as pc2
-from std_msgs.msg import ColorRGBA
+from std_msgs.msg import ColorRGBA, Header
 from didi_pipeline.msg import Andres
 from sensor_msgs.msg._PointCloud import PointCloud
 from visualization_msgs.msg import Marker
 import tf as ros_tf
+import pcl
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(BASE_DIR)
@@ -113,6 +114,8 @@ def handle_velodyne_msg(msg, arg):
     yaw       = np.zeros((1))
 
     segmented_points_cloud_msg = pc2.create_cloud_xyz32(msg.header, segmented_points[:,:3])
+    
+    segmented_points_xyz = np.copy(segmented_points[:,:3])
 
     if segmented_points.shape[0] >= POINTS_THRESHOLD:
 
@@ -200,6 +203,22 @@ def handle_velodyne_msg(msg, arg):
         marker.lifetime = rospy.Duration()
         pub = rospy.Publisher("car_pred_bbox", Marker, queue_size=10)
         pub.publish(marker)
+        
+    
+    if detection > 0:
+        time_start = time.time()
+        
+        cloud_orig = pcl.PointCloud(segmented_points_xyz.astype(np.float32))
+        fil = cloud_orig.make_statistical_outlier_filter()
+        fil.set_mean_k(50)
+        fil.set_std_dev_mul_thresh(1.0)
+        cloud_fil = fil.filter()
+        seg_points_fil_msg = pc2.create_cloud_xyz32(msg.header, cloud_fil.to_array())
+        rospy.Publisher(name='segmented_filt_car',
+                      data_class=PointCloud2,
+                      queue_size=1).publish(seg_points_fil_msg)
+        
+        print 'point cloud filter: {:.2f}ms'.format(1e3*(time.time() - time_start))
     
 
 if __name__ == '__main__':
