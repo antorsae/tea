@@ -70,19 +70,21 @@ def handle_velodyne_msg(msg, arg):
         return_lidar_interpolated=True)
 
     lidar_d = np.empty((sectors, points_per_ring // sectors, len(rings)), dtype=np.float32)
+    lidar_h = np.empty((sectors, points_per_ring // sectors, len(rings)), dtype=np.float32)
     lidar_i = np.empty((sectors, points_per_ring // sectors, len(rings)), dtype=np.float32)
     s_start = 0
     for sector in range(sectors):
         s_end = s_start + points_per_ring // sectors
         for ring in range(len(rings)):
             lidar_d[sector, :, ring] = lidar[ring, s_start:s_end, 0]
+            lidar_h[sector, :, ring] = lidar[ring, s_start:s_end, 1]
             lidar_i[sector, :, ring] = lidar[ring, s_start:s_end, 2]
         s_start = s_end
     # PERFORMANCE WARNING END
 
     with tf_segmenter_graph.as_default():
         time_seg_infe_start = time.time()
-        class_predictions_by_angle = segmenter_model.predict([lidar_d, lidar_i], batch_size = sectors)
+        class_predictions_by_angle = segmenter_model.predict([lidar_d, lidar_h, lidar_i], batch_size = sectors)
         time_seg_infe_end   = time.time()
 
     print ' Seg inference: %0.3f ms' % ((time_seg_infe_end - time_seg_infe_start)   * 1000.0)
