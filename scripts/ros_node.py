@@ -91,10 +91,18 @@ def handle_velodyne_msg(msg, arg):
     print ' Seg inference: %0.3f ms' % ((time_seg_infe_end - time_seg_infe_start)   * 1000.0)
 
     class_predictions_by_angle = np.squeeze(class_predictions_by_angle.reshape((-1, points_per_ring, len(rings))), axis=0)
+    print(class_predictions_by_angle.shape)
+    class_predictions_by_angle_idx = np.argwhere(class_predictions_by_angle >= segmenter_threshold)
 
-    segmented_points = lidar_int[class_predictions_by_angle.flatten() >= segmenter_threshold]
+    print(class_predictions_by_angle_idx)
 
-    print(segmented_points.shape[0])
+    if (class_predictions_by_angle_idx.shape[0] > 0):
+
+        segmented_points = lidar_int[class_predictions_by_angle_idx[:,0] + points_per_ring * class_predictions_by_angle_idx[:,1]]
+
+        print(segmented_points.shape[0])
+    else:
+        segmented_points = np.empty((0,3))
 
     detection = 0
     centroid  = np.zeros((3))
@@ -194,7 +202,8 @@ if __name__ == '__main__':
         sectors = int(match.group(3))
         points_per_ring *= sectors
         assert len(rings) == segmenter_model.get_input_shape_at(0)[0][2]
-        print('Loaded segmenter model with ' + str(points_per_ring) + ' points per ring and ' + str(len(rings)) + ' rings')
+        print('Loaded segmenter model with ' + str(points_per_ring) + ' points per ring and ' + str(len(rings)) +
+              ' rings from ' + str(rings[0]) + ' to ' + str(rings[-1]) )
 
 
         if K._backend == 'tensorflow':
