@@ -113,13 +113,25 @@ def handle_velodyne_msg(msg, arg):
     box_size  = np.zeros((3))
     yaw       = np.zeros((1))
 
-    segmented_points_cloud_msg = pc2.create_cloud_xyz32(msg.header, segmented_points[:,:3])
-    
-    segmented_points_xyz = np.copy(segmented_points[:,:3])
 
     if segmented_points.shape[0] >= POINTS_THRESHOLD:
 
         detection = 1
+        
+            # filter outlier points
+        if True:
+            time_start = time.time()
+            cloud_orig = pcl.PointCloud(segmented_points[:,:3].astype(np.float32))
+            fil = cloud_orig.make_statistical_outlier_filter()
+            fil.set_mean_k(50)
+            fil.set_std_dev_mul_thresh(1.0)
+            inlier_inds = fil.filter_ind()
+        
+            segmented_points = segmented_points[inlier_inds,:]
+        
+            print 'point cloud filter: {:.2f}ms'.format(1e3*(time.time() - time_start))
+            
+            filtered_points_xyz = segmented_points[:,:3]
 
         segmented_points_mean = np.mean(segmented_points[:, :3], axis=0)
         angle = np.arctan2(segmented_points_mean[1], segmented_points_mean[0])
@@ -151,6 +163,8 @@ def handle_velodyne_msg(msg, arg):
         centroid  = point_utils.rotZ(centroid, -angle)
         yaw       = point_utils.remove_orientation(yaw + angle)
         print(centroid, box_size, yaw)
+    
+    segmented_points_cloud_msg = pc2.create_cloud_xyz32(msg.header, segmented_points[:,:3])
 
     # publish message (resend msg)
     publisher = rospy.Publisher(name='my_topic', 
@@ -204,21 +218,11 @@ def handle_velodyne_msg(msg, arg):
         pub = rospy.Publisher("car_pred_bbox", Marker, queue_size=10)
         pub.publish(marker)
         
-    
-    if detection > 0:
-        time_start = time.time()
-        
-        cloud_orig = pcl.PointCloud(segmented_points_xyz.astype(np.float32))
-        fil = cloud_orig.make_statistical_outlier_filter()
-        fil.set_mean_k(50)
-        fil.set_std_dev_mul_thresh(1.0)
-        cloud_fil = fil.filter()
-        seg_points_fil_msg = pc2.create_cloud_xyz32(msg.header, cloud_fil.to_array())
+        # filtered point cloud
+        fil_points_msg = pc2.create_cloud_xyz32(msg.header, filtered_points_xyz)
         rospy.Publisher(name='segmented_filt_car',
                       data_class=PointCloud2,
-                      queue_size=1).publish(seg_points_fil_msg)
-        
-        print 'point cloud filter: {:.2f}ms'.format(1e3*(time.time() - time_start))
+                      queue_size=1).publish(fil_points_msg)
     
 
 if __name__ == '__main__':
