@@ -6,6 +6,7 @@ import sys
 from sensor_msgs.msg import PointCloud2
 import sensor_msgs.point_cloud2 as pc2
 from didi_pipeline.msg import Andres
+from sensor_msgs.msg._PointCloud import PointCloud
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(BASE_DIR)
@@ -152,6 +153,13 @@ def handle_velodyne_msg(msg, arg):
     my_msg.cy = centroid[1]
     my_msg.cz = centroid[2]
     publisher.publish(my_msg)
+    
+    # FIXME publish segmented points just for now
+    seg_pnt_pub = rospy.Publisher(name='segmented_car',
+                                  data_class=PointCloud2,
+                                  queue_size=1)
+    seg_msg = PointCloud2()
+    seg_pnt_pub.publish(segmented_points_cloud_msg)
     
 
 if __name__ == '__main__':
