@@ -60,8 +60,8 @@ def handle_velodyne_msg(msg, arg):
     #print 'number of points: %i' % msg.width * msg.height
 
     # PERFORMANCE WARNING START
-    # this preparation code is super slow b/c it uses generator, ideally the code should receive two arrays:
-    # lidar_d and lidar_i already preprocessed in C++
+    # this preparation code is super slow b/c it uses generator, ideally the code should receive 3 arrays:
+    # lidar_d lidar_h lidar_i already preprocessed in C++
     points = 0
     for x, y, z, intensity, ring in pc2.read_points(msg):
         cloud[points] = x, y, z, intensity, ring
@@ -94,16 +94,10 @@ def handle_velodyne_msg(msg, arg):
     print ' Seg inference: %0.3f ms' % ((time_seg_infe_end - time_seg_infe_start)   * 1000.0)
 
     class_predictions_by_angle = np.squeeze(class_predictions_by_angle.reshape((-1, points_per_ring, len(rings))), axis=0)
-    print(class_predictions_by_angle.shape)
     class_predictions_by_angle_idx = np.argwhere(class_predictions_by_angle >= segmenter_threshold)
 
-    print(class_predictions_by_angle_idx)
-
     if (class_predictions_by_angle_idx.shape[0] > 0):
-
         segmented_points = lidar_int[class_predictions_by_angle_idx[:,0] + points_per_ring * class_predictions_by_angle_idx[:,1]]
-
-        print(segmented_points.shape[0])
     else:
         segmented_points = np.empty((0,3))
 
