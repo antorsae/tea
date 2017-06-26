@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+import rosbag
 import os
 import sys
 from sensor_msgs.msg import PointCloud2
@@ -53,10 +54,10 @@ def angle_loss(y_true, y_pred):
         import tensorflow as tf
         arctan2 = tf.atan2
 
-def handle_velodyne_msg(msg, arg):
+def handle_velodyne_msg(msg, arg=None):
     global tf_segmenter_graph
 
-    assert isinstance(msg, PointCloud2)
+    assert msg._type == 'sensor_msgs/PointCloud2'
     
     # PointCloud2 reference http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html
      
@@ -258,10 +259,14 @@ def handle_velodyne_msg(msg, arg):
         rospy.Publisher(name='segmented_filt_car',
                       data_class=PointCloud2,
                       queue_size=1).publish(fil_points_msg)
+                      
+                      
+    return detection, my_msg
     
 
-if __name__ == '__main__':
+if __name__ == '__main__':        
     parser = argparse.ArgumentParser(description='Predicts bounding box pose of obstacle in lidar point cloud.')
+    parser.add_argument('--bag', help='path to ros bag')
     parser.add_argument('-sm', '--segmenter-model', required=True, help='path to hdf5 model')
     parser.add_argument('-lm', '--localizer-model', required=True, help='path to hdf5 model')
     parser.add_argument('-cd', '--clip-distance', default=50., type=float, help='Clip distance (needs to be consistent with trained model!)')
@@ -322,27 +327,44 @@ if __name__ == '__main__':
         if K._backend == 'tensorflow':
             tf_localizer_graph = tf.get_default_graph()
             print(tf_localizer_graph)
-
-
-
-    node_name = 'ros_node'
+            
     
+    # need to init ros to publish messages
+    node_name = 'ros_node'
     rospy.init_node(node_name)
     
-    # sys.argv layout:
-    # [filepath, argument1, argument2, ..., argumentN, nodename, logpath]
-    # where argument{1..N} are arguments you passed when called:
-    # roslaunch didi_pipeline ros_node argument1:=value argument2:=value ...
-    
-    # subscribe to the 
-    velodyne_topic = '/velodyne_points'
-    data_class = PointCloud2
-    callback = handle_velodyne_msg
-    callback_arg = {}
-    rospy.Subscriber(velodyne_topic,
-                     data_class,
-                     callback,
-                     callback_arg)
-    
-    # this will start infinite loop
-    rospy.spin()
+
+    if args.bag: # BAG MODE
+        # play ros bag
+        with rosbag.Bag(args.bag) as bag:
+            for topic, msg, t in bag.read_messages():
+                if topic == '/image_raw': # 24HZ
+                    # predict object pose with kalman_lidar|kalman_radar;
+                    # add pose to tracklet;
+                    pass
+                elif topic == '/velodyne_points' and msg.data: # 10HZ
+                    # predict object state(NN);
+                    vel_pred = handle_velodyne_msg(msg)
+                    
+                    # update kalman_lidar;
+                    if vel_pred.detection > 0:
+                        # update kalman_lidar
+                        pass
+                elif topic == '/radar/points': # 20HZ
+                    # use last kalman_lidar|kalman_radar estimation to extract radar points of the object; 
+                    # update kalman_radar;
+                    pass
+        
+    else: # NODE MODE
+        # subscribe to the 
+        velodyne_topic = '/velodyne_points'
+        data_class = PointCloud2
+        callback = handle_velodyne_msg
+        callback_arg = {}
+        rospy.Subscriber(velodyne_topic,
+                         data_class,
+                         callback,
+                         callback_arg)
+        
+        # this will start infinite loop
+        rospy.spin()
