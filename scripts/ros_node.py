@@ -37,10 +37,13 @@ clip_distance = None
 sectors = None
 pointnet_points = None
 segmenter_threshold = None
+segmenter_phased    = False
+localizer_points_threshold = None # miniimum number of points to do regression
+
 POINT_LIMIT = 65536
 cloud = np.empty((POINT_LIMIT, 5), dtype=np.float32)
 
-POINTS_THRESHOLD = 10 # miniimum number of points to do regression
+localizer_points_threshold = None # miniimum number of points to do regression
 
 def angle_loss(y_true, y_pred):
     if K._BACKEND == 'theano':
@@ -74,28 +77,66 @@ def handle_velodyne_msg(msg, arg):
         clip=(0., clip_distance),
         return_lidar_interpolated=True)
 
-    lidar_d = np.empty((sectors, points_per_ring // sectors, len(rings)), dtype=np.float32)
-    lidar_h = np.empty((sectors, points_per_ring // sectors, len(rings)), dtype=np.float32)
-    lidar_i = np.empty((sectors, points_per_ring // sectors, len(rings)), dtype=np.float32)
+    points_per_sector = points_per_ring // sectors
+
+    _sectors = 2 * sectors if segmenter_phased else sectors
+
+
+    lidar_d = np.empty((_sectors, points_per_sector, len(rings)), dtype=np.float32)
+    lidar_h = np.empty((_sectors, points_per_sector, len(rings)), dtype=np.float32)
+    lidar_i = np.empty((_sectors, points_per_sector, len(rings)), dtype=np.float32)
     s_start = 0
     for sector in range(sectors):
-        s_end = s_start + points_per_ring // sectors
+        s_end = s_start + points_per_sector
         for ring in range(len(rings)):
             lidar_d[sector, :, ring] = lidar[ring, s_start:s_end, 0]
             lidar_h[sector, :, ring] = lidar[ring, s_start:s_end, 1]
             lidar_i[sector, :, ring] = lidar[ring, s_start:s_end, 2]
         s_start = s_end
+
+    if segmenter_phased:
+        s_start = points_per_sector // 2
+        for sector in range(sectors-1):
+            _sector = sectors + sector
+            s_end = s_start + points_per_sector
+            for ring in range(len(rings)):
+                lidar_d[_sector, :, ring] = lidar[ring, s_start:s_end, 0]
+                lidar_h[_sector, :, ring] = lidar[ring, s_start:s_end, 1]
+                lidar_i[_sector, :, ring] = lidar[ring, s_start:s_end, 2]
+            s_start = s_end
+
+        for ring in range(len(rings)):
+            lidar_d[_sectors-1, :points_per_sector//2, ring] = lidar[ring, :points_per_sector//2,                 0]
+            lidar_d[_sectors-1, points_per_sector//2:, ring] = lidar[ring, points_per_ring - points_per_sector//2:, 0]
+            lidar_h[_sectors-1, :points_per_sector//2, ring] = lidar[ring, :points_per_sector//2,                 1]
+            lidar_h[_sectors-1, points_per_sector//2:, ring] = lidar[ring, points_per_ring - points_per_sector//2:, 1]
+            lidar_i[_sectors-1, :points_per_sector//2, ring] = lidar[ring, :points_per_sector//2,                 2]
+            lidar_i[_sectors-1, points_per_sector//2:, ring] = lidar[ring, points_per_ring - points_per_sector//2:, 2]
+
     # PERFORMANCE WARNING END
 
     with tf_segmenter_graph.as_default():
         time_seg_infe_start = time.time()
-        class_predictions_by_angle = segmenter_model.predict([lidar_d, lidar_h, lidar_i], batch_size = sectors)
+        class_predictions_by_angle = segmenter_model.predict([lidar_d, lidar_h, lidar_i], batch_size = _sectors)
         time_seg_infe_end   = time.time()
 
     print ' Seg inference: %0.3f ms' % ((time_seg_infe_end - time_seg_infe_start)   * 1000.0)
 
-    class_predictions_by_angle = np.squeeze(class_predictions_by_angle.reshape((-1, points_per_ring, len(rings))), axis=0)
-    class_predictions_by_angle_idx = np.argwhere(class_predictions_by_angle >= segmenter_threshold)
+    if segmenter_phased:
+        _class_predictions_by_angle = class_predictions_by_angle.reshape((-1, points_per_ring, len(rings)))
+        class_predictions_by_angle  = np.copy(_class_predictions_by_angle[0 , :])
+        class_predictions_by_angle[points_per_sector // 2 : points_per_ring - (points_per_sector//2)] += \
+            _class_predictions_by_angle[1 , : points_per_ring - points_per_sector]
+        class_predictions_by_angle[0 : points_per_sector // 2 ] += \
+            _class_predictions_by_angle[1 , points_per_ring - points_per_sector : points_per_ring - (points_per_sector // 2)]
+        class_predictions_by_angle[points_per_ring - (points_per_sector // 2) : ] += \
+            _class_predictions_by_angle[1 , points_per_ring - (points_per_sector // 2): ]
+        class_predictions_by_angle_idx = np.argwhere(class_predictions_by_angle >= (2 * segmenter_threshold))
+
+
+    else:
+        class_predictions_by_angle = np.squeeze(class_predictions_by_angle.reshape((-1, points_per_ring, len(rings))), axis=0)
+        class_predictions_by_angle_idx = np.argwhere(class_predictions_by_angle >= segmenter_threshold)
 
     if (class_predictions_by_angle_idx.shape[0] > 0):
         segmented_points = lidar_int[class_predictions_by_angle_idx[:,0] + points_per_ring * class_predictions_by_angle_idx[:,1]]
@@ -108,7 +149,7 @@ def handle_velodyne_msg(msg, arg):
     yaw       = np.zeros((1))
 
 
-    if segmented_points.shape[0] >= POINTS_THRESHOLD:
+    if segmented_points.shape[0] >= localizer_points_threshold:
 
         detection = 1
         
@@ -226,6 +267,8 @@ if __name__ == '__main__':
     parser.add_argument('-cd', '--clip-distance', default=50., type=float, help='Clip distance (needs to be consistent with trained model!)')
     parser.add_argument('-c', '--cpu', action='store_true', help='force CPU inference')
     parser.add_argument('-st', '--segmenter-threshold', default=0.5, type=float, help='Segmenter classification threshold')
+    parser.add_argument('-sp', '--segmenter-phased', action='store_true', help='Use phased-segmenter')
+    parser.add_argument('-lpt', '--localizer-points-threshold', default=10, type=int, help='Number of segmented points to trigger a detection')
 
     args = parser.parse_args()
 
@@ -233,8 +276,12 @@ if __name__ == '__main__':
         os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-    clip_distance       = args.clip_distance
-    segmenter_threshold = args.segmenter_threshold
+    clip_distance              = args.clip_distance
+    segmenter_threshold        = args.segmenter_threshold
+    segmenter_phased           = args.segmenter_phased
+    localizer_points_threshold = args.localizer_points_threshold
+
+
 
     import keras.losses
     keras.losses.angle_loss = angle_loss
