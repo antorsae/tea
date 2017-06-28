@@ -282,7 +282,14 @@ def handle_velodyne_msg(msg, arg=None):
                       queue_size=1).publish(fil_points_msg)
                       
                       
-    return detection, my_msg
+    return {'detection': detection, 
+            'x': centroid[0], 
+            'y': centroid[1],
+            'z': centroid[2], 
+            'l': box_size[2],
+            'w': box_size[1],
+            'h': box_size[0],
+            'yaw': np.squeeze(yaw)}
     
 
 if __name__ == '__main__':        
@@ -354,6 +361,10 @@ if __name__ == '__main__':
     
 
     if args.bag: # BAG MODE
+        import csv
+        writer = csv.DictWriter(open('lidar_pred.csv', 'w'), fieldnames=['time','detection','x','y','z','l','w','h','yaw'])
+        writer.writeheader()
+        
         # play ros bag
         with rosbag.Bag(args.bag) as bag:
             for topic, msg, t in bag.read_messages():
@@ -361,14 +372,17 @@ if __name__ == '__main__':
                     # predict object pose with kalman_lidar|kalman_radar;
                     # add pose to tracklet;
                     pass
+                
                 elif topic == '/velodyne_points' and msg.data: # 10HZ
                     # predict object state(NN);
-                    vel_pred = handle_velodyne_msg(msg)
+                    pred = handle_velodyne_msg(msg)
                     
                     # update kalman_lidar;
-                    if vel_pred.detection > 0:
+                    if pred['detection'] > 0:
                         # update kalman_lidar
-                        pass
+                        pred['time'] = t
+                        writer.writerow(pred)
+                        
                 elif topic == '/radar/points': # 20HZ
                     # use last kalman_lidar|kalman_radar estimation to extract radar points of the object; 
                     # update kalman_radar;
