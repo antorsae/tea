@@ -12,40 +12,36 @@ import os, sys
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(BASE_DIR, '../python'))
 
-import radar
+from radar import RadarObservation
+
+
+RADAR_TO_LIDAR = [1.5494 - 3.8, 0., 1.27]
 
 
 
 def process_radar_tracks(msg):
-    assert msg._type == 'didi_pipeline/RadarTracks'
+    assert msg._md5sum == '6a2de2f790cb8bb0e149d45d297462f8'
     
-    num_tracks = len(msg.tracks)
+    tracks = RadarObservation.from_msg(msg)
+    
+    num_tracks = len(tracks)
     
     acc=[]
     cloud = np.zeros([num_tracks, 3], dtype=np.float32)
-    for i, track in enumerate(msg.tracks):
-        rad = -np.deg2rad(track.angle)
-        
-        x = track.range * np.cos(rad)
-        y = track.range * np.sin(rad)
-        z = 0.
-        
-        vx = track.rate * np.cos(rad)
-        vy = track.rate * np.sin(rad)
-        
-        cloud[i] = [x, y, z]
+    for i, track in enumerate(tracks):
+        cloud[i] = [track.x, track.y, track.z] - np.array(RADAR_TO_LIDAR)
     
-        if np.abs(y) < 2:
-            acc.append(x)
-            acc.append(track.power)
-            #print vx*3.7, vy*3.7
+        if np.abs(track.y) < 2:
+            #acc.append(track.x)
+            #acc.append(track.power)
+            print track.vx*3.7, track.vy*3.7
             #print x, y, z
             
-    print acc
+    #print acc #msg.header.stamp
 
     header = Header()
     header.stamp = msg.header.stamp
-    header.frame_id = 'radar'
+    header.frame_id = 'velodyne'
     cloud_msg = pc2.create_cloud_xyz32(header, cloud)
     cloud_msg.width = 1
     cloud_msg.height = num_tracks

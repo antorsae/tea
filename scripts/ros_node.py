@@ -18,6 +18,8 @@ sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(BASE_DIR, 'torbusnet'))
 sys.path.append(os.path.join(BASE_DIR, '../python'))
 
+from radar import RadarObservation
+
 import argparse
 import provider_didi
 from keras import backend as K
@@ -27,7 +29,10 @@ import point_utils
 import re
 import time
 
-import radar
+
+# =============== MAGIC NUMBERS ====================== #
+RADAR_TO_LIDAR = [1.5494 - 3.8, 0., 1.27] # as per mkz.urdf.xacro
+
 
 if K._backend == 'tensorflow':
     import tensorflow as tf
@@ -365,8 +370,10 @@ if __name__ == '__main__':
 
     if args.bag: # BAG MODE
         import csv
-        writer = csv.DictWriter(open('lidar_pred_{}.csv'.format(os.path.basename(args.bag)), 'w'), fieldnames=['time','detection','x','y','z','l','w','h','yaw'])
-        writer.writeheader()
+        lidar_writer = csv.DictWriter(open('lidar_pred_{}.csv'.format(os.path.basename(args.bag)), 'w'), fieldnames=['time','detection','x','y','z','l','w','h','yaw'])
+        lidar_writer.writeheader()
+        radar_writer = csv.DictWriter(open('radar_pred_{}.csv'.format(os.path.basename(args.bag)), 'w'), fieldnames=['timestamp', 'x','y','z','vx','vy'])
+        radar_writer.writeheader()
         
         # play ros bag
         with rosbag.Bag(args.bag) as bag:
@@ -384,12 +391,19 @@ if __name__ == '__main__':
                     if pred['detection'] > 0:
                         # update kalman_lidar
                         pred['time'] = t
-                        writer.writerow(pred)
+                        lidar_writer.writerow(pred)
                         
-                elif topic == '/radar/points': # 20HZ
+                elif topic == '/radar/tracks': # 20HZ
                     # use last kalman_lidar|kalman_radar estimation to extract radar points of the object; 
                     # update kalman_radar;
-                    pass
+                    observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR)
+                    
+                    # in ford03 the obstacle is always +-2m along Y-axis
+                    acc = []
+                    for o in observations:
+                        if np.abs(o.y) < 2.:
+                            radar_writer.writerow(o.__dict__) 
+                    
         
     else: # NODE MODE
         # subscribe to the 
