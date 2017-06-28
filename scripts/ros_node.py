@@ -16,6 +16,7 @@ import pcl
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(BASE_DIR, 'torbusnet'))
+sys.path.append(os.path.join(BASE_DIR, '../python'))
 
 import argparse
 import provider_didi
@@ -25,6 +26,8 @@ from diditracklet import *
 import point_utils
 import re
 import time
+
+import radar
 
 if K._backend == 'tensorflow':
     import tensorflow as tf
@@ -362,7 +365,7 @@ if __name__ == '__main__':
 
     if args.bag: # BAG MODE
         import csv
-        writer = csv.DictWriter(open('lidar_pred.csv', 'w'), fieldnames=['time','detection','x','y','z','l','w','h','yaw'])
+        writer = csv.DictWriter(open('lidar_pred_{}.csv'.format(os.path.basename(args.bag)), 'w'), fieldnames=['time','detection','x','y','z','l','w','h','yaw'])
         writer.writeheader()
         
         # play ros bag
