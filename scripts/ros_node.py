@@ -41,6 +41,7 @@ segmenter_threshold = None
 deinterpolate = False
 segmenter_phased    = False
 localizer_points_threshold = None # miniimum number of points to do regression
+reject_false_positives = False
 
 CLIP_DIST      = (0., 50.)
 CLIP_HEIGHT    = (-3., 1.)
@@ -50,16 +51,19 @@ cloud = np.empty((POINT_LIMIT, 5), dtype=np.float32)
 
 localizer_points_threshold = None # miniimum number of points to do regression
 
+last_known_position = None
+
 def angle_loss(y_true, y_pred):
     if K._BACKEND == 'theano':
         import theano
         arctan2 = theano.tensor.arctan2
-    elif K._BACKEND == 'tensorflow': # NOT WORDKING!
+    elif K._BACKEND == 'tensorflow':
         import tensorflow as tf
         arctan2 = tf.atan2
 
 def handle_velodyne_msg(msg, arg=None):
     global tf_segmenter_graph
+    global last_known_position
 
     assert msg._type == 'sensor_msgs/PointCloud2'
     
@@ -146,22 +150,46 @@ def handle_velodyne_msg(msg, arg=None):
     if (class_predictions_by_angle_idx.shape[0] > 0):
         if deinterpolate:
             deinterpolated_class_predictions_by_angle_idx = np.empty((0,2))
-            lidar_d_interpolated = lidar_d.reshape((points_per_sector, len(rings),-1))[:,:,0]
+            lidar_d_interpolated = lidar_d.reshape((-1, points_per_ring, len(rings)))[0]
             for ring in range(len(rings)):
                 predictions_idx_in_ring = class_predictions_by_angle_idx[class_predictions_by_angle_idx[:,1] == ring]
-                if predictions_idx_in_ring.shape[0] > 0:
-                    lidar_d_predictions_in_ring = lidar_d_interpolated[ predictions_idx_in_ring[:,0] + points_per_ring * ring]
+                if predictions_idx_in_ring.shape[0] > 1:
+                    lidar_d_predictions_in_ring = lidar_d_interpolated[ predictions_idx_in_ring[:,0], ring]
                     lidar_d_predictions_in_ring_unique, lidar_d_predictions_in_ring_unique_idx = np.unique(lidar_d_predictions_in_ring, return_index=True)
-                    deinterpolated_class_predictions_by_angle_idx_this_ring = np.c_[
-                        np.expand_dims(lidar_d_predictions_in_ring_unique_idx, axis=-1),
-                        np.ones(lidar_d_predictions_in_ring_unique_idx.shape[0]) * ring]
+                    deinterpolated_class_predictions_by_angle_idx_this_ring = \
+                        predictions_idx_in_ring[lidar_d_predictions_in_ring_unique_idx]
                     deinterpolated_class_predictions_by_angle_idx = np.concatenate((
                         deinterpolated_class_predictions_by_angle_idx,
                         deinterpolated_class_predictions_by_angle_idx_this_ring))
 
-            class_predictions_by_angle_idx = deinterpolated_class_predictions_by_angle_idx
-        else:
-            segmented_points = lidar_int[class_predictions_by_angle_idx[:,0] + points_per_ring * class_predictions_by_angle_idx[:,1]]
+            #print(deinterpolated_class_predictions_by_angle_idx.shape)
+            #print(class_predictions_by_angle_idx.shape)
+            class_predictions_by_angle_idx = deinterpolated_class_predictions_by_angle_idx.astype(int)
+
+        segmented_points = lidar_int[class_predictions_by_angle_idx[:,0] + points_per_ring * class_predictions_by_angle_idx[:,1]]
+
+        if reject_false_positives and last_known_position is not None and segmented_points.shape[0] > 2:
+            import hdbscan
+            clusterer = hdbscan.HDBSCAN( allow_single_cluster=True)
+            cluster_labels = clusterer.fit_predict(segmented_points[:,:3])
+            number_of_clusters  = len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0)
+            print("Clusters " + str(number_of_clusters) + ' from ' + str(segmented_points.shape[0]) + ' points')
+            if number_of_clusters > 1:
+                unique_clusters = set(cluster_labels)
+                closest_cluster_center_of_mass = np.array([1e10,1e10,1e10])
+                points_in_closest_cluster = None
+
+                for cluster in unique_clusters:
+                    points_in_cluster = segmented_points[cluster_labels == cluster]
+                    points_in_cluster_center_of_mass = np.linalg.norm(points_in_cluster[:,:3])
+                    if np.linalg.norm(closest_cluster_center_of_mass - last_known_position) >\
+                            np.linalg.norm(points_in_cluster_center_of_mass - last_known_position):
+                        closest_cluster_center_of_mass = points_in_cluster_center_of_mass
+                        points_in_closest_cluster = points_in_cluster
+
+                segmented_points = points_in_closest_cluster
+                print(segmented_points)
+
     else:
         segmented_points = np.empty((0,3))
 
@@ -169,7 +197,6 @@ def handle_velodyne_msg(msg, arg=None):
     centroid  = np.zeros((3))
     box_size  = np.zeros((3))
     yaw       = np.zeros((1))
-
 
     if segmented_points.shape[0] >= localizer_points_threshold:
 
@@ -220,6 +247,8 @@ def handle_velodyne_msg(msg, arg=None):
         centroid  = point_utils.rotZ(centroid, -angle)
         yaw       = point_utils.remove_orientation(yaw + angle)
         print(centroid, box_size, yaw)
+
+        last_known_position = centroid
     
     segmented_points_cloud_msg = pc2.create_cloud_xyz32(msg.header, segmented_points[:,:3])
 
@@ -302,6 +331,7 @@ if __name__ == '__main__':
     parser.add_argument('-sp', '--segmenter-phased', action='store_true', help='Use phased-segmenter')
     parser.add_argument('-lpt', '--localizer-points-threshold', default=10, type=int, help='Number of segmented points to trigger a detection')
     parser.add_argument('-di', '--deinterpolate', action='store_true', help='Deinterpolate prior to regression')
+    parser.add_argument('-rfp', '--reject-false-positives', action='store_true', help='Rejects false positives')
 
     args = parser.parse_args()
 
@@ -313,6 +343,7 @@ if __name__ == '__main__':
     segmenter_phased           = args.segmenter_phased
     localizer_points_threshold = args.localizer_points_threshold
     deinterpolate              = args.deinterpolate
+    reject_false_positives     = args.reject_false_positives
 
     import keras.losses
     keras.losses.angle_loss = angle_loss
