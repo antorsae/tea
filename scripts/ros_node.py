@@ -38,8 +38,12 @@ clip_distance = None
 sectors = None
 pointnet_points = None
 segmenter_threshold = None
+deinterpolate = False
 segmenter_phased    = False
 localizer_points_threshold = None # miniimum number of points to do regression
+
+CLIP_DIST      = (0., 50.)
+CLIP_HEIGHT    = (-3., 1.)
 
 POINT_LIMIT = 65536
 cloud = np.empty((POINT_LIMIT, 5), dtype=np.float32)
@@ -75,13 +79,13 @@ def handle_velodyne_msg(msg, arg=None):
     lidar, lidar_int = DidiTracklet.filter_lidar_rings(
         cloud[:points],
         rings, points_per_ring,
-        clip=(0., clip_distance),
+        clip=CLIP_DIST,
+        clip_h=CLIP_HEIGHT,
         return_lidar_interpolated=True)
 
     points_per_sector = points_per_ring // sectors
 
     _sectors = 2 * sectors if segmenter_phased else sectors
-
 
     lidar_d = np.empty((_sectors, points_per_sector, len(rings)), dtype=np.float32)
     lidar_h = np.empty((_sectors, points_per_sector, len(rings)), dtype=np.float32)
@@ -140,7 +144,24 @@ def handle_velodyne_msg(msg, arg=None):
         class_predictions_by_angle_idx = np.argwhere(class_predictions_by_angle >= segmenter_threshold)
 
     if (class_predictions_by_angle_idx.shape[0] > 0):
-        segmented_points = lidar_int[class_predictions_by_angle_idx[:,0] + points_per_ring * class_predictions_by_angle_idx[:,1]]
+        if deinterpolate:
+            deinterpolated_class_predictions_by_angle_idx = np.empty((0,2))
+            lidar_d_interpolated = lidar_d.reshape((points_per_sector, len(rings),-1))[:,:,0]
+            for ring in range(len(rings)):
+                predictions_idx_in_ring = class_predictions_by_angle_idx[class_predictions_by_angle_idx[:,1] == ring]
+                if predictions_idx_in_ring.shape[0] > 0:
+                    lidar_d_predictions_in_ring = lidar_d_interpolated[ predictions_idx_in_ring[:,0] + points_per_ring * ring]
+                    lidar_d_predictions_in_ring_unique, lidar_d_predictions_in_ring_unique_idx = np.unique(lidar_d_predictions_in_ring, return_index=True)
+                    deinterpolated_class_predictions_by_angle_idx_this_ring = np.c_[
+                        np.expand_dims(lidar_d_predictions_in_ring_unique_idx, axis=-1),
+                        np.ones(lidar_d_predictions_in_ring_unique_idx.shape[0]) * ring]
+                    deinterpolated_class_predictions_by_angle_idx = np.concatenate((
+                        deinterpolated_class_predictions_by_angle_idx,
+                        deinterpolated_class_predictions_by_angle_idx_this_ring))
+
+            class_predictions_by_angle_idx = deinterpolated_class_predictions_by_angle_idx
+        else:
+            segmented_points = lidar_int[class_predictions_by_angle_idx[:,0] + points_per_ring * class_predictions_by_angle_idx[:,1]]
     else:
         segmented_points = np.empty((0,3))
 
@@ -269,11 +290,11 @@ if __name__ == '__main__':
     parser.add_argument('--bag', help='path to ros bag')
     parser.add_argument('-sm', '--segmenter-model', required=True, help='path to hdf5 model')
     parser.add_argument('-lm', '--localizer-model', required=True, help='path to hdf5 model')
-    parser.add_argument('-cd', '--clip-distance', default=50., type=float, help='Clip distance (needs to be consistent with trained model!)')
     parser.add_argument('-c', '--cpu', action='store_true', help='force CPU inference')
     parser.add_argument('-st', '--segmenter-threshold', default=0.5, type=float, help='Segmenter classification threshold')
     parser.add_argument('-sp', '--segmenter-phased', action='store_true', help='Use phased-segmenter')
     parser.add_argument('-lpt', '--localizer-points-threshold', default=10, type=int, help='Number of segmented points to trigger a detection')
+    parser.add_argument('-di', '--deinterpolate', action='store_true', help='Deinterpolate prior to regression')
 
     args = parser.parse_args()
 
@@ -281,12 +302,10 @@ if __name__ == '__main__':
         os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-    clip_distance              = args.clip_distance
     segmenter_threshold        = args.segmenter_threshold
     segmenter_phased           = args.segmenter_phased
     localizer_points_threshold = args.localizer_points_threshold
-
-
+    deinterpolate              = args.deinterpolate
 
     import keras.losses
     keras.losses.angle_loss = angle_loss
@@ -298,7 +317,7 @@ if __name__ == '__main__':
         print("segmenter model")
         segmenter_model.summary()
         points_per_ring = segmenter_model.get_input_shape_at(0)[0][1]
-        match = re.search(r'lidarnet-seg-rings_(\d+)_(\d+)-sectors_(\d+)-.*\.hdf5', args.segmenter_model)
+        match = re.search(r'seg-rings_(\d+)_(\d+)-sectors_(\d+)-.*\.hdf5', args.segmenter_model)
         rings = range(int(match.group(1)), int(match.group(2)))
         sectors = int(match.group(3))
         points_per_ring *= sectors
