@@ -8,6 +8,7 @@ from sensor_msgs.msg import PointCloud2
 import sensor_msgs.point_cloud2 as pc2
 from std_msgs.msg import ColorRGBA, Header
 from didi_pipeline.msg import Andres
+from didi_pipeline.msg import RadarTracks
 from sensor_msgs.msg._PointCloud import PointCloud
 from visualization_msgs.msg import Marker
 import tf as ros_tf
@@ -18,8 +19,6 @@ sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(BASE_DIR, 'torbusnet'))
 sys.path.append(os.path.join(BASE_DIR, '../python'))
 
-from radar import RadarObservation
-
 import argparse
 import provider_didi
 from keras import backend as K
@@ -28,10 +27,18 @@ from diditracklet import *
 import point_utils
 import re
 import time
+import threading
 
 
 # =============== MAGIC NUMBERS ====================== #
+CAR_SIZE = [4.358, 1.823, 1.484] # https://en.wikipedia.org/wiki/Ford_Focus_(third_generation)
 RADAR_TO_LIDAR = [1.5494 - 3.8, 0., 1.27] # as per mkz.urdf.xacro
+
+# =============== Sensor Fusion ====================== #
+from fusion import FusionUKF, EmptyObservation, RadarObservation, LidarObservation
+
+g_fusion = FusionUKF(CAR_SIZE[0] * 0.5)
+g_fusion_lock = threading.Lock()
 
 
 if K._backend == 'tensorflow':
@@ -262,6 +269,11 @@ def handle_velodyne_msg(msg, arg=None):
         print(centroid, box_size, yaw)
 
         last_known_position = centroid
+        
+    # FUSION
+    with g_fusion_lock:
+        observation = LidarObservation(msg.header.stamp.to_sec(), centroid[0], centroid[1], centroid[2], yaw)
+        g_fusion.filter(observation)
     
     segmented_points_cloud_msg = pc2.create_cloud_xyz32(msg.header, segmented_points[:,:3])
 
@@ -293,6 +305,10 @@ def handle_velodyne_msg(msg, arg=None):
         seg_pnt_pub.publish(segmented_points_cloud_msg)
         
         # car centroid frame
+        with g_fusion_lock:
+            if g_fusion.last_state_mean != None:
+                centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+            
         yaw_q = ros_tf.transformations.quaternion_from_euler(0, 0, yaw)
         br = ros_tf.TransformBroadcaster()
         br.sendTransform(tuple(centroid), tuple(yaw_q), rospy.Time.now(), 'car_pred_centroid', 'velodyne')
@@ -332,6 +348,13 @@ def handle_velodyne_msg(msg, arg=None):
             'w': box_size[1],
             'h': box_size[0],
             'yaw': np.squeeze(yaw)}
+    
+    
+def handle_radar_msg(msg):
+    assert msg._md5sum == '6a2de2f790cb8bb0e149d45d297462f8'
+    
+    with g_fusion_lock:
+        pass
     
 
 if __name__ == '__main__':        
@@ -411,6 +434,7 @@ if __name__ == '__main__':
         radar_writer = csv.DictWriter(open('radar_pred_{}.csv'.format(os.path.basename(args.bag)), 'w'), fieldnames=['timestamp', 'x','y','z','vx','vy'])
         radar_writer.writeheader()
         
+        
         # play ros bag
         with rosbag.Bag(args.bag) as bag:
             for topic, msg, t in bag.read_messages():
@@ -432,7 +456,7 @@ if __name__ == '__main__':
                 elif topic == '/radar/tracks': # 20HZ
                     # use last kalman_lidar|kalman_radar estimation to extract radar points of the object; 
                     # update kalman_radar;
-                    observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR)
+                    observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR, CAR_SIZE[1] * 0.5)
                     
                     # in ford03 the obstacle is always +-2m along Y-axis
                     last = None
@@ -448,14 +472,13 @@ if __name__ == '__main__':
         
     else: # NODE MODE
         # subscribe to the 
-        velodyne_topic = '/velodyne_points'
-        data_class = PointCloud2
-        callback = handle_velodyne_msg
-        callback_arg = {}
-        rospy.Subscriber(velodyne_topic,
-                         data_class,
-                         callback,
-                         callback_arg)
+        topics = [('/velodyne_points', PointCloud2, handle_velodyne_msg), 
+                  ('/radar/tracks', RadarTracks, handle_radar_msg)]
+        
+        for t in topics:
+            rospy.Subscriber(t[0],
+                             t[1],
+                             t[2])
         
         # this will start infinite loop
         rospy.spin()

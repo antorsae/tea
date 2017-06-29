@@ -1,6 +1,5 @@
 import csv
 import numpy as np
-from pykalman import AdditiveUnscentedKalmanFilter
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -10,204 +9,8 @@ import os, sys
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(BASE_DIR, '../python'))
 
-from radar import RadarObservation
+from fusion import FusionUKF, EmptyObservation, RadarObservation, LidarObservation
 
-
-class EmptyObservation:
-    def __init__(self, timestamp):
-        self.timestamp = timestamp
-
-    def __repr__(self):
-        return 'time: {}'.format(self.timestamp)
-
-
-class LidarObservation:
-    def __init__(self, timestamp, x=None, y=None, z=None, yaw=None):
-        # timestamp is seconds
-        # x,y,z is meters
-        # yaw is radians
-        self.timestamp = timestamp
-        self.x = x
-        self.y = y
-        self.z = z
-        self.yaw = yaw
-
-    def has_xyz(self):
-        return self.x is not None and self.y is not None and self.z is not None
-
-    def time(self):
-        # time in seconds
-        return self.timestamp
-
-    def __repr__(self):
-        return 'time: {:.6f}, x: {}, y: {}, z: {}, yaw: {}'.format(self.timestamp, self.x, self.y, self.z, self.yaw)
-
-
-class FusionUKF:
-    n_state_dims = 9
-    n_lidar_obs_dims = 3
-    n_radar_obs_dims = 4
-
-    # mapping between observed (by both lidar and radar) variables and their respective state variable indices
-    state_obs_map = {'x': 0, 'vx': 1, 'y': 3, 'vy': 4, 'z': 6}
-
-    def __init__(self):
-        self.transition_covariance = FusionUKF.create_transition_covariance()
-        self.lidar_initial_state_covariance = FusionUKF.create_lidar_initial_state_covariance()
-        self.radar_initial_state_covariance = FusionUKF.create_radar_initial_state_covariance()
-        self.lidar_observation_function = FusionUKF.create_lidar_observation_function()
-        self.radar_observation_function = FusionUKF.create_radar_observation_function()
-        self.lidar_observation_covariance = FusionUKF.create_lidar_observation_covariance()
-        self.radar_observation_covariance = FusionUKF.create_radar_observation_covariance()
-
-        self.kf = AdditiveUnscentedKalmanFilter(n_dim_state=FusionUKF.n_state_dims)
-
-        self.last_state_mean = None
-        self.last_state_covar = None
-        self.last_obs = None
-        self.last_obs_time = None
-        self.initialized = False
-
-        print self.create_transition_function(0.1)([1,1,0,0,0,0,0,0,0])
-
-    @staticmethod
-    def create_lidar_initial_state_covariance():
-        # converges really fast, so don't tweak too carefully
-        pos_cov = 1.
-        vel_cov = 10.
-        acc_cov = 100.
-        return np.diag([pos_cov, vel_cov, acc_cov, pos_cov, vel_cov, acc_cov, pos_cov, vel_cov, acc_cov])
-
-    @staticmethod
-    def create_radar_initial_state_covariance():
-        # converges really fast, so don't tweak too carefully
-        pos_cov = 1.
-        vel_cov = 10.
-        acc_cov = 100.
-        return np.diag([pos_cov, vel_cov, acc_cov, pos_cov, vel_cov, acc_cov, pos_cov, vel_cov, acc_cov])
-
-    @staticmethod
-    def create_transition_covariance():
-        eps = 1e-3  # this value should be small (acceleration speed noise)
-        return eps * np.eye(FusionUKF.n_state_dims)
-
-    @staticmethod
-    def create_transition_function(dt):
-        dt2 = 0.5*dt**2
-        F = np.array(
-            [[1, dt, dt2, 0,  0,  0,  0,  0,  0],  # x
-             [0,  1,  dt, 0,  0,  0,  0,  0,  0],  # x'
-             [0,  0,   1, 0,  0,  0,  0,  0,  0],  # x''
-             [0,  0,   0, 1, dt, dt2, 0,  0,  0],  # y
-             [0,  0,   0, 0,  1,  dt, 0,  0,  0],  # y'
-             [0,  0,   0, 0,  0,   1, 0,  0,  0],  # y''
-             [0,  0,   0, 0,  0,   0, 1, dt, dt2], # z
-             [0,  0,   0, 0,  0,   0, 0,  1,  dt], # z'
-             [0,  0,   0, 0,  0,   0, 0,  0,   1]  # z''
-             ], dtype=np.float32)
-        return lambda s: F.dot(s)
-
-    @staticmethod
-    def create_lidar_observation_function():
-        m = FusionUKF.state_obs_map
-        return lambda s: [s[m['x']], s[m['y']], s[m['z']]]
-
-    @staticmethod
-    def create_radar_observation_function():
-        m = FusionUKF.state_obs_map
-        return lambda s: [s[m['x']], s[m['vx']], s[m['y']], s[m['vy']]]
-
-    @staticmethod
-    def create_lidar_observation_covariance():
-        eps = .1 # derive from the lidar predictor accuracy
-        return eps * np.eye(FusionUKF.n_lidar_obs_dims)
-
-    @staticmethod
-    def create_radar_observation_covariance():
-        eps = .4 # derive from the lidar predictor accuracy
-        return eps * np.eye(FusionUKF.n_radar_obs_dims)
-
-    @staticmethod
-    def obs_as_kf_obs(obs):
-        if isinstance(obs, RadarObservation):
-            return [obs.x, obs.vx, obs.y, obs.vy]
-        elif isinstance(obs, LidarObservation):
-            return [obs.x, obs.y, obs.z]
-        else:
-            raise ValueError
-
-    @staticmethod
-    def obs_as_state(obs):
-        if isinstance(obs, RadarObservation):
-            return [obs.x,  obs.vx,     0.,     obs.y,    obs.vy,   0.,     0,      0.,     0.]
-        elif isinstance(obs, LidarObservation):
-            return [obs.x,      0.,     0.,     obs.y,        0.,   0.,  obs.z,      0.,     0.]
-        else:
-            raise ValueError
-
-    def filter(self, obs):
-        empty_obs = isinstance(obs, EmptyObservation)
-
-        if not self.initialized and empty_obs:
-            return
-
-        # we need initial estimation to feed it to filter_update()
-        if not self.initialized:
-            if not self.last_obs:
-                # need two observations to get a filtered state
-                self.last_obs = obs
-            else:
-                dt = obs.timestamp - self.last_obs.timestamp
-                #self.update_transition_matrix(dt)
-
-                #kf_obss = self.to_kf_obs([self.last_obs, obs])
-                #state_means, state_covars = self.kf.filter(kf_obss)
-
-                #self.last_state_mean, self.last_state_covar = state_means[-1], state_covars[-1]
-
-                is_radar = isinstance(obs, RadarObservation)
-
-                self.last_state_mean, self.last_state_covar =\
-                    self.kf.filter_update(
-                        self.obs_as_state(self.last_obs),
-                        self.radar_initial_state_covariance if is_radar else self.lidar_initial_state_covariance,
-                        self.obs_as_kf_obs(obs),
-                        self.create_transition_function(dt),
-                        self.transition_covariance,
-                        self.radar_observation_function if is_radar else self.lidar_observation_function,
-                        self.radar_observation_covariance if is_radar else self.lidar_observation_covariance)
-
-                self.last_obs = obs
-                self.initialized = True
-
-            return
-
-        dt = obs.timestamp - self.last_obs.timestamp
-        #self.update_transition_matrix(dt)
-
-        #print '---'
-        #print dt, obs
-        #print '---'
-
-        #print obs
-        # self.last_state_mean, self.last_state_covar = self.kf.filter_update(
-        #     self.last_state_mean,
-        #     self.last_state_covar,
-        #     observation=self.to_kf_obs(obs)[0] if not empty_obs else None)
-
-        is_radar = isinstance(obs, RadarObservation)
-
-        self.last_state_mean, self.last_state_covar =\
-            self.kf.filter_update(
-                self.last_state_mean,
-                self.last_state_covar,
-                self.obs_as_kf_obs(obs) if not empty_obs else None,
-                self.create_transition_function(dt),
-                self.transition_covariance,
-                self.radar_observation_function if is_radar else self.lidar_observation_function,
-                self.radar_observation_covariance if is_radar else self.lidar_observation_covariance)
-
-        self.last_obs = obs
 
 
 def run_synthetic_test():
@@ -277,7 +80,7 @@ def process_radar_csv_file():
 
 
 def analyze_ukf(radar_obss, lidar_obss):
-    fus = FusionUKF()
+    fus = FusionUKF(4.358/2)
 
     # shortenings
     # obs = 'observation'
@@ -325,6 +128,7 @@ def analyze_ukf(radar_obss, lidar_obss):
             next_radar_obs_i += 1
 
         #radar_obs = None
+        #lidar_obs = None
 
         if radar_obs:
             fus.filter(radar_obs)
@@ -348,7 +152,7 @@ def analyze_ukf(radar_obss, lidar_obss):
 
     # --------- PLOTS -----------
 
-    var = 'x'
+    var = 'z'
     o_i = FusionUKF.state_obs_map[var]
     radar_obss_var = [o.__dict__[var] for o in radar_obss]
     radar_obss_t = [o.timestamp for o in radar_obss]
