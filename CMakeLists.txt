@@ -66,6 +66,8 @@ add_definitions(${PCL_DEFINITIONS})
 add_message_files(
 	FILES
 	Andres.msg
+	RadarTracks.msg
+	Track.msg
 )
 
 ## Generate services in the 'srv' folder
