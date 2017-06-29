@@ -430,10 +430,15 @@ if __name__ == '__main__':
                     observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR)
                     
                     # in ford03 the obstacle is always +-2m along Y-axis
-                    acc = []
+                    last = None
                     for o in observations:
                         if np.abs(o.y) < 2.:
-                            radar_writer.writerow(o.__dict__) 
+                            if last:
+                                if last.x > o.x:
+                                    last = o
+                            else:
+                                last = o
+                    if last: radar_writer.writerow(last.__dict__) 
                     
         
     else: # NODE MODE

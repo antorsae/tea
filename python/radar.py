@@ -40,5 +40,8 @@ class RadarObservation:
             radar_obss.append(RadarObservation(stamp, x, y, z, vx, vy))
         
         return radar_obss
+    
+    def __repr__(self):
+        return 'time: {:.6f}, x: {}, y: {}, z: {}, vx: {}, vy: {}'.format(self.timestamp, self.x, self.y, self.z, self.vx, self.vy)
         
         
