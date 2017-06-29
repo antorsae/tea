@@ -67,6 +67,7 @@ cloud = np.empty((POINT_LIMIT, 5), dtype=np.float32)
 localizer_points_threshold = None # miniimum number of points to do regression
 
 last_known_position = None
+last_known_box_size = None
 
 def angle_loss(y_true, y_pred):
     if K._BACKEND == 'theano':
@@ -78,13 +79,15 @@ def angle_loss(y_true, y_pred):
 
 def handle_velodyne_msg(msg, arg=None):
     global tf_segmenter_graph
-    global last_known_position
+    global last_known_position, last_known_box_size
+    
+    verbose = False
 
     assert msg._type == 'sensor_msgs/PointCloud2'
     
     # PointCloud2 reference http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html
      
-    print 'stamp: %s' % msg.header.stamp
+    if verbose: print 'stamp: %s' % msg.header.stamp
     #print 'number of points: %i' % msg.width * msg.height
 
     # PERFORMANCE WARNING START
@@ -144,7 +147,7 @@ def handle_velodyne_msg(msg, arg=None):
         class_predictions_by_angle = segmenter_model.predict([lidar_d, lidar_h, lidar_i], batch_size = _sectors)
         time_seg_infe_end   = time.time()
 
-    print ' Seg inference: %0.3f ms' % ((time_seg_infe_end - time_seg_infe_start)   * 1000.0)
+    if verbose: print ' Seg inference: %0.3f ms' % ((time_seg_infe_end - time_seg_infe_start)   * 1000.0)
 
     if segmenter_phased:
         _class_predictions_by_angle = class_predictions_by_angle.reshape((-1, points_per_ring, len(rings)))
@@ -188,7 +191,7 @@ def handle_velodyne_msg(msg, arg=None):
             clusterer = hdbscan.HDBSCAN( allow_single_cluster=True)
             cluster_labels = clusterer.fit_predict(segmented_points[:,:3])
             number_of_clusters  = len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0)
-            print("Clusters " + str(number_of_clusters) + ' from ' + str(segmented_points.shape[0]) + ' points')
+            if verbose: print("Clusters " + str(number_of_clusters) + ' from ' + str(segmented_points.shape[0]) + ' points')
             if number_of_clusters > 1:
                 unique_clusters = set(cluster_labels)
                 closest_cluster_center_of_mass = np.array([1e10,1e10,1e10])
@@ -203,7 +206,7 @@ def handle_velodyne_msg(msg, arg=None):
                         points_in_closest_cluster = points_in_cluster
 
                 segmented_points = points_in_closest_cluster
-                print(segmented_points)
+                if verbose: print(segmented_points)
 
     else:
         segmented_points = np.empty((0,3))
@@ -228,7 +231,7 @@ def handle_velodyne_msg(msg, arg=None):
         
             segmented_points = segmented_points[inlier_inds,:]
         
-            print 'point cloud filter: {:.2f}ms'.format(1e3*(time.time() - time_start))
+            if verbose: print 'point cloud filter: {:.2f}ms'.format(1e3*(time.time() - time_start))
             
             filtered_points_xyz = segmented_points[:,:3]
 
@@ -256,19 +259,24 @@ def handle_velodyne_msg(msg, arg=None):
         box_size = np.squeeze(box_size, axis=0)
         yaw      = np.squeeze(yaw     , axis=0)
 
-        print ' Reg inference: %0.3f ms' % ((time_loc_infe_end - time_loc_infe_start) * 1000.0)
+        if verbose: print ' Reg inference: %0.3f ms' % ((time_loc_infe_end - time_loc_infe_start) * 1000.0)
 
         centroid += segmented_and_aligned_points_mean
         centroid  = point_utils.rotZ(centroid, -angle)
         yaw       = point_utils.remove_orientation(yaw + angle)
-        print(centroid, box_size, yaw)
+        if verbose: print(centroid, box_size, yaw)
 
         last_known_position = centroid
+        last_known_box_size = box_size
         
         # FUSION
         with g_fusion_lock:
             observation = LidarObservation(msg.header.stamp.to_sec(), centroid[0], centroid[1], centroid[2], yaw)
             g_fusion.filter(observation)
+            
+            # get filter centroid position
+            if g_fusion.last_state_mean is not None:
+                centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
     
     segmented_points_cloud_msg = pc2.create_cloud_xyz32(msg.header, segmented_points[:,:3])
 
@@ -300,13 +308,9 @@ def handle_velodyne_msg(msg, arg=None):
         seg_pnt_pub.publish(segmented_points_cloud_msg)
         
         # car centroid frame
-        with g_fusion_lock:
-            if g_fusion.last_state_mean != None:
-                centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
-            
         yaw_q = ros_tf.transformations.quaternion_from_euler(0, 0, yaw)
         br = ros_tf.TransformBroadcaster()
-        br.sendTransform(tuple(centroid), tuple(yaw_q), rospy.Time.now(), 'car_pred_centroid', 'velodyne')
+       # br.sendTransform(tuple(centroid), tuple(yaw_q), rospy.Time.now(), 'car_pred_centroid', 'velodyne')
         
         # give bbox different color, depending on the predicted object class
         if detection == 1: # car
@@ -348,10 +352,52 @@ def handle_velodyne_msg(msg, arg=None):
 def handle_radar_msg(msg):
     assert msg._md5sum == '6a2de2f790cb8bb0e149d45d297462f8'
     
-    with g_fusion_lock:
-        pass
+    publish_rviz_topics = True
     
-
+    with g_fusion_lock:
+        # do we have any estimation?
+        if g_fusion.last_state_mean is not None:
+            centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+    
+            observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR, CAR_SIZE[1] * 0.5)
+            
+            # find nearest observation to current object position estimation
+            distance_threshold = CAR_SIZE[0]
+            nearest = None
+            nearest_dist = 1e9
+            for o in observations:
+                dist = [o.x - centroid[0], o.y - centroid[1], o.z - centroid[2]]
+                dist = np.sqrt(np.array(dist).dot(dist))
+                
+                if dist < nearest_dist:
+                    nearest_dist = dist
+                    nearest = o
+            
+            if nearest is not None:
+                g_fusion.filter(nearest)
+                
+                if publish_rviz_topics:
+                    centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+                    
+                    br = ros_tf.TransformBroadcaster()
+                    br.sendTransform(tuple(centroid), (0,0,0,1), rospy.Time.now(), 'car_pred_centroid', 'velodyne')
+                    
+                    if last_known_box_size is not None:
+                        # bounding box
+                        marker = Marker()
+                        marker.header.frame_id = "car_pred_centroid"
+                        marker.header.stamp = rospy.Time.now()
+                        marker.type = Marker.CUBE
+                        marker.action = Marker.ADD
+                        marker.scale.x = last_known_box_size[2]
+                        marker.scale.y = last_known_box_size[1]
+                        marker.scale.z = last_known_box_size[0]
+                        marker.color = ColorRGBA(r=1., g=1., b=0., a=0.5)
+                        marker.lifetime = rospy.Duration()
+                        pub = rospy.Publisher("car_pred_bbox", Marker, queue_size=10)
+                        pub.publish(marker)
+                
+                    
 if __name__ == '__main__':        
     parser = argparse.ArgumentParser(description='Predicts bounding box pose of obstacle in lidar point cloud.')
     parser.add_argument('--bag', help='path to ros bag')
