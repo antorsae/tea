@@ -406,6 +406,8 @@ if __name__ == '__main__':
         radar_writer = csv.DictWriter(open('radar_pred_{}.csv'.format(os.path.basename(args.bag)), 'w'), fieldnames=['timestamp', 'x','y','z','vx','vy'])
         radar_writer.writeheader()
         
+        CAR_SIZE = [4.358, 1.823, 1.484] # https://en.wikipedia.org/wiki/Ford_Focus_(third_generation)
+        
         # play ros bag
         with rosbag.Bag(args.bag) as bag:
             for topic, msg, t in bag.read_messages():
@@ -427,7 +429,7 @@ if __name__ == '__main__':
                 elif topic == '/radar/tracks': # 20HZ
                     # use last kalman_lidar|kalman_radar estimation to extract radar points of the object; 
                     # update kalman_radar;
-                    observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR)
+                    observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR, CAR_SIZE[1] * 0.5)
                     
                     # in ford03 the obstacle is always +-2m along Y-axis
                     last = None

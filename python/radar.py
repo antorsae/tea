@@ -14,19 +14,19 @@ class RadarObservation:
         self.vy = vy
         
     @staticmethod
-    def from_msg(msg, radar_to_lidar=None):
+    def from_msg(msg, radar_to_lidar=None, radius_shift=0.):
         assert msg._md5sum == '6a2de2f790cb8bb0e149d45d297462f8'
         
-        num_tracks = len(msg.tracks)
         stamp = msg.header.stamp.to_sec()
         
         radar_obss = []
         
         for i, track in enumerate(msg.tracks):
-            rad = -np.deg2rad(track.angle)
+            ang = -np.deg2rad(track.angle)
+            r = track.range + radius_shift
             
-            x = track.range * np.cos(rad)
-            y = track.range * np.sin(rad)
+            x = r * np.cos(ang)
+            y = r * np.sin(ang)
             z = 0.
             
             if radar_to_lidar:
@@ -34,8 +34,8 @@ class RadarObservation:
                 y -= radar_to_lidar[1]
                 z -= radar_to_lidar[2]
             
-            vx = track.rate * np.cos(rad)
-            vy = track.rate * np.sin(rad)
+            vx = track.rate * np.cos(ang)
+            vy = track.rate * np.sin(ang)
             
             radar_obss.append(RadarObservation(stamp, x, y, z, vx, vy))
         
