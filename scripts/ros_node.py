@@ -265,10 +265,10 @@ def handle_velodyne_msg(msg, arg=None):
 
         last_known_position = centroid
         
-    # FUSION
-    with g_fusion_lock:
-        observation = LidarObservation(msg.header.stamp.to_sec(), centroid[0], centroid[1], centroid[2], yaw)
-        g_fusion.filter(observation)
+        # FUSION
+        with g_fusion_lock:
+            observation = LidarObservation(msg.header.stamp.to_sec(), centroid[0], centroid[1], centroid[2], yaw)
+            g_fusion.filter(observation)
     
     segmented_points_cloud_msg = pc2.create_cloud_xyz32(msg.header, segmented_points[:,:3])
 
