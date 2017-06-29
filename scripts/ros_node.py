@@ -18,7 +18,7 @@ sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(BASE_DIR, 'torbusnet'))
 sys.path.append(os.path.join(BASE_DIR, '../python'))
 
-from radar import RadarObservation
+from fusion import RadarObservation
 
 import argparse
 import provider_didi
