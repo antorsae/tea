@@ -166,6 +166,11 @@ def handle_velodyne_msg(msg, arg=None):
         class_predictions_by_angle_idx = np.argwhere(class_predictions_by_angle >= segmenter_threshold)
 
     if (class_predictions_by_angle_idx.shape[0] > 0):
+        # the idea of de-interpolation is to remove artifacts created by same-neighbor interpolation
+        # by checking repeated values (which are going to be same-neighbor interpolated values with high prob)
+        # for code convenience, we'e just taking the unique indexes as returned by np.unique but we
+        # could further improve this by calculating the center of mass on the X axis of the prediction
+        # vector (with the unique elements only), and take the index closest to the center for each duplicated stride.
         if deinterpolate:
             deinterpolated_class_predictions_by_angle_idx = np.empty((0,2))
             lidar_d_interpolated = lidar_d.reshape((-1, points_per_ring, len(rings)))[0]
