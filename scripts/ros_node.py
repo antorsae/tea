@@ -318,7 +318,7 @@ def handle_velodyne_msg(msg, arg=None):
             
         yaw_q = ros_tf.transformations.quaternion_from_euler(0, 0, yaw)
         br = ros_tf.TransformBroadcaster()
-       # br.sendTransform(tuple(centroid), tuple(yaw_q), rospy.Time.now(), 'car_pred_centroid', 'velodyne')
+        br.sendTransform(tuple(centroid), tuple(yaw_q), rospy.Time.now(), 'car_pred_centroid', 'velodyne')
         
         # give bbox different color, depending on the predicted object class
         if detection == 1: # car
@@ -377,7 +377,7 @@ def handle_radar_msg(msg):
                 dist = [o.x - centroid[0], o.y - centroid[1], o.z - centroid[2]]
                 dist = np.sqrt(np.array(dist).dot(dist))
                 
-                if dist < nearest_dist:
+                if dist < nearest_dist and dist < distance_threshold:
                     nearest_dist = dist
                     nearest = o
             
