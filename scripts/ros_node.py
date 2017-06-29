@@ -182,8 +182,6 @@ def handle_velodyne_msg(msg, arg=None):
                         deinterpolated_class_predictions_by_angle_idx,
                         deinterpolated_class_predictions_by_angle_idx_this_ring))
 
-            #print(deinterpolated_class_predictions_by_angle_idx.shape)
-            #print(class_predictions_by_angle_idx.shape)
             class_predictions_by_angle_idx = deinterpolated_class_predictions_by_angle_idx.astype(int)
 
         segmented_points = lidar_int[class_predictions_by_angle_idx[:,0] + points_per_ring * class_predictions_by_angle_idx[:,1]]
@@ -202,6 +200,7 @@ def handle_velodyne_msg(msg, arg=None):
                 for cluster in unique_clusters:
                     points_in_cluster = segmented_points[cluster_labels == cluster]
                     points_in_cluster_center_of_mass = np.linalg.norm(points_in_cluster[:,:3])
+                    print(cluster, points_in_cluster_center_of_mass)
                     if np.linalg.norm(closest_cluster_center_of_mass - last_known_position) >\
                             np.linalg.norm(points_in_cluster_center_of_mass - last_known_position):
                         closest_cluster_center_of_mass = points_in_cluster_center_of_mass
@@ -222,7 +221,7 @@ def handle_velodyne_msg(msg, arg=None):
 
         detection = 1
         
-            # filter outlier points
+         # filter outlier points
         if True:
             time_start = time.time()
             cloud_orig = pcl.PointCloud(segmented_points[:,:3].astype(np.float32))
@@ -306,7 +305,7 @@ def handle_velodyne_msg(msg, arg=None):
         
         # car centroid frame
         with g_fusion_lock:
-            if g_fusion.last_state_mean != None:
+            if g_fusion.last_state_mean is not None:
                 centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
             
         yaw_q = ros_tf.transformations.quaternion_from_euler(0, 0, yaw)
@@ -384,7 +383,7 @@ if __name__ == '__main__':
     import keras.losses
     keras.losses.angle_loss = angle_loss
 
-    if True:
+    if args.segmenter_model:
         # segmenter model
         segmenter_model = load_model(args.segmenter_model, compile=False)
         segmenter_model._make_predict_function() # https://github.com/fchollet/keras/issues/6124
@@ -406,10 +405,9 @@ if __name__ == '__main__':
 
     # localizer model
 
-    if True:
+    if args.localizer_model:
 
         print("localizer model")
-        #'lidarnet-pointnet-rings_10_28-epoch78-val_loss0.0269.hdf5'
         localizer_model = load_model(args.localizer_model, compile=False)
         segmenter_model._make_predict_function() # https://github.com/fchollet/keras/issues/6124
         localizer_model.summary()
