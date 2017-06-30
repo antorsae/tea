@@ -4,7 +4,7 @@ import rospy
 import rosbag
 import os
 import sys
-from sensor_msgs.msg import PointCloud2
+from sensor_msgs.msg import PointCloud2, Image
 import sensor_msgs.point_cloud2 as pc2
 from std_msgs.msg import ColorRGBA, Header
 from didi_pipeline.msg import Andres
@@ -72,6 +72,7 @@ localizer_points_threshold = None # miniimum number of points to do regression
 
 last_known_position = None
 last_known_box_size = None
+last_known_yaw = 0.
 
 def angle_loss(y_true, y_pred):
     if K._BACKEND == 'theano':
@@ -83,7 +84,7 @@ def angle_loss(y_true, y_pred):
 
 def handle_velodyne_msg(msg, arg=None):
     global tf_segmenter_graph
-    global last_known_position, last_known_box_size
+    global last_known_position, last_known_box_size, last_known_yaw
 
     assert msg._type == 'sensor_msgs/PointCloud2'
     
@@ -303,53 +304,53 @@ def handle_velodyne_msg(msg, arg=None):
 
         last_known_position = centroid
         last_known_box_size = box_size
+        last_known_yaw = np.squeeze(yaw)
         
         # FUSION
         with g_fusion_lock:
             observation = LidarObservation(msg.header.stamp.to_sec(), centroid[0], centroid[1], centroid[2], yaw)
             g_fusion.filter(observation)
             
-            # get filter centroid position
-            if g_fusion.last_state_mean is not None:
-                centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+#             # get filter centroid position
+#             if g_fusion.last_state_mean is not None:
+#                 centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
     
     segmented_points_cloud_msg = pc2.create_cloud_xyz32(msg.header, segmented_points[:,:3])
 
     # publish message (resend msg)
-    publisher = rospy.Publisher(name='my_topic', 
-                    data_class=Andres, 
-                    queue_size=1)
-    my_msg = Andres()
-    my_msg.header = msg.header
-    my_msg.detection = detection
-    my_msg.cloud = segmented_points_cloud_msg
-    my_msg.length = box_size[2]
-    my_msg.width  = box_size[1]
-    my_msg.height = box_size[0]
-    my_msg.cx = centroid[0]
-    my_msg.cy = centroid[1]
-    my_msg.cz = centroid[2]
-    publisher.publish(my_msg)
+#     publisher = rospy.Publisher(name='my_topic', 
+#                     data_class=Andres, 
+#                     queue_size=1)
+#     my_msg = Andres()
+#     my_msg.header = msg.header
+#     my_msg.detection = detection
+#     my_msg.cloud = segmented_points_cloud_msg
+#     my_msg.length = box_size[2]
+#     my_msg.width  = box_size[1]
+#     my_msg.height = box_size[0]
+#     my_msg.cx = centroid[0]
+#     my_msg.cy = centroid[1]
+#     my_msg.cz = centroid[2]
+#     publisher.publish(my_msg)
     
     # publish car prediction data as separate regular ROS messages just for vizualization (dunno how to visualize custom messages in rviz)
     publish_rviz_topics = True
     
     if publish_rviz_topics and detection > 0:
         # point cloud
-        seg_pnt_pub = rospy.Publisher(name='segmented_car',
+        seg_pnt_pub = rospy.Publisher(name='segmented_obj',
                                       data_class=PointCloud2,
                                       queue_size=1)
         seg_msg = PointCloud2()
         seg_pnt_pub.publish(segmented_points_cloud_msg)
         
-        # car centroid frame
-        with g_fusion_lock:
-            if g_fusion.last_state_mean is not None:
-                centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
-            
+#         with g_fusion_lock:
+#             if g_fusion.last_state_mean is not None:
+#                 centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+        # car centroid frame 
         yaw_q = ros_tf.transformations.quaternion_from_euler(0, 0, yaw)
         br = ros_tf.TransformBroadcaster()
-        br.sendTransform(tuple(centroid), tuple(yaw_q), rospy.Time.now(), 'car_pred_centroid', 'velodyne')
+        br.sendTransform(tuple(centroid), tuple(yaw_q), rospy.Time.now(), 'obj_lidar_centroid', 'velodyne')
         
         # give bbox different color, depending on the predicted object class
         if detection == 1: # car
@@ -359,7 +360,7 @@ def handle_velodyne_msg(msg, arg=None):
         
         # bounding box
         marker = Marker()
-        marker.header.frame_id = "car_pred_centroid"
+        marker.header.frame_id = "obj_lidar_centroid"
         marker.header.stamp = rospy.Time.now()
         marker.type = Marker.CUBE
         marker.action = Marker.ADD
@@ -368,15 +369,15 @@ def handle_velodyne_msg(msg, arg=None):
         marker.scale.z = box_size[0]
         marker.color = bbox_color
         marker.lifetime = rospy.Duration()
-        pub = rospy.Publisher("car_pred_bbox", Marker, queue_size=10)
+        pub = rospy.Publisher("obj_lidar_bbox", Marker, queue_size=10)
         pub.publish(marker)
         
         # filtered point cloud
         fil_points_msg = pc2.create_cloud_xyz32(msg.header, filtered_points_xyz)
-        rospy.Publisher(name='segmented_filt_car',
+        rospy.Publisher(name='segmented_filt_obj',
                       data_class=PointCloud2,
                       queue_size=1).publish(fil_points_msg)
-                      
+                    
                       
     return {'detection': detection, 
             'x': centroid[0], 
@@ -388,7 +389,7 @@ def handle_velodyne_msg(msg, arg=None):
             'yaw': np.squeeze(yaw)}
     
     
-def handle_radar_msg(msg):
+def handle_radar_msg(msg, dont_fuse):
     assert msg._md5sum == '6a2de2f790cb8bb0e149d45d297462f8'
     
     publish_rviz_topics = True
@@ -413,28 +414,67 @@ def handle_radar_msg(msg):
                     nearest = o
             
             if nearest is not None:
-                g_fusion.filter(nearest)
+                # FUSION
+                if not dont_fuse:
+                    g_fusion.filter(nearest)
                 
                 if publish_rviz_topics:
-                    centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+                    header = Header()
+                    header.frame_id = '/velodyne'
+                    header.stamp = rospy.Time.now()
+                    point = np.array([[nearest.x, nearest.y, nearest.z]], dtype=np.float32)
+                    rospy.Publisher(name='obj_radar_nearest',
+                      data_class=PointCloud2,
+                      queue_size=1).publish(pc2.create_cloud_xyz32(header, point))
                     
-                    br = ros_tf.TransformBroadcaster()
-                    br.sendTransform(tuple(centroid), (0,0,0,1), rospy.Time.now(), 'car_pred_centroid', 'velodyne')
+                    #centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
                     
-                    if last_known_box_size is not None:
-                        # bounding box
-                        marker = Marker()
-                        marker.header.frame_id = "car_pred_centroid"
-                        marker.header.stamp = rospy.Time.now()
-                        marker.type = Marker.CUBE
-                        marker.action = Marker.ADD
-                        marker.scale.x = last_known_box_size[2]
-                        marker.scale.y = last_known_box_size[1]
-                        marker.scale.z = last_known_box_size[0]
-                        marker.color = ColorRGBA(r=1., g=1., b=0., a=0.5)
-                        marker.lifetime = rospy.Duration()
-                        pub = rospy.Publisher("car_pred_bbox", Marker, queue_size=10)
-                        pub.publish(marker)
+                    #br = ros_tf.TransformBroadcaster()
+                    #br.sendTransform(tuple(centroid), (0,0,0,1), rospy.Time.now(), 'car_fuse_centroid', 'velodyne')
+                    
+#                     if last_known_box_size is not None:
+#                         # bounding box
+#                         marker = Marker()
+#                         marker.header.frame_id = "car_fuse_centroid"
+#                         marker.header.stamp = rospy.Time.now()
+#                         marker.type = Marker.CUBE
+#                         marker.action = Marker.ADD
+#                         marker.scale.x = last_known_box_size[2]
+#                         marker.scale.y = last_known_box_size[1]
+#                         marker.scale.z = last_known_box_size[0]
+#                         marker.color = ColorRGBA(r=1., g=1., b=0., a=0.5)
+#                         marker.lifetime = rospy.Duration()
+#                         pub = rospy.Publisher("car_fuse_bbox", Marker, queue_size=10)
+#                         pub.publish(marker)
+                        
+                        
+def handle_image_msg(msg):
+    assert msg._type == 'sensor_msgs/Image'
+    
+    with g_fusion_lock:
+        g_fusion.filter(EmptyObservation(msg.header.stamp.to_sec()))
+                    
+        if g_fusion.last_state_mean is not None:
+            centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+                        
+            yaw_q = ros_tf.transformations.quaternion_from_euler(0, 0, last_known_yaw)
+            br = ros_tf.TransformBroadcaster()
+            br.sendTransform(tuple(centroid), tuple(yaw_q), rospy.Time.now(), 'obj_fuse_centroid', 'velodyne')
+            
+            if last_known_box_size is not None:
+                # bounding box
+                marker = Marker()
+                marker.header.frame_id = "obj_fuse_centroid"
+                marker.header.stamp = rospy.Time.now()
+                marker.type = Marker.CUBE
+                marker.action = Marker.ADD
+                marker.scale.x = last_known_box_size[2]
+                marker.scale.y = last_known_box_size[1]
+                marker.scale.z = last_known_box_size[0]
+                marker.color = ColorRGBA(r=0., g=1., b=0., a=0.5)
+                marker.lifetime = rospy.Duration()
+                pub = rospy.Publisher("obj_fuse_bbox", Marker, queue_size=10)
+                pub.publish(marker)
                 
                     
 if __name__ == '__main__':        
@@ -448,6 +488,7 @@ if __name__ == '__main__':
     parser.add_argument('-lpt', '--localizer-points-threshold', default=10, type=int, help='Number of segmented points to trigger a detection')
     parser.add_argument('-di', '--deinterpolate', action='store_true', help='Deinterpolate prior to regression')
     parser.add_argument('-rfp', '--reject-false-positives', action='store_true', help='Rejects false positives')
+    parser.add_argument('--no-radar-fuse', action='store_true', help='use radar data in fusion or not')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
 
     args = parser.parse_args()
@@ -622,13 +663,12 @@ if __name__ == '__main__':
         
     else: # NODE MODE
         # subscribe to the 
-        topics = [('/velodyne_points', PointCloud2, handle_velodyne_msg), 
-                  ('/radar/tracks', RadarTracks, handle_radar_msg)]
+        topics = [('/velodyne_points', PointCloud2, handle_velodyne_msg),
+                  ('/radar/tracks', RadarTracks, handle_radar_msg, args.no_radar_fuse),
+                  ('/image_raw', Image, handle_image_msg)]
         
         for t in topics:
-            rospy.Subscriber(t[0],
-                             t[1],
-                             t[2])
+            rospy.Subscriber(*t)
         
         # this will start infinite loop
         rospy.spin()
