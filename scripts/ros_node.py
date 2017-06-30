@@ -60,6 +60,7 @@ deinterpolate = False
 segmenter_phased    = False
 localizer_points_threshold = None # miniimum number of points to do regression
 reject_false_positives = False
+verbose = False
 
 CLIP_DIST      = (0., 50.)
 CLIP_HEIGHT    = (-3., 1.)
@@ -83,8 +84,6 @@ def angle_loss(y_true, y_pred):
 def handle_velodyne_msg(msg, arg=None):
     global tf_segmenter_graph
     global last_known_position, last_known_box_size
-    
-    verbose = False
 
     assert msg._type == 'sensor_msgs/PointCloud2'
     
@@ -168,6 +167,8 @@ def handle_velodyne_msg(msg, arg=None):
         class_predictions_by_angle = np.squeeze(class_predictions_by_angle.reshape((-1, points_per_ring, len(rings))), axis=0)
         class_predictions_by_angle_idx = np.argwhere(class_predictions_by_angle >= segmenter_threshold)
 
+    filtered_points_xyz = np.empty((0,3))
+
     if (class_predictions_by_angle_idx.shape[0] > 0):
         # the idea of de-interpolation is to remove artifacts created by same-neighbor interpolation
         # by checking repeated values (which are going to be same-neighbor interpolated values with high prob)
@@ -188,33 +189,59 @@ def handle_velodyne_msg(msg, arg=None):
                         deinterpolated_class_predictions_by_angle_idx,
                         deinterpolated_class_predictions_by_angle_idx_this_ring))
 
-            #print(deinterpolated_class_predictions_by_angle_idx.shape)
-            #print(class_predictions_by_angle_idx.shape)
             class_predictions_by_angle_idx = deinterpolated_class_predictions_by_angle_idx.astype(int)
 
         segmented_points = lidar_int[class_predictions_by_angle_idx[:,0] + points_per_ring * class_predictions_by_angle_idx[:,1]]
 
+        # TODO: use PREDICTED position instead of last known for false positive rejection
         if reject_false_positives and last_known_position is not None and segmented_points.shape[0] > 2:
-            import hdbscan
-            clusterer = hdbscan.HDBSCAN( allow_single_cluster=True)
-            cluster_labels = clusterer.fit_predict(segmented_points[:,:3])
-            number_of_clusters  = len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0)
-            if verbose: print("Clusters " + str(number_of_clusters) + ' from ' + str(segmented_points.shape[0]) + ' points')
-            if number_of_clusters > 1:
-                unique_clusters = set(cluster_labels)
-                closest_cluster_center_of_mass = np.array([1e10,1e10,1e10])
-                points_in_closest_cluster = None
+            original_number_of_points = segmented_points.shape[0]
+            time_start = time.time()
 
-                for cluster in unique_clusters:
-                    points_in_cluster = segmented_points[cluster_labels == cluster]
-                    points_in_cluster_center_of_mass = np.linalg.norm(points_in_cluster[:,:3])
-                    if np.linalg.norm(closest_cluster_center_of_mass - last_known_position) >\
-                            np.linalg.norm(points_in_cluster_center_of_mass - last_known_position):
-                        closest_cluster_center_of_mass = points_in_cluster_center_of_mass
-                        points_in_closest_cluster = points_in_cluster
+            rfp_implementation = 2
+            if rfp_implementation == 1:
 
-                segmented_points = points_in_closest_cluster
-                if verbose: print(segmented_points)
+                import hdbscan
+                clusterer = hdbscan.HDBSCAN( allow_single_cluster=True, metric='l2', min_cluster_size=50)
+                cluster_labels = clusterer.fit_predict(segmented_points[:,:2])
+                number_of_clusters  = len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0)
+                if verbose: print("Clusters " + str(number_of_clusters) + ' from ' + str(segmented_points.shape[0]) + ' points')
+                if number_of_clusters > 1:
+                    unique_clusters = set(cluster_labels)
+                    closest_cluster_center_of_mass = np.array([1e20,1e20])
+                    best_cluster = None
+                    for cluster in unique_clusters:
+                        points_in_cluster = segmented_points[cluster_labels == cluster]
+                        points_in_cluster_center_of_mass = np.mean(points_in_cluster[:,:2], axis=0)
+                        if verbose: print(cluster, points_in_cluster.shape, points_in_cluster_center_of_mass)
+
+                        if cluster != -1:
+                            if np.linalg.norm(closest_cluster_center_of_mass - last_known_position[:2]) >\
+                                    np.linalg.norm(points_in_cluster_center_of_mass - last_known_position[:2]):
+                                closest_cluster_center_of_mass = points_in_cluster_center_of_mass
+                                best_cluster = cluster
+
+                    #if verbose: print("best cluster", best_cluster, 'last_known_position at ', last_known_position)
+                    selected_clusters = [best_cluster]
+                    for cluster in unique_clusters:
+                        if (cluster != -1) and (cluster != best_cluster):
+                            points_in_cluster = segmented_points[cluster_labels == cluster]
+                            distances_from_last_known_position = np.linalg.norm(points_in_cluster[:,:2] - closest_cluster_center_of_mass, axis=1)
+                            if np.all(distances_from_last_known_position < 2.): # TODO ADJUST
+                                selected_clusters.append(cluster)
+
+                    filtered_points_xyz = segmented_points[np.in1d(cluster_labels, selected_clusters, invert=True),:3]
+                    segmented_points =  segmented_points[np.in1d(cluster_labels, selected_clusters)]
+                    if verbose:
+                        print('selected_clusters: ' + str(selected_clusters) + ' with points '+ str(segmented_points.shape[0]) + '/' + str(original_number_of_points))
+            else:
+                within_tolerance_idx = (((segmented_points[:,0] - last_known_position[0])**2 + (segmented_points[:,0] - last_known_position[0])**2)  <= (5 ** 2))
+                filtered_points_xyz = segmented_points[~within_tolerance_idx,:3]
+                if filtered_points_xyz.shape[0] < original_number_of_points:
+                    segmented_points    = segmented_points[within_tolerance_idx]
+
+            if verbose: print 'clustering filter: {:.2f}ms'.format(1e3*(time.time() - time_start))
+
 
     else:
         segmented_points = np.empty((0,3))
@@ -228,7 +255,7 @@ def handle_velodyne_msg(msg, arg=None):
 
         detection = 1
         
-            # filter outlier points
+         # filter outlier points
         if True:
             time_start = time.time()
             cloud_orig = pcl.PointCloud(segmented_points[:,:3].astype(np.float32))
@@ -241,33 +268,33 @@ def handle_velodyne_msg(msg, arg=None):
         
             if verbose: print 'point cloud filter: {:.2f}ms'.format(1e3*(time.time() - time_start))
             
-            filtered_points_xyz = segmented_points[:,:3]
+            #filtered_points_xyz = segmented_points[:,:3]
 
         segmented_points_mean = np.mean(segmented_points[:, :3], axis=0)
         angle = np.arctan2(segmented_points_mean[1], segmented_points_mean[0])
-        segmented_points = point_utils.rotZ(segmented_points, angle)
+        aligned_points = point_utils.rotZ(segmented_points, angle)
 
-        segmented_and_aligned_points_mean = np.mean(segmented_points[:, :3], axis=0)
-        segmented_points[:, :3] -= segmented_and_aligned_points_mean
-        segmented_points[:,  3] /= 128.
+        segmented_and_aligned_points_mean = np.mean(aligned_points[:, :3], axis=0)
+        aligned_points[:, :3] -= segmented_and_aligned_points_mean
+        aligned_points[:,  3] /= 128.
 
         distance_to_segmented_and_aligned_points = np.linalg.norm(segmented_and_aligned_points_mean[:2])
 
-        segmented_points_resampled = DidiTracklet.resample_lidar(segmented_points[:,:4], pointnet_points)
+        aligned_points_resampled = DidiTracklet.resample_lidar(aligned_points[:,:4], pointnet_points)
 
-        segmented_points_resampled = np.expand_dims(segmented_points_resampled, axis=0)
+        aligned_points_resampled = np.expand_dims(aligned_points_resampled, axis=0)
         distance_to_segmented_and_aligned_points = np.expand_dims(distance_to_segmented_and_aligned_points, axis=0)
 
         with tf_localizer_graph.as_default():
             time_loc_infe_start = time.time()
-            centroid, box_size, yaw = localizer_model.predict_on_batch([segmented_points_resampled, distance_to_segmented_and_aligned_points])
+            centroid, box_size, yaw = localizer_model.predict_on_batch([aligned_points_resampled, distance_to_segmented_and_aligned_points])
             time_loc_infe_end   = time.time()
 
         centroid = np.squeeze(centroid, axis=0)
         box_size = np.squeeze(box_size, axis=0)
         yaw      = np.squeeze(yaw     , axis=0)
 
-        if verbose: print ' Reg inference: %0.3f ms' % ((time_loc_infe_end - time_loc_infe_start) * 1000.0)
+        if verbose: print ' Loc inference: %0.3f ms' % ((time_loc_infe_end - time_loc_infe_start) * 1000.0)
 
         centroid += segmented_and_aligned_points_mean
         centroid  = point_utils.rotZ(centroid, -angle)
@@ -316,6 +343,10 @@ def handle_velodyne_msg(msg, arg=None):
         seg_pnt_pub.publish(segmented_points_cloud_msg)
         
         # car centroid frame
+        with g_fusion_lock:
+            if g_fusion.last_state_mean is not None:
+                centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+            
         yaw_q = ros_tf.transformations.quaternion_from_euler(0, 0, yaw)
         br = ros_tf.TransformBroadcaster()
         br.sendTransform(tuple(centroid), tuple(yaw_q), rospy.Time.now(), 'car_pred_centroid', 'velodyne')
@@ -417,6 +448,7 @@ if __name__ == '__main__':
     parser.add_argument('-lpt', '--localizer-points-threshold', default=10, type=int, help='Number of segmented points to trigger a detection')
     parser.add_argument('-di', '--deinterpolate', action='store_true', help='Deinterpolate prior to regression')
     parser.add_argument('-rfp', '--reject-false-positives', action='store_true', help='Rejects false positives')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
 
     args = parser.parse_args()
 
@@ -429,11 +461,13 @@ if __name__ == '__main__':
     localizer_points_threshold = args.localizer_points_threshold
     deinterpolate              = args.deinterpolate
     reject_false_positives     = args.reject_false_positives
+    verbose                    = args.verbose
+
 
     import keras.losses
     keras.losses.angle_loss = angle_loss
 
-    if True:
+    if args.segmenter_model:
         # segmenter model
         segmenter_model = load_model(args.segmenter_model, compile=False)
         segmenter_model._make_predict_function() # https://github.com/fchollet/keras/issues/6124
@@ -448,17 +482,15 @@ if __name__ == '__main__':
         print('Loaded segmenter model with ' + str(points_per_ring) + ' points per ring and ' + str(len(rings)) +
               ' rings from ' + str(rings[0]) + ' to ' + str(rings[-1]) )
 
-
         if K._backend == 'tensorflow':
             tf_segmenter_graph = tf.get_default_graph()
             print(tf_segmenter_graph)
 
     # localizer model
 
-    if True:
+    if args.localizer_model:
 
         print("localizer model")
-        #'lidarnet-pointnet-rings_10_28-epoch78-val_loss0.0269.hdf5'
         localizer_model = load_model(args.localizer_model, compile=False)
         segmenter_model._make_predict_function() # https://github.com/fchollet/keras/issues/6124
         localizer_model.summary()
