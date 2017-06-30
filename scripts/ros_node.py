@@ -277,7 +277,7 @@ def handle_velodyne_msg(msg, arg=None):
 
         segmented_and_aligned_points_mean = np.mean(aligned_points[:, :3], axis=0)
         aligned_points[:, :3] -= segmented_and_aligned_points_mean
-        aligned_points[:,  3] /= 128.
+        #aligned_points[:,  3] /= 128.
 
         distance_to_segmented_and_aligned_points = np.linalg.norm(segmented_and_aligned_points_mean[:2])
 
