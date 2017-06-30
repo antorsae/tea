@@ -588,7 +588,7 @@ if __name__ == '__main__':
                                          'tz': pose[2],
                                          'rx': 0.,
                                          'ry': 0.,
-                                         'rz': np.rad2deg(last_known_yaw)}
+                                         'rz': last_known_yaw}
                         tracklet.poses.append(tracklet_pose)
                         
                         if tracklet.first_frame < 0:
