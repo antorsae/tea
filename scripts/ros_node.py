@@ -17,6 +17,7 @@ import pcl
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(BASE_DIR, 'torbusnet'))
+sys.path.append(os.path.join(BASE_DIR, 'torbusnet/didi-competition/tracklets/python'))
 sys.path.append(os.path.join(BASE_DIR, '../python'))
 
 import argparse
@@ -28,6 +29,8 @@ import point_utils
 import re
 import time
 import threading
+
+from generate_tracklet import *
 
 
 # =============== MAGIC NUMBERS ====================== #
@@ -474,47 +477,116 @@ if __name__ == '__main__':
     
 
     if args.bag: # BAG MODE
-        import csv
-        lidar_writer = csv.DictWriter(open('lidar_pred_{}.csv'.format(os.path.basename(args.bag)), 'w'), fieldnames=['time','detection','x','y','z','l','w','h','yaw'])
-        lidar_writer.writeheader()
-        radar_writer = csv.DictWriter(open('radar_pred_{}.csv'.format(os.path.basename(args.bag)), 'w'), fieldnames=['timestamp', 'x','y','z','vx','vy'])
-        radar_writer.writeheader()
+        record_raw_data = False
         
+        if record_raw_data:
+            import csv
+            lidar_writer = csv.DictWriter(open('lidar_pred_{}.csv'.format(os.path.basename(args.bag)), 'w'), fieldnames=['time','detection','x','y','z','l','w','h','yaw'])
+            lidar_writer.writeheader()
+            radar_writer = csv.DictWriter(open('radar_pred_{}.csv'.format(os.path.basename(args.bag)), 'w'), fieldnames=['timestamp', 'x','y','z','vx','vy'])
+            radar_writer.writeheader()
+        
+        fusion = FusionUKF(CAR_SIZE[0] * 0.5)
+        
+        tracklet_collection = TrackletCollection()
         
         # play ros bag
         with rosbag.Bag(args.bag) as bag:
+            tracklet = Tracklet(object_type='Car', l=0, w=0, h=0)
+            tracklet.first_frame = -1
+            
+            last_known_yaw = 0.
+            
+            image_msg_num = bag.get_message_count(['/image_raw'])
+            image_frame_i = 0
+            
+            print 'Start processing messages in {}...'.format(args.bag)
             for topic, msg, t in bag.read_messages():
                 if topic == '/image_raw': # 24HZ
                     # predict object pose with kalman_lidar|kalman_radar;
                     # add pose to tracklet;
-                    pass
+                    fusion.filter(EmptyObservation(t.to_sec()))
+                    
+                    if fusion.last_state_mean is not None:
+                        pose = fusion.lidar_observation_function(fusion.last_state_mean)
+                        
+                        tracklet_pose = {'tx': pose[0],
+                                         'ty': pose[1],
+                                         'tz': pose[2],
+                                         'rx': 0.,
+                                         'ry': 0.,
+                                         'rz': np.rad2deg(last_known_yaw)}
+                        tracklet.poses.append(tracklet_pose)
+                        
+                        if tracklet.first_frame < 0:
+                            tracklet.first_frame = image_frame_i
+                            
+                    image_frame_i += 1
+                    
+                    if image_frame_i % 100 == 0:
+                        print 'Processed {}/{} image frames'.format(image_frame_i, image_msg_num)
                 
                 elif topic == '/velodyne_points' and msg.data: # 10HZ
-                    # predict object state(NN);
                     pred = handle_velodyne_msg(msg)
                     
-                    # update kalman_lidar;
                     if pred['detection'] > 0:
-                        # update kalman_lidar
-                        pred['time'] = t
-                        lidar_writer.writerow(pred)
+                        lidar_obs = LidarObservation(t.to_sec(), pred['x'], pred['y'], pred['z'], pred['yaw'])
+                        
+                        fusion.filter(lidar_obs)
+                        
+                        last_known_yaw = pred['yaw']
+                        
+                        if record_raw_data:
+                            pred['time'] = t
+                            lidar_writer.writerow(pred)
                         
                 elif topic == '/radar/tracks': # 20HZ
                     # use last kalman_lidar|kalman_radar estimation to extract radar points of the object; 
                     # update kalman_radar;
                     observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR, CAR_SIZE[1] * 0.5)
                     
-                    # in ford03 the obstacle is always +-2m along Y-axis
-                    last = None
-                    for o in observations:
-                        if np.abs(o.y) < 2.:
-                            if last:
-                                if last.x > o.x:
+                    # do we have any estimation?
+                    if fusion.last_state_mean is not None:
+                        centroid = fusion.lidar_observation_function(fusion.last_state_mean)
+                
+                        # find nearest observation to current object position estimation
+                        distance_threshold = CAR_SIZE[0]
+                        nearest = None
+                        nearest_dist = 1e9
+                        for o in observations:
+                            dist = [o.x - centroid[0], o.y - centroid[1], o.z - centroid[2]]
+                            dist = np.sqrt(np.array(dist).dot(dist))
+                            
+                            if dist < nearest_dist and dist < distance_threshold:
+                                nearest_dist = dist
+                                nearest = o
+                        
+                        if nearest is not None:
+                            print nearest
+                            fusion.filter(nearest)
+                            
+                    if record_raw_data:
+                        # in ford03 the obstacle is always +-2m along Y-axis
+                        last = None
+                        for o in observations:
+                            if np.abs(o.y) < 2.:
+                                if last:
+                                    if last.x > o.x:
+                                        last = o
+                                else:
                                     last = o
-                            else:
-                                last = o
-                    if last: radar_writer.writerow(last.__dict__) 
-                    
+                        if last: radar_writer.writerow(last.__dict__)
+            print 'Done.'
+            
+            tracklet.l = CAR_SIZE[0]
+            tracklet.w = CAR_SIZE[1]
+            tracklet.h = CAR_SIZE[2]
+            
+            tracklet_collection.tracklets.append(tracklet)
+            
+            bag_name = os.path.basename(args.bag).split('.')[0]
+            tracklet_path = os.path.join(BASE_DIR, '../tracklets/{}'.format(bag_name + '.xml'))
+            tracklet_collection.write_xml(tracklet_path)
         
     else: # NODE MODE
         # subscribe to the 
