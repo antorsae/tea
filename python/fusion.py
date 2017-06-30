@@ -10,6 +10,19 @@ class EmptyObservation:
         return 'time: {}'.format(self.timestamp)
 
 
+class OdometryObservation:
+    def __init__(self, timestamp, vx, vy, vz):
+        # timestamp in secnods
+        # vx, vy, vz in m/s
+        self.timestamp = timestamp
+        self.vx = vx
+        self.vy = vy
+        self.vz = vz
+
+    def __repr__(self):
+        return 'time: {:.6f}, vx: {}, vy: {}, vz: {}'.format(self.timestamp, self.vx, self.vy, self.vz)
+
+
 class LidarObservation:
     def __init__(self, timestamp, x=None, y=None, z=None, yaw=None):
         # timestamp is seconds

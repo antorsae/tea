@@ -2,7 +2,7 @@
 
 import numpy as np
 
-import rospy
+import rospy, rosbag
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseStamped, Point, Quaternion
 import tf as ros_tf
@@ -13,12 +13,10 @@ last_front_t = None
 last_yaw = None
 
 def get_position_from_odometry(msg):
-    assert isinstance(msg, Odometry)
     p = msg.pose.pose.position
     return np.array([p.x, p.y, p.z])
 
 def get_speed_from_odometry(msg):
-    assert isinstance(msg, Odometry)
     l = msg.twist.twist.linear
     return np.array([l.x, l.y, l.z])
 
@@ -37,7 +35,7 @@ def rotMatZ(a):
     ])
 
 def process_msg(msg, who):
-    assert isinstance(msg, Odometry)
+    msg._type == 'nav_msgs/Odometry'
 
     global last_rear, last_front, last_yaw, last_front_t
 
@@ -47,12 +45,15 @@ def process_msg(msg, who):
         cur_front = get_position_from_odometry(msg)
         last_yaw = get_yaw(cur_front, last_rear)
         
+        twist_lin = np.dot(rotMatZ(-last_yaw), get_speed_from_odometry(msg))
+        
         if last_front is not None:
             dt = msg.header.stamp.to_sec() - last_front_t
             speed = (cur_front - last_front)/dt
             speed = np.dot(rotMatZ(-last_yaw), speed)
-            #speed = np.dot(rotMatZ(-last_yaw), get_speed_from_odometry(msg))
-            print speed[1]*100
+            print '1', speed
+            print '2', twist_lin
+            print '3', np.sqrt((speed-twist_lin).dot(speed-twist_lin))
             
             odo = Odometry()
             odo.header.frame_id = '/base_link'
@@ -67,6 +68,8 @@ def process_msg(msg, who):
         #print last_yaw
         last_front = cur_front
         last_front_t = msg.header.stamp.to_sec()
+        
+        return twist_lin
 
 
 topics = {
@@ -76,11 +79,28 @@ topics = {
 
 rospy.init_node('odometry_test')
 
-for key in topics:
-    rospy.Subscriber(
-        topics[key],
-        Odometry,
-        process_msg,
-        key)
+if True:
+    import csv
+    import os, sys
+    bagpath = '/data/didi/dataset_3/car/testing/ford03.bag'
+    writer = csv.DictWriter(open('../odometry_{}.csv'.format(os.path.basename(bagpath)), 'w'), 
+                            fieldnames=['time','vx','vy','vz'])
+    writer.writeheader()
     
-rospy.spin()
+    with rosbag.Bag(bagpath) as bag:
+        for topic, msg, t in bag.read_messages():
+            if topic == '/objects/capture_vehicle/rear/gps/rtkfix':
+                process_msg(msg, 'rear')
+            elif topic == '/objects/capture_vehicle/front/gps/rtkfix':
+                v = process_msg(msg, 'front')
+                writer.writerow({'time': msg.header.stamp.to_sec(), 'vx': v[0], 'vy': v[1], 'vz': v[2]})
+        
+else:
+    for key in topics:
+        rospy.Subscriber(
+            topics[key],
+            Odometry,
+            process_msg,
+            key)
+        
+    rospy.spin()

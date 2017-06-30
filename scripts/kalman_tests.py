@@ -9,8 +9,7 @@ import os, sys
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(BASE_DIR, '../python'))
 
-from fusion import FusionUKF, EmptyObservation, RadarObservation, LidarObservation
-
+from fusion import *
 
 
 def run_synthetic_test():
@@ -28,8 +27,28 @@ def run_synthetic_test():
         print
 
 
-def process_lidar_csv_file():
-    with open('../lidar_pred_ford03.bag.csv') as csvfile:
+def process_odometry_csv_file(filename):
+    with open(filename) as csvfile:
+        reader = csv.DictReader(csvfile)
+
+        csv_rows = [row for row in reader]
+        print "%s odometry records" % len(csv_rows)
+
+        odo_obs = []
+
+        for i, row in enumerate(csv_rows):
+            time = float(row['time'])
+            vx, vy, vz = float(row['vx']), float(row['vy']), float(row['vz'])
+
+            obs = OdometryObservation(time, vx, vy, vz)
+
+            odo_obs.append(obs)
+
+        return odo_obs
+
+
+def process_lidar_csv_file(filename):
+    with open(filename) as csvfile:
         reader = csv.DictReader(csvfile)
 
         csv_rows = [row for row in reader]
@@ -53,8 +72,8 @@ def process_lidar_csv_file():
         return lidar_obss
 
 
-def process_radar_csv_file():
-    with open('../radar_pred_ford03.bag.csv') as csvfile:
+def process_radar_csv_file(filename):
+    with open(filename) as csvfile:
         reader = csv.DictReader(csvfile)
 
         csv_rows = [row for row in reader]
@@ -103,6 +122,7 @@ def analyze_ukf(radar_obss, lidar_obss):
 
     next_lidar_obs_i = 0
     next_radar_obs_i = 0
+    next_odometry_obs_i = 0
     for s_i in range(n_samples_max):
         now = time_start + base_rate * s_i
 
@@ -120,15 +140,21 @@ def analyze_ukf(radar_obss, lidar_obss):
             if not drop_noisy or not lidar_obss[noisy_period[0]].timestamp < lidar_obs.timestamp < lidar_obss[noisy_period[1]].timestamp:
                 lidar_obss_actual.append(lidar_obs)
 
-            next_lidar_obs_i += 1
+            next_lidar_obs_i = min(len(lidar_obss) - 1, next_lidar_obs_i + 1)
 
         if now >= radar_obss[next_radar_obs_i].timestamp:
             radar_obs = radar_obss[next_radar_obs_i]
 
-            next_radar_obs_i += 1
+            next_radar_obs_i = min(len(radar_obss) - 1, next_radar_obs_i + 1)
+
+        if now >= odometry_obss[next_odometry_obs_i].timestamp:
+            odometry_obs = odometry_obss[next_odometry_obs_i]
+
+            next_odometry_obs_i = min(len(odometry_obss) - 1, next_odometry_obs_i + 1)
 
         #radar_obs = None
         #lidar_obs = None
+        print odometry_obs
 
         if radar_obs:
             fus.filter(radar_obs)
@@ -178,7 +204,9 @@ def analyze_ukf(radar_obss, lidar_obss):
     plt.show()
 
 
-radar_obss = process_radar_csv_file()
-lidar_obss = process_lidar_csv_file()
+bag_no = 3
+odometry_obss = process_odometry_csv_file('../odometry_ford0{}.bag.csv'.format(bag_no))
+radar_obss = process_radar_csv_file('../radar_pred_ford0{}.bag.csv'.format(bag_no))
+lidar_obss = process_lidar_csv_file('../lidar_pred_ford0{}.bag.csv'.format(bag_no))
 
 analyze_ukf(radar_obss, lidar_obss)
