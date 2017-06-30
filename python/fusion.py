@@ -77,12 +77,14 @@ class RadarObservation:
         
 
 class FusionUKF:
-    n_state_dims = 9
+    #n_state_dims = 9
+    n_state_dims = 7
     n_lidar_obs_dims = 3
     n_radar_obs_dims = 4
 
     # mapping between observed (by both lidar and radar) variables and their respective state variable indices
-    state_obs_map = {'x': 0, 'vx': 1, 'y': 3, 'vy': 4, 'z': 6}
+    #state_obs_map = {'x': 0, 'vx': 1, 'y': 3, 'vy': 4, 'z': 6}
+    state_var_map = {'r': 0, 'vr': 1, 'ar': 2, 'alpha': 3, 'valpha': 4, 'z': 5, 'vz': 6}
 
     def __init__(self, initial_object_radius):
         self.transition_covariance = FusionUKF.create_transition_covariance()
@@ -104,51 +106,89 @@ class FusionUKF:
     @staticmethod
     def create_lidar_initial_state_covariance():
         # converges really fast, so don't tweak too carefully
-        pos_cov = 1.
-        vel_cov = 10.
-        acc_cov = 100.
-        return np.diag([pos_cov, vel_cov, acc_cov, pos_cov, vel_cov, acc_cov, pos_cov, vel_cov, acc_cov])
+        eps = 10.
+        return eps * np.eye(FusionUKF.n_state_dims)
+        # pos_cov = 1.
+        # vel_cov = 10.
+        # acc_cov = 100.
+        # return np.diag([pos_cov, vel_cov, acc_cov, pos_cov, vel_cov, acc_cov, pos_cov, vel_cov, acc_cov])
 
     @staticmethod
     def create_radar_initial_state_covariance(object_radius):
         # converges really fast, so don't tweak too carefully
-        cov_x, cov_vx, cov_y, cov_vy = FusionUKF.calc_radar_covariances(object_radius)
-        cov_z = 1.
-        cov_vz = 10.
-        cov_a = 100.
-
-        return np.diag([cov_x, cov_vx, cov_a, cov_y, cov_vy, cov_a, cov_z, cov_vz, cov_a])
+        eps = 10.
+        return eps * np.eye(FusionUKF.n_state_dims)
+        # cov_x, cov_vx, cov_y, cov_vy = FusionUKF.calc_radar_covariances(object_radius)
+        # cov_z = 1.
+        # cov_vz = 10.
+        # cov_a = 100.
+        # return np.diag([cov_x, cov_vx, cov_a, cov_y, cov_vy, cov_a, cov_z, cov_vz, cov_a])
 
     @staticmethod
     def create_transition_covariance():
-        eps = 1e-3  # this value should be small (acceleration speed noise)
-        return eps * np.eye(FusionUKF.n_state_dims)
+        r = 1e-0
+        vr = 1e-0
+        ar = 1e-0
+        alpha = 1e-4
+        valpha = 1e-4
+        z = 1e-3
+        vz = 1e-2
+        return np.diag([r, vr, ar, alpha, valpha, z, vz])
+        # eps = 1e-4  # this value should be small (acceleration speed noise)
+        # return eps * np.eye(FusionUKF.n_state_dims)
 
     @staticmethod
     def create_transition_function(dt):
         dt2 = 0.5*dt**2
+        # F = np.array(
+        #     [[1, dt, dt2, 0,  0,  0,  0,  0,  0],  # x
+        #      [0,  1,  dt, 0,  0,  0,  0,  0,  0],  # x'
+        #      [0,  0,   1, 0,  0,  0,  0,  0,  0],  # x''
+        #      [0,  0,   0, 1, dt, dt2, 0,  0,  0],  # y
+        #      [0,  0,   0, 0,  1,  dt, 0,  0,  0],  # y'
+        #      [0,  0,   0, 0,  0,   1, 0,  0,  0],  # y''
+        #      [0,  0,   0, 0,  0,   0, 1, dt, dt2], # z
+        #      [0,  0,   0, 0,  0,   0, 0,  1,  dt], # z'
+        #      [0,  0,   0, 0,  0,   0, 0,  0,   1]  # z''
+        #      ], dtype=np.float32)
         F = np.array(
-            [[1, dt, dt2, 0,  0,  0,  0,  0,  0],  # x
-             [0,  1,  dt, 0,  0,  0,  0,  0,  0],  # x'
-             [0,  0,   1, 0,  0,  0,  0,  0,  0],  # x''
-             [0,  0,   0, 1, dt, dt2, 0,  0,  0],  # y
-             [0,  0,   0, 0,  1,  dt, 0,  0,  0],  # y'
-             [0,  0,   0, 0,  0,   1, 0,  0,  0],  # y''
-             [0,  0,   0, 0,  0,   0, 1, dt, dt2], # z
-             [0,  0,   0, 0,  0,   0, 0,  1,  dt], # z'
-             [0,  0,   0, 0,  0,   0, 0,  0,   1]  # z''
-             ], dtype=np.float32)
+            [[1, dt, dt2, 0, 0, 0,  0], # r
+             [0,  1,  dt, 0, 0, 0,  0], # r'
+             [0,  0,   1, 0, 0, 0,  0], # r''
+             [0,  0,   0, 1, dt, 0, 0], # alpha
+             [0,  0,   0, 0,  1, 0, 0], # alpha'
+             [0,  0,   0, 0,  0, 1, dt], # z
+             [0,  0,   0, 0,  0, 0,  1], # z'
+            ], dtype=np.float32)
         return lambda s: F.dot(s)
 
     @staticmethod
     def create_lidar_observation_function():
-        m = FusionUKF.state_obs_map
-        return lambda s: [s[m['x']], s[m['y']], s[m['z']]]
+        r_i = FusionUKF.state_var_map['r']
+        alpha_i = FusionUKF.state_var_map['alpha']
+        z_i = FusionUKF.state_var_map['z']
+        return lambda s: [
+            s[r_i] * np.cos(s[alpha_i]),
+            s[r_i] * np.sin(s[alpha_i]),
+            s[z_i]
+            ]
+        #m = FusionUKF.state_obs_map
+        #return lambda s: [s[m['x']], s[m['y']], s[m['z']]]
 
     @staticmethod
     def create_radar_observation_function():
-        m = FusionUKF.state_obs_map
-        return lambda s: [s[m['x']], s[m['vx']], s[m['y']], s[m['vy']]]
+        r_i = FusionUKF.state_var_map['r']
+        vr_i = FusionUKF.state_var_map['vr']
+        alpha_i = FusionUKF.state_var_map['alpha']
+        valpha_i = FusionUKF.state_var_map['valpha']
+        return lambda s: [
+            s[r_i] * np.cos(s[alpha_i]),
+            s[vr_i] * np.cos(s[alpha_i]) - s[r_i] * s[valpha_i] * np.sin(s[alpha_i]),
+            s[r_i] * np.sin(s[alpha_i]),
+            s[vr_i] * np.sin(s[alpha_i]) + s[r_i] * s[valpha_i] * np.cos(s[alpha_i]),
+        ]
+        # m = FusionUKF.state_obs_map
+        # return lambda s: [s[m['x']], s[m['vx']], s[m['y']], s[m['vy']]]
 
     @staticmethod
     def create_lidar_observation_covariance():
@@ -158,6 +198,7 @@ class FusionUKF:
     @staticmethod
     def create_radar_observation_covariance(object_radius):
         cov_x, cov_vx, cov_y, cov_vy = FusionUKF.calc_radar_covariances(object_radius)
+        print cov_x, cov_vx, cov_y, cov_vy
 
         return np.diag([cov_x, cov_vx, cov_y, cov_vy])
 
@@ -186,9 +227,16 @@ class FusionUKF:
     @staticmethod
     def obs_as_state(obs):
         if isinstance(obs, RadarObservation):
-            return [obs.x,  obs.vx,     0.,     obs.y,    obs.vy,   0.,     0,      0.,     0.]
+            r = np.sqrt(obs.x**2 + obs.y**2)
+            vr = (obs.x * obs.vx + obs.y * obs.vy) / r
+            alpha = np.arctan2(obs.y, obs.x)
+            return [r,  vr,     0.,     alpha,  0.,     0.,     0.]
+            #return [obs.x,  obs.vx,     0.,     obs.y,    obs.vy,   0.,     0,      0.,     0.]
         elif isinstance(obs, LidarObservation):
-            return [obs.x,      0.,     0.,     obs.y,        0.,   0.,  obs.z,      0.,     0.]
+            r = np.sqrt(obs.x**2 + obs.y**2)
+            alpha = np.arctan2(obs.y, obs.x)
+            return [r,  0.,     0.,     alpha,  0.,     obs.z,  0.]
+            #return [obs.x,      0.,     0.,     obs.y,        0.,   0.,  obs.z,      0.,     0.]
         else:
             raise ValueError
 
@@ -211,7 +259,8 @@ class FusionUKF:
                 # radar doesn't measure Z-coord, so we need an initial estimation of Z.
                 # Z = -0.8 is good.
                 if isinstance(self.last_obs, RadarObservation):
-                    prior_state[FusionUKF.state_obs_map['z']] = -0.8
+                    prior_state[FusionUKF.state_var_map['z']] = -0.8
+                    #prior_state[FusionUKF.state_obs_map['z']] = -0.8
 
                 is_radar = isinstance(obs, RadarObservation)
 

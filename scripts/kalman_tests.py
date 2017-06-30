@@ -101,6 +101,8 @@ def analyze_ukf(radar_obss, lidar_obss):
     noisy_period = (60, 120) # in lidar obs numbers
     lidar_obss_actual = []
 
+    radar_proximity_threshold = 10.
+
     next_lidar_obs_i = 0
     next_radar_obs_i = 0
     for s_i in range(n_samples_max):
@@ -130,6 +132,10 @@ def analyze_ukf(radar_obss, lidar_obss):
         #radar_obs = None
         #lidar_obs = None
 
+        # discard too close radar readings
+        if radar_obs is not None and np.sqrt(radar_obs.x**2 + radar_obs.y**2) < radar_proximity_threshold:
+            radar_obs = None
+
         if radar_obs:
             fus.filter(radar_obs)
         elif lidar_obs:
@@ -152,15 +158,18 @@ def analyze_ukf(radar_obss, lidar_obss):
 
     # --------- PLOTS -----------
 
-    var = 'z'
-    o_i = FusionUKF.state_obs_map[var]
+    var = 'x'
+    #o_i = FusionUKF.state_obs_map[var]
+    o_i = {'x': 0, 'y': 1, 'z': 2}[var]
     radar_obss_var = [o.__dict__[var] for o in radar_obss]
     radar_obss_t = [o.timestamp for o in radar_obss]
     lidar_obss_var = [o.__dict__[var] for o in lidar_obss_actual]
     lidar_obss_t = [o.timestamp for o in lidar_obss_actual]
-    means = [o[o_i] for o in state_means]
-    covs = [o[o_i, o_i] for o in state_covs]
-
+    #means = [o[o_i] for s in state_means]
+    means = [fus.lidar_observation_function(s)[o_i] for s in state_means]
+    #covs = [o[o_i, o_i] for o in state_covs]
+    r_covs = [o[0,0] for o in state_covs]
+    alpha_covs = [o[3,3] for o in state_covs]
 
     fig, ax1 = plt.subplots(figsize=(16, 8))
     ax1.plot(radar_obss_t, radar_obss_var, 'go')
@@ -169,9 +178,12 @@ def analyze_ukf(radar_obss, lidar_obss):
     plt.legend(['%s_radar' % var, '%s_lidar' % var, '%s_filtered' % var], loc=2)
 
     ax2 = ax1.twinx()
-    ax2.plot(base_timestamps[base_skip:], covs, 'black')
+    #ax2.plot(base_timestamps[base_skip:], covs, 'black')
+    ax2.plot(base_timestamps[base_skip:], r_covs, 'black')
+    ax2.plot(base_timestamps[base_skip:], alpha_covs, 'magenta')
 
-    plt.legend(['%s covariance' % var])
+    #plt.legend(['%s covariance' % var])
+    plt.legend(['r covariance', 'alpha covariance'])
     plt.grid(True)
 
     fig.tight_layout()
