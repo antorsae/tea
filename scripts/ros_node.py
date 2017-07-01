@@ -181,7 +181,7 @@ def handle_velodyne_msg(msg, arg=None):
 
     if (class_predictions_by_angle_idx.shape[0] > 0):
         # the idea of de-interpolation is to remove artifacts created by same-neighbor interpolation
-        # by checking repeated values (which are going to be same-neighbor interpolated values with high prob)
+        # by checking repeated values (which are going to be nearest-neighbor interpolated values with high prob)
         # for code convenience, we'e just taking the unique indexes as returned by np.unique but we
         # could further improve this by calculating the center of mass on the X axis of the prediction
         # vector (with the unique elements only), and take the index closest to the center for each duplicated stride.
@@ -201,7 +201,11 @@ def handle_velodyne_msg(msg, arg=None):
 
             class_predictions_by_angle_idx = deinterpolated_class_predictions_by_angle_idx.astype(int)
 
+
         segmented_points = lidar_int[class_predictions_by_angle_idx[:,0] + points_per_ring * class_predictions_by_angle_idx[:,1]]
+
+        # remove capture vehicle, helps in ford01.bag (and doesn't hurt)
+        segmented_points = DidiTracklet._remove_capture_vehicle(segmented_points)
 
         # TODO: use PREDICTED position instead of last known for false positive rejection
         if reject_false_positives and last_known_position is not None and segmented_points.shape[0] > 2:
