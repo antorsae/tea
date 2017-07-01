@@ -37,6 +37,8 @@ from generate_tracklet import *
 CAR_SIZE = [4.358, 1.823, 1.484] # https://en.wikipedia.org/wiki/Ford_Focus_(third_generation)
 RADAR_TO_LIDAR = [1.5494 - 3.8, 0., 1.27] # as per mkz.urdf.xacro
 
+PEDESTRIAN_SIZE = [0.8, 0.8, 1.708]
+
 # =============== Sensor Fusion ====================== #
 from fusion import FusionUKF, EmptyObservation, RadarObservation, LidarObservation
 
@@ -515,9 +517,10 @@ if __name__ == '__main__':
         print("segmenter model")
         segmenter_model.summary()
         points_per_ring = segmenter_model.get_input_shape_at(0)[0][1]
-        match = re.search(r'seg-rings_(\d+)_(\d+)-sectors_(\d+)-.*\.hdf5', args.segmenter_model)
-        rings = range(int(match.group(1)), int(match.group(2)))
-        sectors = int(match.group(3))
+        match = re.search(r'lidarnet-(car|ped)-.*seg-rings_(\d+)_(\d+)-sectors_(\d+)-.*\.hdf5', args.segmenter_model)
+        is_ped = match.group(1) == 'ped'
+        rings = range(int(match.group(2)), int(match.group(3)))
+        sectors = int(match.group(4))
         points_per_ring *= sectors
         assert len(rings) == segmenter_model.get_input_shape_at(0)[0][2]
         print('Loaded segmenter model with ' + str(points_per_ring) + ' points per ring and ' + str(len(rings)) +
@@ -565,7 +568,7 @@ if __name__ == '__main__':
         
         # play ros bag
         with rosbag.Bag(args.bag) as bag:
-            tracklet = Tracklet(object_type='Car', l=0, w=0, h=0)
+            tracklet = Tracklet(object_type='Pedestrian' if is_ped else 'Car', l=0, w=0, h=0)
             tracklet.first_frame = -1
             
             last_known_yaw = 0.
@@ -581,6 +584,7 @@ if __name__ == '__main__':
                     fusion.filter(EmptyObservation(t.to_sec()))
                     
                     if fusion.last_state_mean is not None:
+                        print 'h'
                         pose = fusion.lidar_observation_function(fusion.last_state_mean)
                         
                         tracklet_pose = {'tx': pose[0],
@@ -651,9 +655,10 @@ if __name__ == '__main__':
                         if last: radar_writer.writerow(last.__dict__)
             print 'Done.'
             
-            tracklet.l = CAR_SIZE[0]
-            tracklet.w = CAR_SIZE[1]
-            tracklet.h = CAR_SIZE[2]
+            object_size = PEDESTRIAN_SIZE if is_ped else CAR_SIZE
+            tracklet.l = object_size[0]
+            tracklet.w = object_size[1]
+            tracklet.h = object_size[2]
             
             tracklet_collection.tracklets.append(tracklet)
             
