@@ -693,7 +693,8 @@ if __name__ == '__main__':
             
             bag_name = os.path.basename(args.bag).split('.')[0]
             tracklet_path = os.path.join(BASE_DIR, '../tracklets/{}'.format(bag_name + '.xml'))
-            tracklet_collection.write_xml(tracklet_path)
+            tracklet_collection.write_xml(tracklet_path, comment=(' '.join(sys.argv[1:]).replace('--', '&#x002D;&#x002D;'))
+)
         
     else: # NODE MODE
         # subscribe to the 
