@@ -101,6 +101,11 @@ class FusionUKF:
                      'y': 3, 'vy': 4, 'ay': 5,
                      'z': 6, 'vz': 7, 'az': 8}
 
+    OK = 0
+    UNRELIABLE_OBSERVATION = 1
+    NOT_INITED = 2
+    RESETTED = 3
+
     def __init__(self, initial_object_radius):
         self.transition_covariance = FusionUKF.create_transition_covariance()
         self.initial_state_covariance = FusionUKF.create_initial_state_covariance()
@@ -256,8 +261,15 @@ class FusionUKF:
         #print '1', oas_deviation
         #print '2', deviation_threshold
 
-        #return False
-        return bad_x or bad_y # or bad_z
+        who_bad = ''
+        if bad_x:
+            who_bad += 'x'
+        elif bad_y:
+            who_bad += 'y'
+        elif bad_z:
+            who_bad += 'z'
+
+        return who_bad if who_bad != '' else None
 
     def reset(self):
         self.kf = AdditiveUnscentedKalmanFilter(n_dim_state=self.n_state_dims)
@@ -270,12 +282,12 @@ class FusionUKF:
 
     def filter(self, obs):
         if not self.initialized and isinstance(obs, EmptyObservation):
-            return
+            return self.NOT_INITED
 
         if isinstance(obs, RadarObservation) and obs.radius() < self.min_radar_radius:
             #print 'rejecting radar observation because its too close'
 
-            return
+            return self.UNRELIABLE_OBSERVATION
 
         if isinstance(obs, LidarObservation):
             observation_function = self.lidar_observation_function
@@ -294,13 +306,16 @@ class FusionUKF:
             if not self.last_obs:
                 # need two observations to get a filtered state
                 self.last_obs = obs
+
+                return self.NOT_INITED
             else:
                 dt = obs.timestamp - self.last_obs.timestamp
 
                 if np.abs(dt) > self.max_timejump:
                     print 'Fusion: {}s time jump detected, allowed is {}s. Resetting.'.format(dt, self.max_timejump)
                     self.reset()
-                    return
+
+                    return self.RESETTED
 
                 self.last_state_mean, self.last_state_covar =\
                     self.kf.filter_update(
@@ -315,17 +330,18 @@ class FusionUKF:
                 self.last_obs = obs
                 self.initialized = True
 
-            return
+                return self.OK
 
         dt = obs.timestamp - self.last_obs.timestamp
 
         if np.abs(dt) > self.max_timejump:
             print 'Fusion: {}s time jump detected, allowed is {}s. Resetting.'.format(dt, self.max_timejump)
             self.reset()
-            return
+            return self.RESETTED
 
-        if self.looks_like_noise(obs):
-            print 'Fusion: rejected noisy %s observation : %s' % ('lidar' if isinstance(obs, LidarObservation) else 'radar', obs)
+        who_is_bad = self.looks_like_noise(obs)
+        if who_is_bad is not None:
+            print 'Fusion: rejected noisy observation (bad {}): {}'.format(who_is_bad, obs)
 
             self.reject_count += 1
 
@@ -333,7 +349,9 @@ class FusionUKF:
                 print 'Fusion: resetting filter because too much noise'
                 self.reset()
 
-            return
+                return self.RESETTED
+
+            return self.UNRELIABLE_OBSERVATION
             #obs = EmptyObservation(obs.timestamp)
 
         self.last_state_mean, self.last_state_covar =\
@@ -347,3 +365,5 @@ class FusionUKF:
                 observation_covariance)
 
         self.last_obs = obs
+
+        return self.OK

@@ -608,20 +608,37 @@ if __name__ == '__main__':
         
         # play ros bag
         with rosbag.Bag(args.bag) as bag:
-            tracklet = Tracklet(object_type='Pedestrian' if is_ped else 'Car', l=0, w=0, h=0)
-            tracklet.first_frame = -1
+            def create_tracklet():
+                return Tracklet(object_type='Pedestrian' if is_ped else 'Car', 
+                                l=0, w=0, h=0, 
+                                first_frame = -1)
+            
+            def finalize_tracklet(tracklet):
+                object_size = PEDESTRIAN_SIZE if is_ped else CAR_SIZE
+                tracklet.l = object_size[0]
+                tracklet.w = object_size[1]
+                tracklet.h = object_size[2]
             
             last_known_yaw = 0.
             
             image_msg_num = bag.get_message_count(['/image_raw'])
             image_frame_i = 0
             
+            # create the first tracklet
+            tracklet = create_tracklet()
+            
             print 'Start processing messages in {}...'.format(args.bag)
             for topic, msg, t in bag.read_messages():
                 if topic == '/image_raw': # 24HZ
                     # predict object pose with kalman_lidar|kalman_radar;
                     # add pose to tracklet;
-                    fusion.filter(EmptyObservation(t.to_sec()))
+                    ret = fusion.filter(EmptyObservation(t.to_sec()))
+                    
+                    # if fusion is not inited, it's likely it was resetted
+                    if ret == fusion.NOT_INITED and len(tracklet.poses):
+                        finalize_tracklet(tracklet)
+                        tracklet_collection.tracklets.append(tracklet)
+                        tracklet = create_tracklet()
                     
                     if fusion.last_state_mean is not None:
                         pose = fusion.lidar_observation_function(fusion.last_state_mean)
@@ -686,12 +703,9 @@ if __name__ == '__main__':
 
             print 'Done.'
             
-            object_size = PEDESTRIAN_SIZE if is_ped else CAR_SIZE
-            tracklet.l = object_size[0]
-            tracklet.w = object_size[1]
-            tracklet.h = object_size[2]
-            
-            tracklet_collection.tracklets.append(tracklet)
+            if len(tracklet.poses):
+                finalize_tracklet(tracklet)
+                tracklet_collection.tracklets.append(tracklet)
             
             bag_name = os.path.basename(args.bag).split('.')[0]
             tracklet_path = os.path.join(BASE_DIR, '../tracklets/{}'.format(bag_name + '.xml'))
