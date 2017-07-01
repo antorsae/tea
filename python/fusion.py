@@ -117,10 +117,16 @@ class FusionUKF:
         # discard radar observations closer than this
         self.min_radar_radius = 0.
 
+
+        self.max_timejump = 1e9
+
         self.reset()
 
     def set_min_radar_radius(self, min_radius):
         self.min_radar_radius = min_radius
+
+    def set_max_timejump(self, max_timejump):
+        self.max_timejump = max_timejump
 
     @staticmethod
     def create_initial_state_covariance():
@@ -291,6 +297,11 @@ class FusionUKF:
             else:
                 dt = obs.timestamp - self.last_obs.timestamp
 
+                if np.abs(dt) > self.max_timejump:
+                    print 'Fusion: {}s time jump detected, allowed is {}s. Resetting.'.format(dt, self.max_timejump)
+                    self.reset()
+                    return
+
                 self.last_state_mean, self.last_state_covar =\
                     self.kf.filter_update(
                         self.obs_as_state(self.last_obs),
@@ -308,13 +319,18 @@ class FusionUKF:
 
         dt = obs.timestamp - self.last_obs.timestamp
 
+        if np.abs(dt) > self.max_timejump:
+            print 'Fusion: {}s time jump detected, allowed is {}s. Resetting.'.format(dt, self.max_timejump)
+            self.reset()
+            return
+
         if self.looks_like_noise(obs):
-            print 'rejected noisy %s observation : %s' % ('lidar' if isinstance(obs, LidarObservation) else 'radar', obs)
+            print 'Fusion: rejected noisy %s observation : %s' % ('lidar' if isinstance(obs, LidarObservation) else 'radar', obs)
 
             self.reject_count += 1
 
             if self.reject_count > self.reject_max:
-                print 'resetting filter because too much noise'
+                print 'Fusion: resetting filter because too much noise'
                 self.reset()
 
             return

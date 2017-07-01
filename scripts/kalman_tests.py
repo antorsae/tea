@@ -80,8 +80,6 @@ def process_radar_csv_file(filename):
 
 
 def analyze_ukf(radar_obss, lidar_obss):
-    fus = FusionUKF(4.358/2)
-
     # shortenings
     # obs = 'observation'
 
@@ -97,6 +95,8 @@ def analyze_ukf(radar_obss, lidar_obss):
     state_covs = []
     state_timestamps = []
 
+    fus = FusionUKF(4.358 / 2)
+    fus.set_max_timejump(1.)
     fus.set_min_radar_radius(30)
 
     empty_obss = [EmptyObservation(time_start + base_rate * s_i) for s_i in range(n_samples_max)]
@@ -106,8 +106,17 @@ def analyze_ukf(radar_obss, lidar_obss):
     obss_timestamps = [o.timestamp for o in all_obss]
     timestamp_sort_inds = np.argsort(obss_timestamps)
 
-    for obs_i in timestamp_sort_inds:
+    timejump_i = np.random.random_integers(0, len(all_obss) - 1)
+    time_shift = 0.
+    do_timejump = True
+
+    for i, obs_i in enumerate(timestamp_sort_inds):
         obs = all_obss[obs_i]
+
+        if i == timejump_i and do_timejump:
+            time_shift = 1.1
+
+        obs.timestamp += time_shift
 
         fus.filter(obs)
 
