@@ -63,6 +63,7 @@ if K._backend == 'tensorflow':
 segmenter_model = None
 localizer_model = None
 points_per_ring = None
+rings = None
 clip_distance = None
 sectors = None
 pointnet_points = None
@@ -93,9 +94,50 @@ def angle_loss(y_true, y_pred):
         import tensorflow as tf
         arctan2 = tf.atan2
 
+def init_segmenter(args_segmenter_model):
+    global segmenter_model, rings, sectors, points_per_ring, is_ped, tf_segmenter_graph
+    segmenter_model = load_model(args_segmenter_model, compile=False)
+    segmenter_model._make_predict_function() # https://github.com/fchollet/keras/issues/6124
+    print("Loading segmenter model " + args_segmenter_model)
+    segmenter_model.summary()
+    points_per_ring = segmenter_model.get_input_shape_at(0)[0][1]
+    match = re.search(r'lidarnet-(car|ped)-.*seg-rings_(\d+)_(\d+)-sectors_(\d+)-.*\.hdf5', args_segmenter_model)
+    is_ped = match.group(1) == 'ped'
+    rings = range(int(match.group(2)), int(match.group(3)))
+    sectors = int(match.group(4))
+    points_per_ring *= sectors
+    assert len(rings) == segmenter_model.get_input_shape_at(0)[0][2]
+    print('Loaded segmenter model with ' + str(points_per_ring) + ' points per ring and ' + str(len(rings)) +
+          ' rings from ' + str(rings[0]) + ' to ' + str(rings[-1]) )
+
+    if K._backend == 'tensorflow':
+        tf_segmenter_graph = tf.get_default_graph()
+        print(tf_segmenter_graph)
+    return
+
+def init_localizer(args_localizer_model):
+    global localizer_model, pointnet_points, tf_localizer_graph
+    print("Loading localizer model " + args_localizer_model)
+    localizer_model = load_model(args_localizer_model, compile=False)
+    localizer_model._make_predict_function()  # https://github.com/fchollet/keras/issues/6124
+    localizer_model.summary()
+    # TODO: check consistency against segmenter model (rings)
+    pointnet_points = localizer_model.get_input_shape_at(0)[0][1]
+    print('Loaded localizer model with ' + str(pointnet_points) + ' points')
+
+    if K._backend == 'tensorflow':
+        tf_localizer_graph = tf.get_default_graph()
+        print(tf_localizer_graph)
+    return
+
 def handle_velodyne_msg(msg, arg=None):
     global tf_segmenter_graph
     global last_known_position, last_known_box_size, last_known_yaw
+
+    if segmenter_model is None:
+        init_segmenter(args.segmenter_model)
+    if localizer_model is None:
+        init_localizer(args.localizer_model)
 
     assert msg._type == 'sensor_msgs/PointCloud2'
     
@@ -156,10 +198,15 @@ def handle_velodyne_msg(msg, arg=None):
 
     # PERFORMANCE WARNING END
 
-    with tf_segmenter_graph.as_default():
+    if K._backend == 'tensorflow':
+        with tf_segmenter_graph.as_default():
+            time_seg_infe_start = time.time()
+            class_predictions_by_angle = segmenter_model.predict([lidar_d, lidar_h, lidar_i], batch_size = _sectors)
+            time_seg_infe_end   = time.time()
+    else:
         time_seg_infe_start = time.time()
-        class_predictions_by_angle = segmenter_model.predict([lidar_d, lidar_h, lidar_i], batch_size = _sectors)
-        time_seg_infe_end   = time.time()
+        class_predictions_by_angle = segmenter_model.predict([lidar_d, lidar_h, lidar_i], batch_size=_sectors)
+        time_seg_infe_end = time.time()
 
     if verbose: print ' Seg inference: %0.3f ms' % ((time_seg_infe_end - time_seg_infe_start)   * 1000.0)
 
@@ -301,11 +348,17 @@ def handle_velodyne_msg(msg, arg=None):
         aligned_points_resampled = np.expand_dims(aligned_points_resampled, axis=0)
         distance_to_segmented_and_aligned_points = np.expand_dims(distance_to_segmented_and_aligned_points, axis=0)
 
-        with tf_localizer_graph.as_default():
+        if K._backend == 'tensorflow':
+            with tf_localizer_graph.as_default():
+                time_loc_infe_start = time.time()
+                centroid, box_size, yaw = localizer_model.predict_on_batch([aligned_points_resampled, distance_to_segmented_and_aligned_points])
+                time_loc_infe_end   = time.time()
+        else:
             time_loc_infe_start = time.time()
-            centroid, box_size, yaw = localizer_model.predict_on_batch([aligned_points_resampled, distance_to_segmented_and_aligned_points])
-            time_loc_infe_end   = time.time()
-
+            centroid, box_size, yaw = localizer_model.predict_on_batch(
+                [aligned_points_resampled, distance_to_segmented_and_aligned_points])
+            time_loc_infe_end = time.time()
+            
         centroid = np.squeeze(centroid, axis=0)
         box_size = np.squeeze(box_size, axis=0)
         yaw      = np.squeeze(yaw     , axis=0)
@@ -519,47 +572,21 @@ if __name__ == '__main__':
     reject_false_positives     = args.reject_false_positives
     verbose                    = args.verbose
 
-
     import keras.losses
     keras.losses.angle_loss = angle_loss
 
     if args.segmenter_model:
-        # segmenter model
-        segmenter_model = load_model(args.segmenter_model, compile=False)
-        segmenter_model._make_predict_function() # https://github.com/fchollet/keras/issues/6124
-        print("segmenter model")
-        segmenter_model.summary()
-        points_per_ring = segmenter_model.get_input_shape_at(0)[0][1]
-        match = re.search(r'lidarnet-(car|ped)-.*seg-rings_(\d+)_(\d+)-sectors_(\d+)-.*\.hdf5', args.segmenter_model)
-        is_ped = match.group(1) == 'ped'
-        rings = range(int(match.group(2)), int(match.group(3)))
-        sectors = int(match.group(4))
-        points_per_ring *= sectors
-        assert len(rings) == segmenter_model.get_input_shape_at(0)[0][2]
-        print('Loaded segmenter model with ' + str(points_per_ring) + ' points per ring and ' + str(len(rings)) +
-              ' rings from ' + str(rings[0]) + ' to ' + str(rings[-1]) )
-
         if K._backend == 'tensorflow':
-            tf_segmenter_graph = tf.get_default_graph()
-            print(tf_segmenter_graph)
+            init_segmenter(args.segmenter_model)
+
+        # segmenter model
+
 
     # localizer model
-
     if args.localizer_model:
-
-        print("localizer model")
-        localizer_model = load_model(args.localizer_model, compile=False)
-        segmenter_model._make_predict_function() # https://github.com/fchollet/keras/issues/6124
-        localizer_model.summary()
-        # TODO: check consistency against segmenter model (rings)
-        pointnet_points = localizer_model.get_input_shape_at(0)[0][1]
-        print('Loaded localizer model with ' + str(pointnet_points) + ' points')
-
         if K._backend == 'tensorflow':
-            tf_localizer_graph = tf.get_default_graph()
-            print(tf_localizer_graph)
-            
-    
+            init_localizer(args.localizer_model)
+
     # need to init ros to publish messages
     node_name = 'ros_node'
     rospy.init_node(node_name)
