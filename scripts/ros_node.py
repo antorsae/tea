@@ -39,10 +39,17 @@ RADAR_TO_LIDAR = [1.5494 - 3.8, 0., 1.27] # as per mkz.urdf.xacro
 
 PEDESTRIAN_SIZE = [0.8, 0.8, 1.708]
 
+FUSION_MIN_RADAR_RADIUS = 30.
+
 # =============== Sensor Fusion ====================== #
 from fusion import FusionUKF, EmptyObservation, RadarObservation, LidarObservation
 
-g_fusion = FusionUKF(CAR_SIZE[0] * 0.5)
+def create_fusion():
+    fus = FusionUKF(CAR_SIZE[0] * 0.5)
+    fus.set_min_radar_radius(FUSION_MIN_RADAR_RADIUS)
+    return fus
+
+g_fusion = create_fusion()
 g_fusion_lock = threading.Lock()
 
 
@@ -553,7 +560,7 @@ if __name__ == '__main__':
     
 
     if args.bag: # BAG MODE
-        record_raw_data = False
+        record_raw_data = True
         
         if record_raw_data:
             import csv
@@ -562,7 +569,7 @@ if __name__ == '__main__':
             radar_writer = csv.DictWriter(open('radar_pred_{}.csv'.format(os.path.basename(args.bag)), 'w'), fieldnames=['timestamp', 'x','y','z','vx','vy'])
             radar_writer.writeheader()
         
-        fusion = FusionUKF(CAR_SIZE[0] * 0.5)
+        fusion = create_fusion()
         
         tracklet_collection = TrackletCollection()
         
@@ -584,7 +591,6 @@ if __name__ == '__main__':
                     fusion.filter(EmptyObservation(t.to_sec()))
                     
                     if fusion.last_state_mean is not None:
-                        print 'h'
                         pose = fusion.lidar_observation_function(fusion.last_state_mean)
                         
                         tracklet_pose = {'tx': pose[0],
@@ -633,26 +639,18 @@ if __name__ == '__main__':
                         for o in observations:
                             dist = [o.x - centroid[0], o.y - centroid[1], o.z - centroid[2]]
                             dist = np.sqrt(np.array(dist).dot(dist))
+                            #print dist
                             
                             if dist < nearest_dist and dist < distance_threshold:
                                 nearest_dist = dist
                                 nearest = o
                         
                         if nearest is not None:
-                            print nearest
                             fusion.filter(nearest)
                             
-                    if record_raw_data:
-                        # in ford03 the obstacle is always +-2m along Y-axis
-                        last = None
-                        for o in observations:
-                            if np.abs(o.y) < 2.:
-                                if last:
-                                    if last.x > o.x:
-                                        last = o
-                                else:
-                                    last = o
-                        if last: radar_writer.writerow(last.__dict__)
+                            if record_raw_data:
+                                radar_writer.writerow(nearest.__dict__)
+
             print 'Done.'
             
             object_size = PEDESTRIAN_SIZE if is_ped else CAR_SIZE
