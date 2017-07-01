@@ -90,19 +90,16 @@ class RadarObservation:
         
 
 class FusionUKF:
-    #n_state_dims = 9
     n_state_dims = 7
     n_lidar_obs_dims = 3
     n_radar_obs_dims = 4
 
-    # mapping between observed (by both lidar and radar) variables and their respective state variable indices
-    #state_obs_map = {'x': 0, 'vx': 1, 'y': 3, 'vy': 4, 'z': 6}
     state_var_map = {'r': 0, 'vr': 1, 'ar': 2, 'alpha': 3, 'valpha': 4, 'z': 5, 'vz': 6}
 
     def __init__(self, initial_object_radius):
         self.transition_covariance = FusionUKF.create_transition_covariance()
-        self.lidar_initial_state_covariance = FusionUKF.create_lidar_initial_state_covariance()
-        self.radar_initial_state_covariance = FusionUKF.create_radar_initial_state_covariance(initial_object_radius)
+        self.initial_state_covariance = FusionUKF.create_initial_state_covariance()
+
         self.lidar_observation_function = FusionUKF.create_lidar_observation_function()
         self.radar_observation_function = FusionUKF.create_radar_observation_function()
         self.lidar_observation_covariance = FusionUKF.create_lidar_observation_covariance()
@@ -117,53 +114,25 @@ class FusionUKF:
         self.initialized = False
 
     @staticmethod
-    def create_lidar_initial_state_covariance():
+    def create_initial_state_covariance():
         # converges really fast, so don't tweak too carefully
         eps = 10.
         return eps * np.eye(FusionUKF.n_state_dims)
-        # pos_cov = 1.
-        # vel_cov = 10.
-        # acc_cov = 100.
-        # return np.diag([pos_cov, vel_cov, acc_cov, pos_cov, vel_cov, acc_cov, pos_cov, vel_cov, acc_cov])
-
-    @staticmethod
-    def create_radar_initial_state_covariance(object_radius):
-        # converges really fast, so don't tweak too carefully
-        eps = 10.
-        return eps * np.eye(FusionUKF.n_state_dims)
-        # cov_x, cov_vx, cov_y, cov_vy = FusionUKF.calc_radar_covariances(object_radius)
-        # cov_z = 1.
-        # cov_vz = 10.
-        # cov_a = 100.
-        # return np.diag([cov_x, cov_vx, cov_a, cov_y, cov_vy, cov_a, cov_z, cov_vz, cov_a])
 
     @staticmethod
     def create_transition_covariance():
-        r = 1e-0
-        vr = 1e-0
+        r = 1e-2
+        vr = 1e-2
         ar = 1e-0
-        alpha = 1e-4
-        valpha = 1e-4
+        alpha = 1e-2
+        valpha = 1e-2
         z = 1e-3
         vz = 1e-2
         return np.diag([r, vr, ar, alpha, valpha, z, vz])
-        # eps = 1e-4  # this value should be small (acceleration speed noise)
-        # return eps * np.eye(FusionUKF.n_state_dims)
 
     @staticmethod
     def create_transition_function(dt):
         dt2 = 0.5*dt**2
-        # F = np.array(
-        #     [[1, dt, dt2, 0,  0,  0,  0,  0,  0],  # x
-        #      [0,  1,  dt, 0,  0,  0,  0,  0,  0],  # x'
-        #      [0,  0,   1, 0,  0,  0,  0,  0,  0],  # x''
-        #      [0,  0,   0, 1, dt, dt2, 0,  0,  0],  # y
-        #      [0,  0,   0, 0,  1,  dt, 0,  0,  0],  # y'
-        #      [0,  0,   0, 0,  0,   1, 0,  0,  0],  # y''
-        #      [0,  0,   0, 0,  0,   0, 1, dt, dt2], # z
-        #      [0,  0,   0, 0,  0,   0, 0,  1,  dt], # z'
-        #      [0,  0,   0, 0,  0,   0, 0,  0,   1]  # z''
-        #      ], dtype=np.float32)
         F = np.array(
             [[1, dt, dt2, 0, 0, 0,  0], # r
              [0,  1,  dt, 0, 0, 0,  0], # r'
@@ -185,8 +154,6 @@ class FusionUKF:
             s[r_i] * np.sin(s[alpha_i]),
             s[z_i]
             ]
-        #m = FusionUKF.state_obs_map
-        #return lambda s: [s[m['x']], s[m['y']], s[m['z']]]
 
     @staticmethod
     def create_radar_observation_function():
@@ -200,8 +167,6 @@ class FusionUKF:
             s[r_i] * np.sin(s[alpha_i]),
             s[vr_i] * np.sin(s[alpha_i]) + s[r_i] * s[valpha_i] * np.cos(s[alpha_i]),
         ]
-        # m = FusionUKF.state_obs_map
-        # return lambda s: [s[m['x']], s[m['vx']], s[m['y']], s[m['vy']]]
 
     @staticmethod
     def create_lidar_observation_covariance():
@@ -234,6 +199,8 @@ class FusionUKF:
             return [obs.x, obs.vx, obs.y, obs.vy]
         elif isinstance(obs, LidarObservation):
             return [obs.x, obs.y, obs.z]
+        elif isinstance(obs, EmptyObservation):
+            return None
         else:
             raise ValueError
 
@@ -243,21 +210,28 @@ class FusionUKF:
             r = np.sqrt(obs.x**2 + obs.y**2)
             vr = (obs.x * obs.vx + obs.y * obs.vy) / r
             alpha = np.arctan2(obs.y, obs.x)
-            return [r,  vr,     0.,     alpha,  0.,     0.,     0.]
-            #return [obs.x,  obs.vx,     0.,     obs.y,    obs.vy,   0.,     0,      0.,     0.]
+            z = -0.8 # radar doesn't measure Z-coord, so we need an initial estimation of Z.
+            return [r,  vr,     0.,     alpha,  0.,     z,      0.]
         elif isinstance(obs, LidarObservation):
             r = np.sqrt(obs.x**2 + obs.y**2)
             alpha = np.arctan2(obs.y, obs.x)
             return [r,  0.,     0.,     alpha,  0.,     obs.z,  0.]
-            #return [obs.x,      0.,     0.,     obs.y,        0.,   0.,  obs.z,      0.,     0.]
         else:
             raise ValueError
 
     def filter(self, obs):
-        empty_obs = isinstance(obs, EmptyObservation)
-
-        if not self.initialized and empty_obs:
+        if not self.initialized and isinstance(obs, EmptyObservation):
             return
+
+        if isinstance(obs, LidarObservation):
+            observation_function = self.lidar_observation_function
+            observation_covariance = self.lidar_observation_covariance
+        elif isinstance(obs, RadarObservation):
+            observation_function = self.radar_observation_function
+            observation_covariance = self.radar_observation_covariance
+        else: # EmptyObservation
+            observation_function = None
+            observation_covariance = None
 
         # we need initial estimation to feed it to filter_update()
         if not self.initialized:
@@ -267,25 +241,15 @@ class FusionUKF:
             else:
                 dt = obs.timestamp - self.last_obs.timestamp
 
-                prior_state = self.obs_as_state(self.last_obs)
-
-                # radar doesn't measure Z-coord, so we need an initial estimation of Z.
-                # Z = -0.8 is good.
-                if isinstance(self.last_obs, RadarObservation):
-                    prior_state[FusionUKF.state_var_map['z']] = -0.8
-                    #prior_state[FusionUKF.state_obs_map['z']] = -0.8
-
-                is_radar = isinstance(obs, RadarObservation)
-
                 self.last_state_mean, self.last_state_covar =\
                     self.kf.filter_update(
-                        prior_state,
-                        self.radar_initial_state_covariance if is_radar else self.lidar_initial_state_covariance,
+                        self.obs_as_state(self.last_obs),
+                        self.initial_state_covariance,
                         self.obs_as_kf_obs(obs),
                         self.create_transition_function(dt),
                         self.transition_covariance,
-                        self.radar_observation_function if is_radar else self.lidar_observation_function,
-                        self.radar_observation_covariance if is_radar else self.lidar_observation_covariance)
+                        observation_function,
+                        observation_covariance)
 
                 self.last_obs = obs
                 self.initialized = True
@@ -294,16 +258,14 @@ class FusionUKF:
 
         dt = obs.timestamp - self.last_obs.timestamp
 
-        is_radar = isinstance(obs, RadarObservation)
-
         self.last_state_mean, self.last_state_covar =\
             self.kf.filter_update(
                 self.last_state_mean,
                 self.last_state_covar,
-                self.obs_as_kf_obs(obs) if not empty_obs else None,
+                self.obs_as_kf_obs(obs),
                 self.create_transition_function(dt),
                 self.transition_covariance,
-                self.radar_observation_function if is_radar else self.lidar_observation_function,
-                self.radar_observation_covariance if is_radar else self.lidar_observation_covariance)
+                observation_function,
+                observation_covariance)
 
         self.last_obs = obs
