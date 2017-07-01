@@ -547,7 +547,7 @@ def handle_image_msg(msg):
                     
 if __name__ == '__main__':        
     parser = argparse.ArgumentParser(description='Predicts bounding box pose of obstacle in lidar point cloud.')
-    parser.add_argument('--bag', help='path to ros bag')
+    parser.add_argument('-b', '--bag', help='path to ros bag')
     parser.add_argument('-sm', '--segmenter-model', required=True, help='path to hdf5 model')
     parser.add_argument('-lm', '--localizer-model', required=True, help='path to hdf5 model')
     parser.add_argument('-c', '--cpu', action='store_true', help='force CPU inference')
@@ -556,7 +556,7 @@ if __name__ == '__main__':
     parser.add_argument('-lpt', '--localizer-points-threshold', default=10, type=int, help='Number of segmented points to trigger a detection')
     parser.add_argument('-di', '--deinterpolate', action='store_true', help='Deinterpolate prior to regression')
     parser.add_argument('-rfp', '--reject-false-positives', action='store_true', help='Rejects false positives')
-    parser.add_argument('--no-radar-fuse', action='store_true', help='use radar data in fusion or not')
+    parser.add_argument('-nrf', '--no-radar-fuse', action='store_true', help='use radar data in fusion or not')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
 
     args = parser.parse_args()
@@ -709,7 +709,9 @@ if __name__ == '__main__':
             
             bag_name = os.path.basename(args.bag).split('.')[0]
             tracklet_path = os.path.join(BASE_DIR, '../tracklets/{}'.format(bag_name + '.xml'))
-            tracklet_collection.write_xml(tracklet_path)
+            # replaced -- with unicode counterpart unless XML files is non-compliant
+            tracklet_collection.write_xml(tracklet_path, comment=(' '.join(sys.argv[1:]).replace('--', '&#x002D;&#x002D;'))
+)
         
     else: # NODE MODE
         # subscribe to the 
