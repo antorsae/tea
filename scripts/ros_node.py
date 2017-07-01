@@ -40,6 +40,7 @@ RADAR_TO_LIDAR = [1.5494 - 3.8, 0., 1.27] # as per mkz.urdf.xacro
 PEDESTRIAN_SIZE = [0.8, 0.8, 1.708]
 
 FUSION_MIN_RADAR_RADIUS = 30.
+FUSION_MAX_TIMEJUMP = 1.
 
 # =============== Sensor Fusion ====================== #
 from fusion import FusionUKF, EmptyObservation, RadarObservation, LidarObservation
@@ -47,6 +48,7 @@ from fusion import FusionUKF, EmptyObservation, RadarObservation, LidarObservati
 def create_fusion():
     fus = FusionUKF(CAR_SIZE[0] * 0.5)
     fus.set_min_radar_radius(FUSION_MIN_RADAR_RADIUS)
+    fus.set_max_timejump(FUSION_MAX_TIMEJUMP)
     return fus
 
 g_fusion = create_fusion()
