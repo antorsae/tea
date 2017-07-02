@@ -36,9 +36,9 @@ from generate_tracklet import *
 
 # =============== MAGIC NUMBERS ====================== #
 CAR_SIZE = [4.358, 1.823, 1.484] # https://en.wikipedia.org/wiki/Ford_Focus_(third_generation)
-RADAR_TO_LIDAR = [1.5494 - 3.8, 0., 1.27] # as per mkz.urdf.xacro
-
 PEDESTRIAN_SIZE = [0.8, 0.8, 1.708]
+
+RADAR_TO_LIDAR = [1.5494 - 3.8, 0., 1.27] # as per mkz.urdf.xacro
 
 FUSION_MIN_RADAR_RADIUS = 30.
 FUSION_MAX_TIMEJUMP = 1.
@@ -54,6 +54,9 @@ def create_fusion():
 
 g_fusion = create_fusion()
 g_fusion_lock = threading.Lock()
+
+g_pitch_correction = 0.
+g_roll_correction = 0.
 
 
 if K._backend == 'tensorflow':
@@ -129,6 +132,27 @@ def init_localizer(args_localizer_model):
         tf_localizer_graph = tf.get_default_graph()
         print(tf_localizer_graph)
     return
+     
+     
+def rotXMat(a):
+    cos = np.cos(a)
+    sin = np.sin(a)
+    return np.array([
+        [1.,   0.,   0.],
+        [0.,  cos, -sin],
+        [0.,  sin,  cos],
+    ])
+    
+    
+def rotYMat(a):
+    cos = np.cos(a)
+    sin = np.sin(a)
+    return np.array([
+        [ cos,   0.,  sin],
+        [ 0.,    1.,   0.],
+        [-sin,   0.,  cos],
+    ])
+
 
 def handle_velodyne_msg(msg, arg=None):
     global tf_segmenter_graph
@@ -422,6 +446,10 @@ def handle_velodyne_msg(msg, arg=None):
 #     my_msg.cy = pose[1]
 #     my_msg.cz = pose[2]
 #     publisher.publish(my_msg)
+
+    Rx = rotXMat(np.deg2rad(g_roll_correction))
+    Ry = rotYMat(np.deg2rad(g_pitch_correction))
+    pose_fixed = Ry.dot(Rx.dot([pose[0], pose[1], pose[2]]))
     
     # publish car prediction data as separate regular ROS messages just for vizualization (dunno how to visualize custom messages in rviz)
     publish_rviz_topics = True
@@ -440,7 +468,7 @@ def handle_velodyne_msg(msg, arg=None):
         # car pose frame 
         yaw_q = ros_tf.transformations.quaternion_from_euler(0, 0, yaw)
         br = ros_tf.TransformBroadcaster()
-        br.sendTransform(tuple(pose), tuple(yaw_q), rospy.Time.now(), 'obj_lidar_centroid', 'velodyne')
+        br.sendTransform(tuple(pose_fixed), tuple(yaw_q), rospy.Time.now(), 'obj_lidar_centroid', 'velodyne')
         
         # give bbox different color, depending on the predicted object class
         if detection == 1: # car
@@ -470,9 +498,9 @@ def handle_velodyne_msg(msg, arg=None):
                     
                       
     return {'detection': detection, 
-            'x': pose[0], 
-            'y': pose[1],
-            'z': pose[2], 
+            'x': pose_fixed[0], 
+            'y': pose_fixed[1],
+            'z': pose_fixed[2], 
             'l': box_size[2],
             'w': box_size[1],
             'h': box_size[0],
@@ -566,7 +594,7 @@ def handle_image_msg(msg):
                 pub = rospy.Publisher("obj_fuse_bbox", Marker, queue_size=10)
                 pub.publish(marker)
                 
-                    
+    
 if __name__ == '__main__':        
     parser = argparse.ArgumentParser(description='Predicts bounding box pose of obstacle in lidar point cloud.')
     parser.add_argument('-b', '--bag', help='path to ros bag')
@@ -580,6 +608,8 @@ if __name__ == '__main__':
     parser.add_argument('-rfp', '--reject-false-positives', action='store_true', help='Rejects false positives')
     parser.add_argument('-nrf', '--no-radar-fuse', action='store_true', help='use radar data in fusion or not')
     parser.add_argument('-rrd', '--record-raw-data', action='store_true', help='record raw data to csv files')
+    parser.add_argument('-pc', '--pitch-correction', default=0., help='apply constant pitch rotation to predicted pose')
+    parser.add_argument('-rc', '--roll-correction', default=0., help='apply constant roll rotation to predicted pose')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
 
     args = parser.parse_args()
@@ -609,6 +639,11 @@ if __name__ == '__main__':
     if args.localizer_model:
         if K._backend == 'tensorflow':
             init_localizer(args.localizer_model)
+            
+    
+    g_roll_correction = float(args.roll_correction)
+    g_pitch_correction = float(args.pitch_correction)
+
 
     # need to init ros to publish messages
     node_name = 'ros_node'
