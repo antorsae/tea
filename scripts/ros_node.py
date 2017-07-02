@@ -411,11 +411,20 @@ def handle_velodyne_msg(msg, arg=None):
         pose  = point_utils.rotZ(pose, -angle)
         yaw       = point_utils.remove_orientation(yaw + angle)
 
-        #print(angle_at_edge)
-        #pose_angle = np.arctan2(pose[1], pose[0])
+        pose_angle = np.arctan2(pose[1], pose[0])
+        angle_diff = angle_at_edge - pose_angle
+        if angle_diff < 0.:
+            angle_diff += 2 * np.pi
 
-
-        if verbose: print(pose, box_size, yaw)
+        # ALI => delta_time is the time difference in milliseconds (0-100) from the start of the lidar
+        # scan to the time the object was detected, i don' know if the lidar msg is referenced to be
+        # beggging of the scan or the end... so basically adjust the lidar observation for two cases wnich
+        # we need to test:
+        # observation_time = msg.header.stamp.to_sec() + delta_time
+        # observation_time = msg.header.stamp.to_sec() - delta_time
+        delta_time = 100. * angle_diff / (2*np.pi)
+        if verbose: print(angle_at_edge, pose_angle, angle_diff)
+        if verbose: print(pose, box_size, yaw, delta_time)
 
         last_known_position = pose
         last_known_box_size = box_size
