@@ -58,6 +58,8 @@ g_fusion_lock = threading.Lock()
 g_pitch_correction = 0.
 g_roll_correction = 0.
 
+g_scale_bbox = False
+
 
 if K._backend == 'tensorflow':
     import tensorflow as tf
@@ -152,6 +154,14 @@ def rotYMat(a):
         [ 0.,    1.,   0.],
         [-sin,   0.,  cos],
     ])
+    
+    
+def bbox_size_factor(r):
+    max_r = 40
+    k = 0.2
+    t = .2
+    r = min(r, max_r)
+    return 1. + k*np.exp(t*(r-max_r))
 
 
 def handle_velodyne_msg(msg, arg=None):
@@ -397,6 +407,18 @@ def handle_velodyne_msg(msg, arg=None):
         pose  = point_utils.rotZ(pose, -angle)
         yaw       = point_utils.remove_orientation(yaw + angle)
         if verbose: print(pose, box_size, yaw)
+        
+        # fix lidar static tilt
+        Rx = rotXMat(np.deg2rad(g_roll_correction))
+        Ry = rotYMat(np.deg2rad(g_pitch_correction))
+        pose = Ry.dot(Rx.dot([pose[0], pose[1], pose[2]]))
+    
+        # scale bbox size
+        if g_scale_bbox:
+            x, y, z = pose
+            radius = np.sqrt(x**2 + y**2)
+            factor = bbox_size_factor(radius)
+            box_size = list(np.array(box_size) * factor)
 
         last_known_position = pose
         last_known_box_size = box_size
@@ -406,32 +428,10 @@ def handle_velodyne_msg(msg, arg=None):
             observation = LidarObservation(msg.header.stamp.to_sec(), pose[0], pose[1], pose[2], yaw)
             g_fusion.filter(observation)
             
-#             # get filter pose position
-#             if g_fusion.last_state_mean is not None:
-#                 pose = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
-    
+            
     segmented_points_cloud_msg = pc2.create_cloud_xyz32(msg.header, segmented_points[:,:3])
-
-    # publish message (resend msg)
-#     publisher = rospy.Publisher(name='my_topic', 
-#                     data_class=Andres, 
-#                     queue_size=1)
-#     my_msg = Andres()
-#     my_msg.header = msg.header
-#     my_msg.detection = detection
-#     my_msg.cloud = segmented_points_cloud_msg
-#     my_msg.length = box_size[2]
-#     my_msg.width  = box_size[1]
-#     my_msg.height = box_size[0]
-#     my_msg.cx = pose[0]
-#     my_msg.cy = pose[1]
-#     my_msg.cz = pose[2]
-#     publisher.publish(my_msg)
-
-    Rx = rotXMat(np.deg2rad(g_roll_correction))
-    Ry = rotYMat(np.deg2rad(g_pitch_correction))
-    pose_fixed = Ry.dot(Rx.dot([pose[0], pose[1], pose[2]]))
     
+
     # publish car prediction data as separate regular ROS messages just for vizualization (dunno how to visualize custom messages in rviz)
     publish_rviz_topics = True
     
@@ -443,13 +443,10 @@ def handle_velodyne_msg(msg, arg=None):
         seg_msg = PointCloud2()
         seg_pnt_pub.publish(segmented_points_cloud_msg)
         
-#         with g_fusion_lock:
-#             if g_fusion.last_state_mean is not None:
-#                 pose = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
         # car pose frame 
         yaw_q = ros_tf.transformations.quaternion_from_euler(0, 0, yaw)
         br = ros_tf.TransformBroadcaster()
-        br.sendTransform(tuple(pose_fixed), tuple(yaw_q), rospy.Time.now(), 'obj_lidar_centroid', 'velodyne')
+        br.sendTransform(tuple(pose), tuple(yaw_q), rospy.Time.now(), 'obj_lidar_centroid', 'velodyne')
         
         # give bbox different color, depending on the predicted object class
         if detection == 1: # car
@@ -479,9 +476,9 @@ def handle_velodyne_msg(msg, arg=None):
                     
                       
     return {'detection': detection, 
-            'x': pose_fixed[0], 
-            'y': pose_fixed[1],
-            'z': pose_fixed[2], 
+            'x': pose[0], 
+            'y': pose[1],
+            'z': pose[2], 
             'l': box_size[2],
             'w': box_size[1],
             'h': box_size[0],
@@ -590,6 +587,7 @@ if __name__ == '__main__':
     parser.add_argument('-nrf', '--no-radar-fuse', action='store_true', help='use radar data in fusion or not')
     parser.add_argument('-rrd', '--record-raw-data', action='store_true', help='record raw data to csv files')
     parser.add_argument('-pc', '--pitch-correction', default=0., help='apply constant pitch rotation to predicted pose')
+    parser.add_argument('-sbb', '--scale-bbox', action='store_true', help='scale bbox when uncertain about its size')
     parser.add_argument('-rc', '--roll-correction', default=0., help='apply constant roll rotation to predicted pose')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
 
@@ -624,6 +622,7 @@ if __name__ == '__main__':
     
     g_roll_correction = float(args.roll_correction)
     g_pitch_correction = float(args.pitch_correction)
+    g_scale_bbox = args.scale_bbox
 
 
     # need to init ros to publish messages
@@ -661,7 +660,7 @@ if __name__ == '__main__':
                 tracklet.l = object_size[0]
                 tracklet.w = object_size[1]
                 tracklet.h = object_size[2]
-                
+            
             image_msg_num = bag.get_message_count(['/image_raw'])
             image_frame_i = 0
             
