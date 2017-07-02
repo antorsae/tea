@@ -4,6 +4,7 @@ import rospy
 import rosbag
 import os
 import sys
+import copy
 from sensor_msgs.msg import PointCloud2, Image
 import sensor_msgs.point_cloud2 as pc2
 from std_msgs.msg import ColorRGBA, Header
@@ -559,6 +560,7 @@ if __name__ == '__main__':
     parser.add_argument('-di', '--deinterpolate', action='store_true', help='Deinterpolate prior to regression')
     parser.add_argument('-rfp', '--reject-false-positives', action='store_true', help='Rejects false positives')
     parser.add_argument('-nrf', '--no-radar-fuse', action='store_true', help='use radar data in fusion or not')
+    parser.add_argument('-rrd', '--record-raw-data', action='store_true', help='record raw data to csv files')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
 
     args = parser.parse_args()
@@ -595,7 +597,7 @@ if __name__ == '__main__':
     
 
     if args.bag: # BAG MODE
-        record_raw_data = True
+        record_raw_data = args.record_raw_data
         
         if record_raw_data:
             import csv
@@ -605,6 +607,8 @@ if __name__ == '__main__':
             radar_writer.writeheader()
         
         fusion = create_fusion()
+        
+        bbox_filter = BBOXSizeFilter(0.01)
         
         tracklet_collection = TrackletCollection()
         
@@ -671,7 +675,7 @@ if __name__ == '__main__':
                         
                         fusion.filter(lidar_obs)
                         
-                        bbox = [pred['l'], pred['w'], pred['h']]
+                        bbox = bbox_filter.update(pred['l'], pred['w'], pred['h'])
                         
                         if last_bbox is None:
                             last_bbox = bbox
@@ -682,8 +686,12 @@ if __name__ == '__main__':
                             tracklet = create_tracklet()
                         
                         if record_raw_data:
-                            pred['time'] = t
-                            lidar_writer.writerow(pred)
+                            data_row = copy.deepcopy(pred)
+                            data_row['time'] = t
+                            #data_row['l'] = bbox[0]
+                            #data_row['w'] = bbox[1]
+                            #data_row['h'] = bbox[2]
+                            lidar_writer.writerow(data_row)
                         
                 elif topic == '/radar/tracks': # 20HZ
                     # use last kalman_lidar|kalman_radar estimation to extract radar points of the object; 
