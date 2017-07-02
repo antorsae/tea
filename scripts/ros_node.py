@@ -234,13 +234,17 @@ def handle_velodyne_msg(msg, arg=None):
         # could further improve this by calculating the center of mass on the X axis of the prediction
         # vector (with the unique elements only), and take the index closest to the center for each duplicated stride.
         if deinterpolate:
+            #((a.shape[0] - 1 - i_l ) + (i_f)) // 2
             deinterpolated_class_predictions_by_angle_idx = np.empty((0,2))
             lidar_d_interpolated = lidar_d.reshape((-1, points_per_ring, len(rings)))[0]
             for ring in range(len(rings)):
                 predictions_idx_in_ring = class_predictions_by_angle_idx[class_predictions_by_angle_idx[:,1] == ring]
                 if predictions_idx_in_ring.shape[0] > 1:
                     lidar_d_predictions_in_ring = lidar_d_interpolated[ predictions_idx_in_ring[:,0], ring]
-                    lidar_d_predictions_in_ring_unique, lidar_d_predictions_in_ring_unique_idx = np.unique(lidar_d_predictions_in_ring, return_index=True)
+                    _, lidar_d_predictions_in_ring_unique_idx_first = np.unique(lidar_d_predictions_in_ring,       return_index=True)
+                    _, lidar_d_predictions_in_ring_unique_idx_last  = np.unique(lidar_d_predictions_in_ring[::-1], return_index=True)
+                    lidar_d_predictions_in_ring_unique_idx = \
+                        (lidar_d_predictions_in_ring.shape[0] - 1 - lidar_d_predictions_in_ring_unique_idx_last + lidar_d_predictions_in_ring_unique_idx_first ) // 2
                     deinterpolated_class_predictions_by_angle_idx_this_ring = \
                         predictions_idx_in_ring[lidar_d_predictions_in_ring_unique_idx]
                     deinterpolated_class_predictions_by_angle_idx = np.concatenate((
