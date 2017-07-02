@@ -143,7 +143,6 @@ class FusionUKF:
     RESETTED = 3
 
     def __init__(self, initial_object_radius):
-        self.transition_covariance = FusionUKF.create_transition_covariance()
         self.initial_state_covariance = FusionUKF.create_initial_state_covariance()
 
         self.radar_observation_function = FusionUKF.create_radar_observation_function()
@@ -175,7 +174,7 @@ class FusionUKF:
         return eps * np.eye(FusionUKF.n_state_dims)
 
     @staticmethod
-    def create_transition_function(dt):
+    def create_transition_function_yaw_average(dt):
         dt2 = 0.5*dt**2
         return lambda s: [
             s[0] + s[1] * dt + s[2] * dt2,
@@ -187,21 +186,26 @@ class FusionUKF:
             s[6] + s[7] * dt + s[8] * dt2,
             s[7] + s[8] * dt,
             s[8],
-            s[9] + s[10] * dt,
+            s[9],
             s[10]
         ]
-        # F = np.array(
-        #     [[1, dt, dt2, 0,  0,  0,   0,  0,  0],    # x
-        #      [0,  1, dt,  0,  0,  0,   0,  0,  0],    # x'
-        #      [0,  0, 1,   0,  0,  0,   0,  0,  0],    # x''
-        #      [0,  0, 0,   1, dt, dt2,  0,  0,  0],    # y
-        #      [0,  0, 0,   0,  1,  dt,  0,  0,  0],    # y'
-        #      [0,  0, 0,   0,  0,   1,  0,  0,  0],    # y''
-        #      [0,  0, 0,   0,  0,   0,  1, dt, dt2],   # z
-        #      [0,  0, 0,   0,  0,   0,  0,  1,  dt],   # z'
-        #      [0,  0, 0,   0,  0,   0,  0,  0,  1],    # z''
-        #     ], dtype=np.float32)
-        # return lambda s: F.dot(s)
+
+    @staticmethod
+    def create_transition_function_yaw_vxvy(dt):
+        dt2 = 0.5*dt**2
+        return lambda s: [
+            s[0] + s[1] * dt + s[2] * dt2,
+            s[1] + s[2] * dt,
+            s[2],
+            s[3] + s[4] * dt + s[5] * dt2,
+            s[4] + s[5] * dt,
+            s[5],
+            s[6] + s[7] * dt + s[8] * dt2,
+            s[7] + s[8] * dt,
+            np.arctan2(s[4], s[1]),
+            s[9],
+            s[10]
+        ]
 
     @staticmethod
     def lidar_observation_function(s):
@@ -225,7 +229,7 @@ class FusionUKF:
         ]
 
     @staticmethod
-    def create_transition_covariance():
+    def create_transition_covariance_yaw_average():
         return np.diag([
             1e-2,   # x
             1e-1,   # vx
@@ -237,6 +241,22 @@ class FusionUKF:
             1e-2,   # vz
             1e-2,   # az
             1e-3,    # yaw
+            1e-3     # vyaw
+        ])
+
+    @staticmethod
+    def create_transition_covariance_yaw_vxvy():
+        return np.diag([
+            1e-2,   # x
+            1e-1,   # vx
+            1e-0,   # ax
+            1e-2,   # x
+            1e-2,   # vy
+            1e-2,   # ay
+            1e-2,   # z
+            1e-2,   # vz
+            1e-2,   # az
+            1e-2,    # yaw
             1e-3     # vyaw
         ])
 
@@ -379,8 +399,8 @@ class FusionUKF:
                         self.obs_as_state(self.last_obs),
                         self.initial_state_covariance,
                         self.obs_as_kf_obs(obs),
-                        self.create_transition_function(dt),
-                        self.transition_covariance,
+                        self.create_transition_function_yaw_average(dt),
+                        self.create_transition_covariance_yaw_average(),
                         observation_function,
                         observation_covariance)
 
@@ -411,15 +431,29 @@ class FusionUKF:
             return self.UNRELIABLE_OBSERVATION
             #obs = EmptyObservation(obs.timestamp)
 
-        self.last_state_mean, self.last_state_covar =\
-            self.kf.filter_update(
-                self.last_state_mean,
-                self.last_state_covar,
-                self.obs_as_kf_obs(obs),
-                self.create_transition_function(dt),
-                self.transition_covariance,
-                observation_function,
-                observation_covariance)
+        vx, vy = self.last_state_mean[1], self.last_state_mean[4]
+        vel = np.sqrt(vx**2 + vy**2)
+        vel_tol = 5.
+        if vel < vel_tol:
+            transition_function = self.create_transition_function_yaw_average(dt)
+            transition_covariance = self.create_transition_covariance_yaw_average()
+        else:
+            #print 'yaw: vxvy', obs.timestamp
+            transition_function = self.create_transition_function_yaw_vxvy(dt)
+            transition_covariance = self.create_transition_covariance_yaw_vxvy()
+
+        try:
+            self.last_state_mean, self.last_state_covar =\
+                self.kf.filter_update(
+                    self.last_state_mean,
+                    self.last_state_covar,
+                    self.obs_as_kf_obs(obs),
+                    transition_function,
+                    transition_covariance,
+                    observation_function,
+                    observation_covariance)
+        except:
+            print 'Fusion: ====== WARNING! ====== filter_update() failed!'
 
         self.last_obs = obs
 
