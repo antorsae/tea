@@ -240,7 +240,7 @@ class FusionUKF:
             1e-2,   # z
             1e-2,   # vz
             1e-2,   # az
-            1e-3,    # yaw
+            1e-1,    # yaw
             1e-3     # vyaw
         ])
 
@@ -262,7 +262,7 @@ class FusionUKF:
 
     @staticmethod
     def create_lidar_observation_covariance():
-        return np.diag([0.1, 0.1, 0.1, 0.1])
+        return np.diag([0.1, 0.1, 0.1, 0.001])
 
     @staticmethod
     def create_radar_observation_covariance(object_radius):
@@ -441,7 +441,7 @@ class FusionUKF:
         #     #print 'yaw: vxvy', obs.timestamp
         #     transition_function = self.create_transition_function_yaw_vxvy(dt)
         #     transition_covariance = self.create_transition_covariance_yaw_vxvy()
-            
+
         transition_function = self.create_transition_function_yaw_average(dt)
         transition_covariance = self.create_transition_covariance_yaw_average()
 
