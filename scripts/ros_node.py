@@ -84,7 +84,6 @@ localizer_points_threshold = None # miniimum number of points to do regression
 
 last_known_position = None
 last_known_box_size = None
-last_known_yaw = 0.
 
 def angle_loss(y_true, y_pred):
     if K._BACKEND == 'theano':
@@ -310,7 +309,7 @@ def handle_velodyne_msg(msg, arg=None):
         segmented_points = np.empty((0,3))
 
     detection = 0
-    centroid  = np.zeros((3))
+    pose  = np.zeros((3))
     box_size  = np.zeros((3))
     yaw       = np.zeros((1))
 
@@ -351,37 +350,36 @@ def handle_velodyne_msg(msg, arg=None):
         if K._backend == 'tensorflow':
             with tf_localizer_graph.as_default():
                 time_loc_infe_start = time.time()
-                centroid, box_size, yaw = localizer_model.predict_on_batch([aligned_points_resampled, distance_to_segmented_and_aligned_points])
+                pose, box_size, yaw = localizer_model.predict_on_batch([aligned_points_resampled, distance_to_segmented_and_aligned_points])
                 time_loc_infe_end   = time.time()
         else:
             time_loc_infe_start = time.time()
-            centroid, box_size, yaw = localizer_model.predict_on_batch(
+            pose, box_size, yaw = localizer_model.predict_on_batch(
                 [aligned_points_resampled, distance_to_segmented_and_aligned_points])
             time_loc_infe_end = time.time()
             
-        centroid = np.squeeze(centroid, axis=0)
+        pose = np.squeeze(pose, axis=0)
         box_size = np.squeeze(box_size, axis=0)
         yaw      = np.squeeze(yaw     , axis=0)
 
         if verbose: print ' Loc inference: %0.3f ms' % ((time_loc_infe_end - time_loc_infe_start) * 1000.0)
 
-        centroid += segmented_and_aligned_points_mean
-        centroid  = point_utils.rotZ(centroid, -angle)
+        pose += segmented_and_aligned_points_mean
+        pose  = point_utils.rotZ(pose, -angle)
         yaw       = point_utils.remove_orientation(yaw + angle)
-        if verbose: print(centroid, box_size, yaw)
+        if verbose: print(pose, box_size, yaw)
 
-        last_known_position = centroid
+        last_known_position = pose
         last_known_box_size = box_size
-        last_known_yaw = np.squeeze(yaw)
         
         # FUSION
         with g_fusion_lock:
-            observation = LidarObservation(msg.header.stamp.to_sec(), centroid[0], centroid[1], centroid[2], yaw)
+            observation = LidarObservation(msg.header.stamp.to_sec(), pose[0], pose[1], pose[2], yaw)
             g_fusion.filter(observation)
             
-#             # get filter centroid position
+#             # get filter pose position
 #             if g_fusion.last_state_mean is not None:
-#                 centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+#                 pose = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
     
     segmented_points_cloud_msg = pc2.create_cloud_xyz32(msg.header, segmented_points[:,:3])
 
@@ -396,9 +394,9 @@ def handle_velodyne_msg(msg, arg=None):
 #     my_msg.length = box_size[2]
 #     my_msg.width  = box_size[1]
 #     my_msg.height = box_size[0]
-#     my_msg.cx = centroid[0]
-#     my_msg.cy = centroid[1]
-#     my_msg.cz = centroid[2]
+#     my_msg.cx = pose[0]
+#     my_msg.cy = pose[1]
+#     my_msg.cz = pose[2]
 #     publisher.publish(my_msg)
     
     # publish car prediction data as separate regular ROS messages just for vizualization (dunno how to visualize custom messages in rviz)
@@ -414,11 +412,11 @@ def handle_velodyne_msg(msg, arg=None):
         
 #         with g_fusion_lock:
 #             if g_fusion.last_state_mean is not None:
-#                 centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
-        # car centroid frame 
+#                 pose = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+        # car pose frame 
         yaw_q = ros_tf.transformations.quaternion_from_euler(0, 0, yaw)
         br = ros_tf.TransformBroadcaster()
-        br.sendTransform(tuple(centroid), tuple(yaw_q), rospy.Time.now(), 'obj_lidar_centroid', 'velodyne')
+        br.sendTransform(tuple(pose), tuple(yaw_q), rospy.Time.now(), 'obj_lidar_centroid', 'velodyne')
         
         # give bbox different color, depending on the predicted object class
         if detection == 1: # car
@@ -448,9 +446,9 @@ def handle_velodyne_msg(msg, arg=None):
                     
                       
     return {'detection': detection, 
-            'x': centroid[0], 
-            'y': centroid[1],
-            'z': centroid[2], 
+            'x': pose[0], 
+            'y': pose[1],
+            'z': pose[2], 
             'l': box_size[2],
             'w': box_size[1],
             'h': box_size[0],
@@ -465,7 +463,7 @@ def handle_radar_msg(msg, dont_fuse):
     with g_fusion_lock:
         # do we have any estimation?
         if g_fusion.last_state_mean is not None:
-            centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+            pose = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
     
             observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR, CAR_SIZE[1] * 0.5)
             
@@ -474,7 +472,7 @@ def handle_radar_msg(msg, dont_fuse):
             nearest = None
             nearest_dist = 1e9
             for o in observations:
-                dist = [o.x - centroid[0], o.y - centroid[1], o.z - centroid[2]]
+                dist = [o.x - pose[0], o.y - pose[1], o.z - pose[2]]
                 dist = np.sqrt(np.array(dist).dot(dist))
                 
                 if dist < nearest_dist and dist < distance_threshold:
@@ -495,10 +493,10 @@ def handle_radar_msg(msg, dont_fuse):
                       data_class=PointCloud2,
                       queue_size=1).publish(pc2.create_cloud_xyz32(header, point))
                     
-                    #centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+                    #pose = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
                     
                     #br = ros_tf.TransformBroadcaster()
-                    #br.sendTransform(tuple(centroid), (0,0,0,1), rospy.Time.now(), 'car_fuse_centroid', 'velodyne')
+                    #br.sendTransform(tuple(pose), (0,0,0,1), rospy.Time.now(), 'car_fuse_centroid', 'velodyne')
                     
 #                     if last_known_box_size is not None:
 #                         # bounding box
@@ -523,11 +521,11 @@ def handle_image_msg(msg):
         g_fusion.filter(EmptyObservation(msg.header.stamp.to_sec()))
                     
         if g_fusion.last_state_mean is not None:
-            centroid = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
+            pose = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
                         
-            yaw_q = ros_tf.transformations.quaternion_from_euler(0, 0, last_known_yaw)
+            yaw_q = ros_tf.transformations.quaternion_from_euler(0, 0, pose[3])
             br = ros_tf.TransformBroadcaster()
-            br.sendTransform(tuple(centroid), tuple(yaw_q), rospy.Time.now(), 'obj_fuse_centroid', 'velodyne')
+            br.sendTransform(tuple(pose[:3]), tuple(yaw_q), rospy.Time.now(), 'obj_fuse_centroid', 'velodyne')
             
             if last_known_box_size is not None:
                 # bounding box
@@ -619,8 +617,6 @@ if __name__ == '__main__':
                 tracklet.w = object_size[1]
                 tracklet.h = object_size[2]
             
-            last_known_yaw = 0.
-            
             image_msg_num = bag.get_message_count(['/image_raw'])
             image_frame_i = 0
             
@@ -648,7 +644,7 @@ if __name__ == '__main__':
                                          'tz': pose[2],
                                          'rx': 0.,
                                          'ry': 0.,
-                                         'rz': last_known_yaw}
+                                         'rz': pose[3]}
                         tracklet.poses.append(tracklet_pose)
                         
                         if tracklet.first_frame < 0:
@@ -667,8 +663,6 @@ if __name__ == '__main__':
                         
                         fusion.filter(lidar_obs)
                         
-                        last_known_yaw = pred['yaw']
-                        
                         if record_raw_data:
                             pred['time'] = t
                             lidar_writer.writerow(pred)
@@ -680,14 +674,14 @@ if __name__ == '__main__':
                     
                     # do we have any estimation?
                     if fusion.last_state_mean is not None:
-                        centroid = fusion.lidar_observation_function(fusion.last_state_mean)
+                        pose = fusion.lidar_observation_function(fusion.last_state_mean)
                 
                         # find nearest observation to current object position estimation
                         distance_threshold = CAR_SIZE[0]
                         nearest = None
                         nearest_dist = 1e9
                         for o in observations:
-                            dist = [o.x - centroid[0], o.y - centroid[1], o.z - centroid[2]]
+                            dist = [o.x - pose[0], o.y - pose[1], o.z - pose[2]]
                             dist = np.sqrt(np.array(dist).dot(dist))
                             #print dist
                             

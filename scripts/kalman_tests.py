@@ -50,6 +50,12 @@ def process_lidar_csv_file(filename):
 
             lidar_obss.append(obs)
 
+        yaw = [np.rad2deg(o.yaw) for o in lidar_obss]
+        print np.std(yaw)
+        #plt.figure(figsize=(16,8))
+        #plt.plot(yaw)
+        #plt.grid(True)
+
         return lidar_obss
 
 
@@ -108,7 +114,7 @@ def analyze_ukf(radar_obss, lidar_obss):
 
     timejump_i = np.random.random_integers(0, len(all_obss) - 1)
     time_shift = 0.
-    do_timejump = True
+    do_timejump = False
 
     for i, obs_i in enumerate(timestamp_sort_inds):
         obs = all_obss[obs_i]
@@ -130,9 +136,9 @@ def analyze_ukf(radar_obss, lidar_obss):
 
     # --------- PLOTS -----------
 
-    var = 'x'
+    var = 'yaw'
     o_i = FusionUKF.state_var_map[var]
-    radar_obss_var = [o.__dict__[var] for o in radar_obss]
+    #radar_obss_var = [o.__dict__[var] for o in radar_obss]
     radar_obss_t = [o.timestamp for o in radar_obss]
     lidar_obss_var = [o.__dict__[var] for o in lidar_obss]
     lidar_obss_t = [o.timestamp for o in lidar_obss]
@@ -148,7 +154,7 @@ def analyze_ukf(radar_obss, lidar_obss):
     lidar_obss_t -= big_num
 
     fig, ax1 = plt.subplots(figsize=(16, 8))
-    ax1.plot(radar_obss_t, radar_obss_var, 'go')
+    #ax1.plot(radar_obss_t, radar_obss_var, 'go')
     ax1.plot(lidar_obss_t, lidar_obss_var, 'ro')
     ax1.plot(state_timestamps, means, 'b', linewidth=2)
     plt.legend(['%s_radar' % var, '%s_lidar' % var, '%s_filtered' % var], loc=2)
@@ -163,7 +169,7 @@ def analyze_ukf(radar_obss, lidar_obss):
     plt.show()
 
 
-bag_no = 3
+bag_no = 7
 #odometry_obss = process_odometry_csv_file('../odometry_ford0{}.bag.csv'.format(bag_no))
 radar_obss = process_radar_csv_file('../radar_pred_ford0{}.bag.csv'.format(bag_no))
 lidar_obss = process_lidar_csv_file('../lidar_pred_ford0{}.bag.csv'.format(bag_no))

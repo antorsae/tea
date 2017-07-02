@@ -90,16 +90,52 @@ class RadarObservation:
     
     def __repr__(self):
         return '(r) time: {:.6f}, x: {}, y: {}, z: {}, vx: {}, vy: {}'.format(self.timestamp, self.x, self.y, self.z, self.vx, self.vy)
-        
+
+
+class YawLinear:
+    quart = np.pi / 3
+
+    def __init__(self):
+        self.last_yaw = None
+        self.yaw_lin = None
+
+    def update(self, yaw):
+        if self.last_yaw is None:
+            self.last_yaw = yaw
+            self.yaw_lin = yaw
+            return yaw
+
+        d = yaw - self.last_yaw
+        if abs(d) > abs(YawLinear.quart):
+            d = yaw + self.last_yaw
+
+        self.last_yaw = yaw
+        self.yaw_lin += d
+
+        return YawLinear.to_pi2(self.yaw_lin)
+
+    @staticmethod
+    def to_pi2(y):
+        pi = np.pi
+        y %= pi
+        if pi / 2 <= y < pi:
+            y -= pi
+        elif pi <= y < 1.5 * pi:
+            y = 2 * pi - y
+        elif 1.5 * pi <= y < 2 * pi:
+            y -= 2 * pi
+        return y
+
 
 class FusionUKF:
-    n_state_dims = 9
+    n_state_dims = 11
     n_lidar_obs_dims = 3
     n_radar_obs_dims = 4
 
     state_var_map = {'x': 0, 'vx': 1, 'ax': 2,
                      'y': 3, 'vy': 4, 'ay': 5,
-                     'z': 6, 'vz': 7, 'az': 8}
+                     'z': 6, 'vz': 7, 'az': 8,
+                     'yaw': 9, 'vyaw': 10}
 
     OK = 0
     UNRELIABLE_OBSERVATION = 1
@@ -110,7 +146,6 @@ class FusionUKF:
         self.transition_covariance = FusionUKF.create_transition_covariance()
         self.initial_state_covariance = FusionUKF.create_initial_state_covariance()
 
-        self.lidar_observation_function = FusionUKF.create_lidar_observation_function()
         self.radar_observation_function = FusionUKF.create_radar_observation_function()
         self.lidar_observation_covariance = FusionUKF.create_lidar_observation_covariance()
         self.radar_observation_covariance = FusionUKF.create_radar_observation_covariance(initial_object_radius)
@@ -142,26 +177,41 @@ class FusionUKF:
     @staticmethod
     def create_transition_function(dt):
         dt2 = 0.5*dt**2
-        F = np.array(
-            [[1, dt, dt2, 0,  0,  0,   0,  0,  0],    # x
-             [0,  1, dt,  0,  0,  0,   0,  0,  0],    # x'
-             [0,  0, 1,   0,  0,  0,   0,  0,  0],    # x''
-             [0,  0, 0,   1, dt, dt2,  0,  0,  0],    # y
-             [0,  0, 0,   0,  1,  dt,  0,  0,  0],    # y'
-             [0,  0, 0,   0,  0,   1,  0,  0,  0],    # y''
-             [0,  0, 0,   0,  0,   0,  1, dt, dt2],   # z
-             [0,  0, 0,   0,  0,   0,  0,  1,  dt],   # z'
-             [0,  0, 0,   0,  0,   0,  0,  0,  1],    # z''
-            ], dtype=np.float32)
-        return lambda s: F.dot(s)
+        return lambda s: [
+            s[0] + s[1] * dt + s[2] * dt2,
+            s[1] + s[2] * dt,
+            s[2],
+            s[3] + s[4] * dt + s[5] * dt2,
+            s[4] + s[5] * dt,
+            s[5],
+            s[6] + s[7] * dt + s[8] * dt2,
+            s[7] + s[8] * dt,
+            s[8],
+            s[9] + s[10] * dt,
+            s[10]
+        ]
+        # F = np.array(
+        #     [[1, dt, dt2, 0,  0,  0,   0,  0,  0],    # x
+        #      [0,  1, dt,  0,  0,  0,   0,  0,  0],    # x'
+        #      [0,  0, 1,   0,  0,  0,   0,  0,  0],    # x''
+        #      [0,  0, 0,   1, dt, dt2,  0,  0,  0],    # y
+        #      [0,  0, 0,   0,  1,  dt,  0,  0,  0],    # y'
+        #      [0,  0, 0,   0,  0,   1,  0,  0,  0],    # y''
+        #      [0,  0, 0,   0,  0,   0,  1, dt, dt2],   # z
+        #      [0,  0, 0,   0,  0,   0,  0,  1,  dt],   # z'
+        #      [0,  0, 0,   0,  0,   0,  0,  0,  1],    # z''
+        #     ], dtype=np.float32)
+        # return lambda s: F.dot(s)
 
     @staticmethod
-    def create_lidar_observation_function():
+    def lidar_observation_function(s):
         m = FusionUKF.state_var_map
-        return lambda s: [
+        #print s[m['yaw']], YawLinear.to_pi2(s[m['yaw']])
+        return [
             s[m['x']],
             s[m['y']],
-            s[m['z']]
+            s[m['z']],
+            s[m['yaw']]
             ]
 
     @staticmethod
@@ -186,11 +236,13 @@ class FusionUKF:
             1e-2,   # z
             1e-2,   # vz
             1e-2,   # az
+            1e-3,    # yaw
+            1e-3     # vyaw
         ])
 
     @staticmethod
     def create_lidar_observation_covariance():
-        return np.diag([0.1, 0.1, 0.1])
+        return np.diag([0.1, 0.1, 0.1, 0.1])
 
     @staticmethod
     def create_radar_observation_covariance(object_radius):
@@ -213,13 +265,14 @@ class FusionUKF:
 
         return cov_xy, cov_v, cov_xy, cov_v
 
-    @staticmethod
-    def obs_as_kf_obs(obs):
+    def obs_as_kf_obs(self, obs):
         if isinstance(obs, RadarObservation):
             #return [obs.x, obs.y]
             return [obs.x, obs.vx, obs.y, obs.vy]
         elif isinstance(obs, LidarObservation):
-            return [obs.x, obs.y, obs.z]
+            #self.obs_yaw_lin.update(obs.yaw)
+            #return [obs.x, obs.y, obs.z, self.obs_yaw_lin.yaw_lin]
+            return [obs.x, obs.y, obs.z, obs.yaw]
         elif isinstance(obs, EmptyObservation):
             return None
         else:
@@ -231,11 +284,13 @@ class FusionUKF:
             z = -0.8 # radar doesn't measure Z-coord, so we need an initial estimation of Z.
             return [obs.x,  0., 0.,
                     obs.y,  0., 0.,
-                    z,      0., 0.]
+                    z,      0., 0.,
+                    0.,     0.]
         elif isinstance(obs, LidarObservation):
             return [obs.x,  0., 0.,
                     obs.y,  0., 0.,
-                    obs.z,  0., 0.]
+                    obs.z,  0., 0.,
+                    obs.yaw,0.]
         else:
             raise ValueError
 
@@ -273,6 +328,8 @@ class FusionUKF:
 
     def reset(self):
         self.kf = AdditiveUnscentedKalmanFilter(n_dim_state=self.n_state_dims)
+
+        self.obs_yaw_lin = YawLinear()
 
         self.last_state_mean = None
         self.last_state_covar = None
