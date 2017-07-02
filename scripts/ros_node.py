@@ -616,8 +616,8 @@ if __name__ == '__main__':
                                 first_frame = -1)
             
             def finalize_tracklet(tracklet):
-                car_size = CAR_SIZE
-#                 car_size = last_bbox
+#                car_size = CAR_SIZE
+                car_size = last_bbox
                 object_size = PEDESTRIAN_SIZE if is_ped else car_size
                 tracklet.l = object_size[0]
                 tracklet.w = object_size[1]
