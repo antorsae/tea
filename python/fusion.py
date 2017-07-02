@@ -142,12 +142,14 @@ class FusionUKF:
     NOT_INITED = 2
     RESETTED = 3
 
-    def __init__(self, initial_object_radius):
+    def __init__(self, object_radius):
         self.initial_state_covariance = FusionUKF.create_initial_state_covariance()
 
         self.radar_observation_function = FusionUKF.create_radar_observation_function()
         self.lidar_observation_covariance = FusionUKF.create_lidar_observation_covariance()
-        self.radar_observation_covariance = FusionUKF.create_radar_observation_covariance(initial_object_radius)
+        self.radar_observation_covariance = FusionUKF.create_radar_observation_covariance(object_radius)
+
+        self.object_radius = object_radius
 
         # how much noisy observations to reject before resetting the filter
         self.reject_max = 2
@@ -346,6 +348,30 @@ class FusionUKF:
 
         return who_bad if who_bad != '' else None
 
+    def check_covar(self):
+        if not self.initialized:
+            return
+
+        state_deviation = np.sqrt(np.diag(self.last_state_covar))
+
+        mul = 1.
+        deviation_threshold = mul * self.object_radius
+
+        mask = state_deviation > deviation_threshold
+        m = self.state_var_map
+        bad_x = mask[m['x']]
+        bad_y = mask[m['y']]
+        bad_z = mask[m['z']]
+
+        if bad_x:
+            return 'x', state_deviation[m['x']]
+        elif bad_y:
+            return 'y', state_deviation[m['y']]
+        elif bad_z:
+            return 'z', state_deviation[m['z']]
+
+        return None
+
     def reset(self):
         self.kf = AdditiveUnscentedKalmanFilter(n_dim_state=self.n_state_dims)
 
@@ -457,6 +483,14 @@ class FusionUKF:
                     observation_covariance)
         except:
             print 'Fusion: ====== WARNING! ====== filter_update() failed!'
+
+        bad_covar = self.check_covar()
+        if bad_covar is not None:
+            print 'Fusion: ({}) resetting filter because too high deviation in {}={}'.format(obs.timestamp, bad_covar[0], bad_covar[1])
+
+            self.reset()
+
+            return self.RESETTED
 
         self.last_obs = obs
 
