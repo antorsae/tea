@@ -154,12 +154,13 @@ def handle_velodyne_msg(msg, arg=None):
         cloud[points] = x, y, z, intensity, ring
         points += 1
 
-    lidar, lidar_int = DidiTracklet.filter_lidar_rings(
+    lidar, lidar_int, angle_at_edge = DidiTracklet.filter_lidar_rings(
         cloud[:points],
         rings, points_per_ring,
         clip=CLIP_DIST,
         clip_h=CLIP_HEIGHT,
-        return_lidar_interpolated=True)
+        return_lidar_interpolated=True,
+        return_angle_at_edges = True)
 
     points_per_sector = points_per_ring // sectors
 
@@ -224,7 +225,21 @@ def handle_velodyne_msg(msg, arg=None):
 
     else:
         class_predictions_by_angle = np.squeeze(class_predictions_by_angle.reshape((-1, points_per_ring, len(rings))), axis=0)
-        class_predictions_by_angle_idx = np.argwhere(class_predictions_by_angle >= segmenter_threshold)
+        if segmenter_threshold == 0.:
+            # dynamic thresholding
+            number_of_segmented_points = 0
+            dyn_threshold = 0.7
+            while (number_of_segmented_points < 100) and dyn_threshold >= 0.2:
+                class_predictions_by_angle_thresholded = (class_predictions_by_angle >= dyn_threshold)
+                number_of_segmented_points = np.sum(class_predictions_by_angle_thresholded)
+                dyn_threshold -= 0.1
+
+            class_predictions_by_angle_idx = np.argwhere(class_predictions_by_angle_thresholded)
+            print(dyn_threshold + 0.1, number_of_segmented_points)
+        else:
+            #for prob in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]:
+            #    print(prob, np.sum(class_predictions_by_angle >= prob))
+            class_predictions_by_angle_idx = np.argwhere(class_predictions_by_angle >= segmenter_threshold)
 
     filtered_points_xyz = np.empty((0,3))
 
@@ -343,7 +358,6 @@ def handle_velodyne_msg(msg, arg=None):
 
         segmented_and_aligned_points_mean = np.mean(aligned_points[:, :3], axis=0)
         aligned_points[:, :3] -= segmented_and_aligned_points_mean
-        #aligned_points[:,  3] /= 128.
 
         distance_to_segmented_and_aligned_points = np.linalg.norm(segmented_and_aligned_points_mean[:2])
 
@@ -363,7 +377,7 @@ def handle_velodyne_msg(msg, arg=None):
                 [aligned_points_resampled, distance_to_segmented_and_aligned_points])
             time_loc_infe_end = time.time()
             
-        pose = np.squeeze(pose, axis=0)
+        pose     = np.squeeze(pose, axis=0)
         box_size = np.squeeze(box_size, axis=0)
         yaw      = np.squeeze(yaw     , axis=0)
 
@@ -372,6 +386,11 @@ def handle_velodyne_msg(msg, arg=None):
         pose += segmented_and_aligned_points_mean
         pose  = point_utils.rotZ(pose, -angle)
         yaw       = point_utils.remove_orientation(yaw + angle)
+
+        #print(angle_at_edge)
+        #pose_angle = np.arctan2(pose[1], pose[0])
+
+
         if verbose: print(pose, box_size, yaw)
 
         last_known_position = pose
@@ -554,7 +573,7 @@ if __name__ == '__main__':
     parser.add_argument('-sm', '--segmenter-model', required=True, help='path to hdf5 model')
     parser.add_argument('-lm', '--localizer-model', required=True, help='path to hdf5 model')
     parser.add_argument('-c', '--cpu', action='store_true', help='force CPU inference')
-    parser.add_argument('-st', '--segmenter-threshold', default=0.5, type=float, help='Segmenter classification threshold')
+    parser.add_argument('-st', '--segmenter-threshold', default=0.5, type=float, help='Segmenter classification threshold (0. for dynamic)')
     parser.add_argument('-sp', '--segmenter-phased', action='store_true', help='Use phased-segmenter')
     parser.add_argument('-lpt', '--localizer-points-threshold', default=10, type=int, help='Number of segmented points to trigger a detection')
     parser.add_argument('-di', '--deinterpolate', action='store_true', help='Deinterpolate prior to regression')
