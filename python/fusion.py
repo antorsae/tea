@@ -431,16 +431,19 @@ class FusionUKF:
             return self.UNRELIABLE_OBSERVATION
             #obs = EmptyObservation(obs.timestamp)
 
-        vx, vy = self.last_state_mean[1], self.last_state_mean[4]
-        vel = np.sqrt(vx**2 + vy**2)
-        vel_tol = 5.
-        if vel < vel_tol:
-            transition_function = self.create_transition_function_yaw_average(dt)
-            transition_covariance = self.create_transition_covariance_yaw_average()
-        else:
-            #print 'yaw: vxvy', obs.timestamp
-            transition_function = self.create_transition_function_yaw_vxvy(dt)
-            transition_covariance = self.create_transition_covariance_yaw_vxvy()
+        # vx, vy = self.last_state_mean[1], self.last_state_mean[4]
+        # vel = np.sqrt(vx**2 + vy**2)
+        # vel_tol = 5.
+        # if vel < vel_tol:
+        #     transition_function = self.create_transition_function_yaw_average(dt)
+        #     transition_covariance = self.create_transition_covariance_yaw_average()
+        # else:
+        #     #print 'yaw: vxvy', obs.timestamp
+        #     transition_function = self.create_transition_function_yaw_vxvy(dt)
+        #     transition_covariance = self.create_transition_covariance_yaw_vxvy()
+            
+        transition_function = self.create_transition_function_yaw_average(dt)
+        transition_covariance = self.create_transition_covariance_yaw_average()
 
         try:
             self.last_state_mean, self.last_state_covar =\
