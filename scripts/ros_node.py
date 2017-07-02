@@ -616,13 +616,17 @@ if __name__ == '__main__':
                                 first_frame = -1)
             
             def finalize_tracklet(tracklet):
-                object_size = PEDESTRIAN_SIZE if is_ped else CAR_SIZE
+                car_size = CAR_SIZE
+#                 car_size = last_bbox
+                object_size = PEDESTRIAN_SIZE if is_ped else car_size
                 tracklet.l = object_size[0]
                 tracklet.w = object_size[1]
                 tracklet.h = object_size[2]
-            
+                
             image_msg_num = bag.get_message_count(['/image_raw'])
             image_frame_i = 0
+            
+            last_bbox = None
             
             # create the first tracklet
             tracklet = create_tracklet()
@@ -635,7 +639,7 @@ if __name__ == '__main__':
                     ret = fusion.filter(EmptyObservation(t.to_sec()))
                     
                     # if fusion is not inited, it's likely it was resetted
-                    if ret == fusion.NOT_INITED and len(tracklet.poses):
+                    if len(tracklet.poses) and ret == fusion.NOT_INITED:
                         finalize_tracklet(tracklet)
                         tracklet_collection.tracklets.append(tracklet)
                         tracklet = create_tracklet()
@@ -666,6 +670,16 @@ if __name__ == '__main__':
                         lidar_obs = LidarObservation(t.to_sec(), pred['x'], pred['y'], pred['z'], pred['yaw'])
                         
                         fusion.filter(lidar_obs)
+                        
+                        bbox = [pred['l'], pred['w'], pred['h']]
+                        
+                        if last_bbox is None:
+                            last_bbox = bbox
+                        
+                        if len(tracklet.poses):
+                            finalize_tracklet(tracklet)
+                            tracklet_collection.tracklets.append(tracklet)
+                            tracklet = create_tracklet()
                         
                         if record_raw_data:
                             pred['time'] = t
