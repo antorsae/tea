@@ -43,7 +43,7 @@ FUSION_MIN_RADAR_RADIUS = 30.
 FUSION_MAX_TIMEJUMP = 1.
 
 # =============== Sensor Fusion ====================== #
-from fusion import FusionUKF, EmptyObservation, RadarObservation, LidarObservation
+from fusion import *
 
 def create_fusion():
     fus = FusionUKF(CAR_SIZE[0] * 0.5)

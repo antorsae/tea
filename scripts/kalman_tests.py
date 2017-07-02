@@ -38,6 +38,7 @@ def process_lidar_csv_file(filename):
         n_limit_rows = 1000000
 
         lidar_obss = []
+        bbox_obss = [[],[],[]]
 
         for i, row in enumerate(csv_rows):
             if i > n_limit_rows - 1:
@@ -45,10 +46,14 @@ def process_lidar_csv_file(filename):
 
             time_ns = int(row['time'])
             x, y, z, yaw = float(row['x']), float(row['y']), float(row['z']), float(row['yaw'])
+            l, w, h = float(row['l']), float(row['w']), float(row['h'])
 
             obs = LidarObservation(time_ns * 1e-9, x, y, z, yaw)
-
             lidar_obss.append(obs)
+
+            bbox_obss[0].append(l)
+            bbox_obss[1].append(w)
+            bbox_obss[2].append(h)
 
         yaw = [np.rad2deg(o.yaw) for o in lidar_obss]
         print np.std(yaw)
@@ -56,7 +61,7 @@ def process_lidar_csv_file(filename):
         #plt.plot(yaw)
         #plt.grid(True)
 
-        return lidar_obss
+        return lidar_obss, bbox_obss
 
 
 def process_radar_csv_file(filename):
@@ -136,9 +141,9 @@ def analyze_ukf(radar_obss, lidar_obss):
 
     # --------- PLOTS -----------
 
-    var = 'yaw'
+    var = 'x'
     o_i = FusionUKF.state_var_map[var]
-    #radar_obss_var = [o.__dict__[var] for o in radar_obss]
+    radar_obss_var = [o.__dict__[var] for o in radar_obss]
     radar_obss_t = [o.timestamp for o in radar_obss]
     lidar_obss_var = [o.__dict__[var] for o in lidar_obss]
     lidar_obss_t = [o.timestamp for o in lidar_obss]
@@ -154,7 +159,7 @@ def analyze_ukf(radar_obss, lidar_obss):
     lidar_obss_t -= big_num
 
     fig, ax1 = plt.subplots(figsize=(16, 8))
-    #ax1.plot(radar_obss_t, radar_obss_var, 'go')
+    ax1.plot(radar_obss_t, radar_obss_var, 'go')
     ax1.plot(lidar_obss_t, lidar_obss_var, 'ro')
     ax1.plot(state_timestamps, means, 'b', linewidth=2)
     plt.legend(['%s_radar' % var, '%s_lidar' % var, '%s_filtered' % var], loc=2)
@@ -169,9 +174,40 @@ def analyze_ukf(radar_obss, lidar_obss):
     plt.show()
 
 
-bag_no = 7
+
+
+
+def analyze_bbox():
+    bbox_arr = np.array(bbox_obss).T
+    pos_arr = np.zeros((len(lidar_obss), 4), np.float32)
+    for i, o in enumerate(lidar_obss):
+        pos_arr[i] = (o.x, o.y, o.z, o.yaw)
+
+    print 'orig mean ', bbox_arr.mean(axis=0), bbox_arr.std(axis=0)
+    #print bbox_arr.min(axis=0)
+    #print bbox_arr.max(axis=0)
+
+    bbox_arr_fil = np.zeros_like(bbox_arr)
+
+    fil = BBOXSizeFilter(0.01)
+
+    for i in range(bbox_arr.shape[0]):
+        bbox_arr_fil[i] = fil.update(*bbox_arr[i])
+
+    print 'filt mean', bbox_arr_fil.mean(axis=0), bbox_arr_fil.std(axis=0)
+
+    var = 0
+    plt.plot(figsize=(16, 8))
+    plt.plot(bbox_arr[:,var])
+    plt.plot(bbox_arr_fil[:,var])
+    #plt.plot(pos_arr[:,0])
+    plt.grid(True)
+    plt.show()
+
+bag_no = 3
 #odometry_obss = process_odometry_csv_file('../odometry_ford0{}.bag.csv'.format(bag_no))
 radar_obss = process_radar_csv_file('../radar_pred_ford0{}.bag.csv'.format(bag_no))
-lidar_obss = process_lidar_csv_file('../lidar_pred_ford0{}.bag.csv'.format(bag_no))
+lidar_obss, bbox_obss = process_lidar_csv_file('../lidar_pred_ford0{}.bag.csv'.format(bag_no))
 
-analyze_ukf(radar_obss, lidar_obss)
+#analyze_ukf(radar_obss, lidar_obss)
+analyze_bbox()

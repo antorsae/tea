@@ -495,3 +495,34 @@ class FusionUKF:
         self.last_obs = obs
 
         return self.OK
+
+
+class MovingAverage:
+    def __init__(self, tau=0.5):
+        self.tau = tau
+        self.reset()
+
+    def update(self, x_new):
+        if self.x is None:
+            self.x = x_new
+        else:
+            self.x = self.tau * x_new + (1. - self.tau) * self.x
+
+        return self.x
+
+    def reset(self):
+        self.x = None
+
+
+class BBOXSizeFilter:
+    def __init__(self, tau=0.01):
+        self.tau = tau
+        self.reset()
+
+    def update(self, l, w, h):
+        return self.l.update(l), self.w.update(w), self.h.update(h)
+
+    def reset(self):
+        self.l = MovingAverage(self.tau)
+        self.w = MovingAverage(self.tau)
+        self.h = MovingAverage(self.tau)
