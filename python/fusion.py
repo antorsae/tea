@@ -172,11 +172,11 @@ class FusionUKF:
     @staticmethod
     def create_initial_state_covariance():
         # converges really fast, so don't tweak too carefully
-        eps = 1.
+        eps = 10.
         return eps * np.eye(FusionUKF.n_state_dims)
 
     @staticmethod
-    def create_transition_function_yaw_average(dt):
+    def create_transition_function(dt):
         dt2 = 0.5*dt**2
         return lambda s: [
             s[0] + s[1] * dt + s[2] * dt2,
@@ -185,7 +185,9 @@ class FusionUKF:
             s[3] + s[4] * dt + s[5] * dt2,
             s[4] + s[5] * dt,
             s[5],
-            s[6] + s[7] * dt + s[8] * dt2,
+            # let's don't track z velocity and acceleration, because it's unreliable
+            # s[6] + s[7] * dt + s[8] * dt2,
+            s[6],
             s[7] + s[8] * dt,
             s[8],
             s[9],
@@ -193,26 +195,8 @@ class FusionUKF:
         ]
 
     @staticmethod
-    def create_transition_function_yaw_vxvy(dt):
-        dt2 = 0.5*dt**2
-        return lambda s: [
-            s[0] + s[1] * dt + s[2] * dt2,
-            s[1] + s[2] * dt,
-            s[2],
-            s[3] + s[4] * dt + s[5] * dt2,
-            s[4] + s[5] * dt,
-            s[5],
-            s[6] + s[7] * dt + s[8] * dt2,
-            s[7] + s[8] * dt,
-            np.arctan2(s[4], s[1]),
-            s[9],
-            s[10]
-        ]
-
-    @staticmethod
     def lidar_observation_function(s):
         m = FusionUKF.state_var_map
-        #print s[m['yaw']], YawLinear.to_pi2(s[m['yaw']])
         return [
             s[m['x']],
             s[m['y']],
@@ -231,7 +215,7 @@ class FusionUKF:
         ]
 
     @staticmethod
-    def create_transition_covariance_yaw_average():
+    def create_transition_covariance():
         return np.diag([
             1e-2,   # x
             1e-1,   # vx
@@ -239,32 +223,20 @@ class FusionUKF:
             1e-2,   # x
             1e-2,   # vy
             1e-2,   # ay
-            1e-2,   # z
+            1e-5,   # z
             1e-2,   # vz
             1e-2,   # az
-            1e-1,    # yaw
-            1e-3     # vyaw
-        ])
-
-    @staticmethod
-    def create_transition_covariance_yaw_vxvy():
-        return np.diag([
-            1e-2,   # x
-            1e-1,   # vx
-            1e-0,   # ax
-            1e-2,   # x
-            1e-2,   # vy
-            1e-2,   # ay
-            1e-2,   # z
-            1e-2,   # vz
-            1e-2,   # az
-            1e-2,    # yaw
-            1e-3     # vyaw
+            1e-1,   # yaw
+            1e-3    # vyaw
         ])
 
     @staticmethod
     def create_lidar_observation_covariance():
-        return np.diag([0.1, 0.1, 0.1, 0.001])
+        return np.diag([0.1,    # x
+                        0.1,    # y
+                        0.1,    # z
+                        0.001   # yaw
+                        ])
 
     @staticmethod
     def create_radar_observation_covariance(object_radius):
@@ -272,7 +244,6 @@ class FusionUKF:
         print cov_x, cov_vx, cov_y, cov_vy
 
         return np.diag([cov_x, cov_vx, cov_y, cov_vy])
-        #return np.diag([cov_x, cov_y])
 
     @staticmethod
     def calc_radar_covariances(object_radius):
@@ -289,11 +260,8 @@ class FusionUKF:
 
     def obs_as_kf_obs(self, obs):
         if isinstance(obs, RadarObservation):
-            #return [obs.x, obs.y]
             return [obs.x, obs.vx, obs.y, obs.vy]
         elif isinstance(obs, LidarObservation):
-            #self.obs_yaw_lin.update(obs.yaw)
-            #return [obs.x, obs.y, obs.z, self.obs_yaw_lin.yaw_lin]
             return [obs.x, obs.y, obs.z, obs.yaw]
         elif isinstance(obs, EmptyObservation):
             return None
@@ -334,9 +302,6 @@ class FusionUKF:
         bad_x = reject_mask[m['x']]
         bad_y = reject_mask[m['y']]
         bad_z = reject_mask[m['z']]
-
-        #print '1', oas_deviation
-        #print '2', deviation_threshold
 
         who_bad = ''
         if bad_x:
@@ -392,16 +357,6 @@ class FusionUKF:
 
             return self.UNRELIABLE_OBSERVATION
 
-        if isinstance(obs, LidarObservation):
-            observation_function = self.lidar_observation_function
-            observation_covariance = self.lidar_observation_covariance
-        elif isinstance(obs, RadarObservation):
-            observation_function = self.radar_observation_function
-            observation_covariance = self.radar_observation_covariance
-        else: # EmptyObservation
-            observation_function = None
-            observation_covariance = None
-
         #print obs
 
         # we need initial estimation to feed it to filter_update()
@@ -411,29 +366,12 @@ class FusionUKF:
                 self.last_obs = obs
 
                 return self.NOT_INITED
-            else:
-                dt = obs.timestamp - self.last_obs.timestamp
 
-                if np.abs(dt) > self.max_timejump:
-                    print 'Fusion: {}s time jump detected, allowed is {}s. Resetting.'.format(dt, self.max_timejump)
-                    self.reset()
-
-                    return self.RESETTED
-
-                self.last_state_mean, self.last_state_covar =\
-                    self.kf.filter_update(
-                        self.obs_as_state(self.last_obs),
-                        self.initial_state_covariance,
-                        self.obs_as_kf_obs(obs),
-                        self.create_transition_function_yaw_average(dt),
-                        self.create_transition_covariance_yaw_average(),
-                        observation_function,
-                        observation_covariance)
-
-                self.last_obs = obs
-                self.initialized = True
-
-                return self.OK
+            last_state_mean = self.obs_as_state(self.last_obs)
+            last_state_covar = self.initial_state_covariance
+        else:
+            last_state_mean = self.last_state_mean
+            last_state_covar = self.last_state_covar
 
         dt = obs.timestamp - self.last_obs.timestamp
 
@@ -455,27 +393,28 @@ class FusionUKF:
                 return self.RESETTED
 
             return self.UNRELIABLE_OBSERVATION
-            #obs = EmptyObservation(obs.timestamp)
 
-        # vx, vy = self.last_state_mean[1], self.last_state_mean[4]
-        # vel = np.sqrt(vx**2 + vy**2)
-        # vel_tol = 5.
-        # if vel < vel_tol:
-        #     transition_function = self.create_transition_function_yaw_average(dt)
-        #     transition_covariance = self.create_transition_covariance_yaw_average()
-        # else:
-        #     #print 'yaw: vxvy', obs.timestamp
-        #     transition_function = self.create_transition_function_yaw_vxvy(dt)
-        #     transition_covariance = self.create_transition_covariance_yaw_vxvy()
-
-        transition_function = self.create_transition_function_yaw_average(dt)
-        transition_covariance = self.create_transition_covariance_yaw_average()
+        if isinstance(obs, LidarObservation):
+            transition_function = self.create_transition_function(dt)
+            transition_covariance = self.create_transition_covariance()
+            observation_function = self.lidar_observation_function
+            observation_covariance = self.lidar_observation_covariance
+        elif isinstance(obs, RadarObservation):
+            transition_function = self.create_transition_function(dt)
+            transition_covariance = self.create_transition_covariance()
+            observation_function = self.radar_observation_function
+            observation_covariance = self.radar_observation_covariance
+        else: # EmptyObservation
+            transition_function = self.create_transition_function(dt)
+            transition_covariance = self.create_transition_covariance()
+            observation_function = None
+            observation_covariance = None
 
         try:
             self.last_state_mean, self.last_state_covar =\
                 self.kf.filter_update(
-                    self.last_state_mean,
-                    self.last_state_covar,
+                    last_state_mean,
+                    last_state_covar,
                     self.obs_as_kf_obs(obs),
                     transition_function,
                     transition_covariance,
@@ -493,6 +432,7 @@ class FusionUKF:
             return self.RESETTED
 
         self.last_obs = obs
+        self.initialized = True
 
         return self.OK
 
