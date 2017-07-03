@@ -40,16 +40,19 @@ PEDESTRIAN_SIZE = [0.8, 0.8, 1.708]
 
 RADAR_TO_LIDAR = [1.5494 - 3.8, 0., 1.27] # as per mkz.urdf.xacro
 
-FUSION_MIN_RADAR_RADIUS = 30.
-FUSION_MAX_TIMEJUMP = 1.
+FUSION_MIN_RADAR_RADIUS_DEFAULT = 30.
+FUSION_MAX_TIMEJUMP_DEFAULT = 1.
 
 # =============== Sensor Fusion ====================== #
 from fusion import *
 
+g_fusion_min_radar_radius = FUSION_MIN_RADAR_RADIUS_DEFAULT
+g_fusion_max_timejump = FUSION_MAX_TIMEJUMP_DEFAULT
+
 def create_fusion():
     fus = FusionUKF(CAR_SIZE[0] * 0.5)
-    fus.set_min_radar_radius(FUSION_MIN_RADAR_RADIUS)
-    fus.set_max_timejump(FUSION_MAX_TIMEJUMP)
+    fus.set_min_radar_radius(g_fusion_min_radar_radius)
+    fus.set_max_timejump(g_fusion_max_timejump)
     return fus
 
 g_fusion = create_fusion()
@@ -635,6 +638,8 @@ if __name__ == '__main__':
     parser.add_argument('-sbb', '--scale-bbox', action='store_true', help='scale bbox when uncertain about its size')
     parser.add_argument('-rc', '--roll-correction', default=0., help='apply constant roll rotation to predicted pose')
     parser.add_argument('-yc', '--yaw-correction', default=0., help='apply constant yaw rotation to predicted pose')
+    parser.add_argument('-fmrr', '--fusion-min-radar-radius', default=FUSION_MIN_RADAR_RADIUS_DEFAULT, help='fuse radar scans not closer than this value [meters]')
+    parser.add_argument('-fmtj', '--fusion-max-timejump', default=FUSION_MAX_TIMEJUMP_DEFAULT, help='reset fusion if msg time diff is greater than this [s]')
 
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
 
@@ -678,6 +683,9 @@ if __name__ == '__main__':
     g_pitch_correction = float(args.pitch_correction)
     g_yaw_correction = float(args.yaw_correction)
     g_scale_bbox = args.scale_bbox
+    
+    g_fusion_min_radar_radius = float(args.fusion_min_radar_radius)
+    g_fusion_max_timejump = float(args.fusion_max_timejump)
 
 
     # need to init ros to publish messages
