@@ -62,7 +62,9 @@ g_pitch_correction = 0.
 g_roll_correction = 0.
 g_yaw_correction = 0.
 
-g_scale_bbox = False
+g_bbox_scale_l = 1.
+g_bbox_scale_w = 1.
+g_bbox_scale_h = 1.
 
 
 if K._backend == 'tensorflow':
@@ -170,11 +172,12 @@ def rotZMat(a):
 
 
 def bbox_size_factor(r):
-    max_r = 40
-    k = 0.2
-    t = .2
+    max_r = 50
+    k = 0.3
+    t = .8
+    s = 0.9
     r = min(r, max_r)
-    return 1. + k*np.exp(t*(r-max_r))
+    return s + k*np.exp(t*(r-max_r))
 
 
 def handle_velodyne_msg(msg, arg=None):
@@ -462,11 +465,9 @@ def handle_velodyne_msg(msg, arg=None):
         pose = Rz.dot(Ry.dot(Rx.dot([pose[0], pose[1], pose[2]])))
     
         # scale bbox size
-        if g_scale_bbox:
-            x, y, z = pose
-            radius = np.sqrt(x**2 + y**2)
-            factor = bbox_size_factor(radius)
-            box_size = list(np.array(box_size) * factor)
+        box_size[2] = g_bbox_scale_l * box_size[2]
+        box_size[1] = g_bbox_scale_w * box_size[1]
+        box_size[0] = g_bbox_scale_h * box_size[0]
 
         last_known_position = pose
         last_known_box_size = box_size
@@ -635,11 +636,13 @@ if __name__ == '__main__':
     parser.add_argument('-nrf', '--no-radar-fuse', action='store_true', help='use radar data in fusion or not')
     parser.add_argument('-rrd', '--record-raw-data', action='store_true', help='record raw data to csv files')
     parser.add_argument('-pc', '--pitch-correction', default=0., help='apply constant pitch rotation to predicted pose')
-    parser.add_argument('-sbb', '--scale-bbox', action='store_true', help='scale bbox when uncertain about its size')
     parser.add_argument('-rc', '--roll-correction', default=0., help='apply constant roll rotation to predicted pose')
     parser.add_argument('-yc', '--yaw-correction', default=0., help='apply constant yaw rotation to predicted pose')
     parser.add_argument('-fmrr', '--fusion-min-radar-radius', default=FUSION_MIN_RADAR_RADIUS_DEFAULT, help='fuse radar scans not closer than this value [meters]')
     parser.add_argument('-fmtj', '--fusion-max-timejump', default=FUSION_MAX_TIMEJUMP_DEFAULT, help='reset fusion if msg time diff is greater than this [s]')
+    parser.add_argument('-bsl', '--bbox-scale-length', default=1., help='scale car bbox length')
+    parser.add_argument('-bsw', '--bbox-scale-width', default=1., help='scale car bbox length')
+    parser.add_argument('-bsh', '--bbox-scale-height', default=1., help='scale car bbox length')
 
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
 
@@ -682,7 +685,10 @@ if __name__ == '__main__':
     g_roll_correction = float(args.roll_correction)
     g_pitch_correction = float(args.pitch_correction)
     g_yaw_correction = float(args.yaw_correction)
-    g_scale_bbox = args.scale_bbox
+    
+    g_bbox_scale_l = float(args.bbox_scale_length)
+    g_bbox_scale_w = float(args.bbox_scale_width)
+    g_bbox_scale_h = float(args.bbox_scale_height)
     
     g_fusion_min_radar_radius = float(args.fusion_min_radar_radius)
     g_fusion_max_timejump = float(args.fusion_max_timejump)
@@ -740,10 +746,6 @@ if __name__ == '__main__':
                     ret = fusion.filter(EmptyObservation(t.to_sec()))
                     
                     # if fusion is not inited, it's likely it was resetted
-                    #if len(tracklet.poses) and ret == fusion.NOT_INITED:
-                    #    finalize_tracklet(tracklet)
-                    #    tracklet_collection.tracklets.append(tracklet)
-                    #    tracklet = create_tracklet()
                     if len(tracklet.poses) and ret == fusion.NOT_INITED:
                         finalize_tracklet(tracklet)
                         tracklet_collection.tracklets.append(tracklet)
