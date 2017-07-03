@@ -172,8 +172,19 @@ class FusionUKF:
     @staticmethod
     def create_initial_state_covariance():
         # converges really fast, so don't tweak too carefully
-        eps = 10.
-        return eps * np.eye(FusionUKF.n_state_dims)
+        return np.diag([
+            2.,    # x
+            0.8,    # x'
+            0.8,    # x''
+            2.,    # y
+            0.8,    # y'
+            0.8,    # y''
+            10.,    # z
+            10.,    # z'
+            10.,    # z''
+            10.,    # alpha
+            10.     # alpha
+        ])
 
     @staticmethod
     def create_transition_function(dt):
@@ -188,7 +199,7 @@ class FusionUKF:
             # let's don't track z velocity and acceleration, because it's unreliable
             # s[6] + s[7] * dt + s[8] * dt2,
             s[6],
-            s[7] + s[8] * dt,
+            s[7],
             s[8],
             s[9],
             s[10]
@@ -224,8 +235,8 @@ class FusionUKF:
             1e-2,   # vy
             1e-2,   # ay
             1e-5,   # z
-            1e-1,   # vz
-            1e-0,   # az
+            1e-5,   # vz
+            1e-5,   # az
             1e-1,   # yaw
             1e-3    # vyaw
         ])
@@ -253,7 +264,7 @@ class FusionUKF:
 
         # jitter derived from http://www.araa.asn.au/acra/acra2015/papers/pap167.pdf
         jitter_v = 0.12
-        sigma_v = jitter_v / 3.
+        sigma_v = jitter_v / 10.
         cov_v = sigma_v ** 2
 
         return cov_xy, cov_v, cov_xy, cov_v
@@ -319,23 +330,31 @@ class FusionUKF:
 
         state_deviation = np.sqrt(np.diag(self.last_state_covar))
 
-        mul = 1.
-        deviation_threshold = mul * self.object_radius
+        mul = 1.5
+        deviation_threshold = mul * np.diag(self.initial_state_covariance)
 
         mask = state_deviation > deviation_threshold
-        m = self.state_var_map
-        bad_x = mask[m['x']]
-        bad_y = mask[m['y']]
-        bad_z = mask[m['z']]
 
-        if bad_x:
-            return 'x', state_deviation[m['x']]
-        elif bad_y:
-            return 'y', state_deviation[m['y']]
-        elif bad_z:
-            return 'z', state_deviation[m['z']]
+        nz = np.nonzero(mask)[0]
+        var_name = ['x', 'vx', 'ax', 'y', 'vy', 'ay', 'z', 'vz', 'az', 'yaw', 'vyaw']
+        for i in nz:
+            print 'Fusion: {} exceeded deviation ({}>{})'.format(var_name[i], state_deviation[i], deviation_threshold[i])
 
-        return None
+        #print mask
+        return mask.sum() == 0
+        # m = self.state_var_map
+        # bad_x = mask[m['x']]
+        # bad_y = mask[m['y']]
+        # bad_z = mask[m['z']]
+
+        # if bad_x:
+        #     return 'x', state_deviation[m['x']]
+        # elif bad_y:
+        #     return 'y', state_deviation[m['y']]
+        # elif bad_z:
+        #     return 'z', state_deviation[m['z']]
+
+        #return None
 
     def reset(self):
         self.kf = AdditiveUnscentedKalmanFilter(n_dim_state=self.n_state_dims)
@@ -424,9 +443,11 @@ class FusionUKF:
         except:
             print 'Fusion: ====== WARNING! ====== filter_update() failed!'
 
-        bad_covar = self.check_covar()
-        if bad_covar is not None:
-            print 'Fusion: ({}) resetting filter because too high deviation in {}={}'.format(obs.timestamp, bad_covar[0], bad_covar[1])
+        #bad_covar = self.check_covar()
+        #if bad_covar is not None:
+            #print 'Fusion: ({}) resetting filter because too high deviation in {}={}'.format(obs.timestamp, bad_covar[0], bad_covar[1])
+        if self.check_covar() == False:
+            print 'Fusion: resetting filter because too high deviation'
 
             self.reset()
 
