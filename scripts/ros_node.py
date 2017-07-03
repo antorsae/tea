@@ -659,11 +659,12 @@ if __name__ == '__main__':
     import keras.losses
     keras.losses.angle_loss = angle_loss
 
-    from keras.backend.tensorflow_backend import set_session
 
     if K._backend == 'tensorflow':
+        from keras.backend.tensorflow_backend import set_session
+
         config = tf.ConfigProto()
-        config.gpu_options.per_process_gpu_memory_fraction = 0.5
+        config.gpu_options.per_process_gpu_memory_fraction = 0.25
         set_session(tf.Session(config=config))
 
     if args.segmenter_model:
