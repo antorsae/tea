@@ -218,23 +218,23 @@ class FusionUKF:
     def create_transition_covariance():
         return np.diag([
             1e-2,   # x
-            1e-1,   # vx
-            1e-0,   # ax
-            1e-2,   # x
+            1e-2,   # vx
+            1e-2,   # ax
+            1e-2,   # y
             1e-2,   # vy
             1e-2,   # ay
             1e-5,   # z
-            1e-2,   # vz
-            1e-2,   # az
+            1e-1,   # vz
+            1e-0,   # az
             1e-1,   # yaw
             1e-3    # vyaw
         ])
 
     @staticmethod
     def create_lidar_observation_covariance():
-        return np.diag([0.1,    # x
-                        0.1,    # y
-                        0.1,    # z
+        return np.diag([0.05,    # x
+                        0.05,    # y
+                        0.05,    # z
                         0.001   # yaw
                         ])
 
@@ -248,7 +248,7 @@ class FusionUKF:
     @staticmethod
     def calc_radar_covariances(object_radius):
         # object_radius = radius of the circumscribing circle of the tracked object
-        sigma_xy = object_radius / 3.
+        sigma_xy = object_radius / 1.
         cov_xy = sigma_xy ** 2
 
         # jitter derived from http://www.araa.asn.au/acra/acra2015/papers/pap167.pdf
