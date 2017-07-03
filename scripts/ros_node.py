@@ -744,6 +744,10 @@ if __name__ == '__main__':
                     #    finalize_tracklet(tracklet)
                     #    tracklet_collection.tracklets.append(tracklet)
                     #    tracklet = create_tracklet()
+                    if len(tracklet.poses) and ret == fusion.NOT_INITED:
+                        finalize_tracklet(tracklet)
+                        tracklet_collection.tracklets.append(tracklet)
+                        tracklet = create_tracklet()
                     
                     if fusion.last_state_mean is not None:
                         pose = fusion.lidar_observation_function(fusion.last_state_mean)

@@ -172,7 +172,7 @@ class FusionUKF:
     @staticmethod
     def create_initial_state_covariance():
         # converges really fast, so don't tweak too carefully
-        eps = 3.
+        eps = 10.
         return eps * np.eye(FusionUKF.n_state_dims)
 
     @staticmethod
@@ -319,7 +319,7 @@ class FusionUKF:
 
         state_deviation = np.sqrt(np.diag(self.last_state_covar))
 
-        mul = 1.5
+        mul = 1.
         deviation_threshold = mul * self.object_radius
 
         mask = state_deviation > deviation_threshold
@@ -361,15 +361,18 @@ class FusionUKF:
 
         # we need initial estimation to feed it to filter_update()
         if not self.initialized:
-            # need two observations to get a filtered state
-            self.last_obs = obs
+            if not self.last_obs:
+                # need two observations to get a filtered state
+                self.last_obs = obs
 
-            self.last_state_mean = self.obs_as_state(self.last_obs)
-            self.last_state_covar = self.initial_state_covariance
+                return self.NOT_INITED
 
-            self.initialized = True
+            last_state_mean = self.obs_as_state(self.last_obs)
+            last_state_covar = self.initial_state_covariance
+        else:
+            last_state_mean = self.last_state_mean
+            last_state_covar = self.last_state_covar
 
-            return self.OK
 
         dt = obs.timestamp - self.last_obs.timestamp
 
@@ -411,8 +414,8 @@ class FusionUKF:
         try:
             self.last_state_mean, self.last_state_covar =\
                 self.kf.filter_update(
-                    self.last_state_mean,
-                    self.last_state_covar,
+                    last_state_mean,
+                    last_state_covar,
                     self.obs_as_kf_obs(obs),
                     transition_function,
                     transition_covariance,
@@ -430,6 +433,7 @@ class FusionUKF:
             return self.RESETTED
 
         self.last_obs = obs
+        self.initialized = True
 
         return self.OK
 
