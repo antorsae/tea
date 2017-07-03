@@ -61,6 +61,7 @@ g_fusion_lock = threading.Lock()
 g_pitch_correction = 0.
 g_roll_correction = 0.
 g_yaw_correction = 0.
+g_z_correction = 0.
 
 g_bbox_scale_l = 1.
 g_bbox_scale_w = 1.
@@ -462,7 +463,8 @@ def handle_velodyne_msg(msg, arg=None):
         Ry = rotYMat(np.deg2rad(g_pitch_correction))
         Rz = rotZMat(np.deg2rad(g_yaw_correction))
 
-        pose = Rz.dot(Ry.dot(Rx.dot([pose[0], pose[1], pose[2]])))
+        pose     = Rz.dot(Ry.dot(Rx.dot([pose[0], pose[1], pose[2]])))
+        pose[2] += g_z_correction
     
         # scale bbox size
         box_size[2] = g_bbox_scale_l * box_size[2]
@@ -638,6 +640,7 @@ if __name__ == '__main__':
     parser.add_argument('-pc', '--pitch-correction', default=0., help='apply constant pitch rotation to predicted pose')
     parser.add_argument('-rc', '--roll-correction', default=0., help='apply constant roll rotation to predicted pose')
     parser.add_argument('-yc', '--yaw-correction', default=0., help='apply constant yaw rotation to predicted pose')
+    parser.add_argument('-zc', '--z-correction', default=0., help='apply constant z offset to predicted pose')
     parser.add_argument('-fmrr', '--fusion-min-radar-radius', default=FUSION_MIN_RADAR_RADIUS_DEFAULT, help='fuse radar scans not closer than this value [meters]')
     parser.add_argument('-fmtj', '--fusion-max-timejump', default=FUSION_MAX_TIMEJUMP_DEFAULT, help='reset fusion if msg time diff is greater than this [s]')
     parser.add_argument('-bsl', '--bbox-scale-length', default=1., help='scale car bbox length')
@@ -662,11 +665,12 @@ if __name__ == '__main__':
     import keras.losses
     keras.losses.angle_loss = angle_loss
 
-    from keras.backend.tensorflow_backend import set_session
 
     if K._backend == 'tensorflow':
+        from keras.backend.tensorflow_backend import set_session
+
         config = tf.ConfigProto()
-        config.gpu_options.per_process_gpu_memory_fraction = 0.5
+        config.gpu_options.per_process_gpu_memory_fraction = 0.25
         set_session(tf.Session(config=config))
 
     if args.segmenter_model:
@@ -685,6 +689,7 @@ if __name__ == '__main__':
     g_roll_correction = float(args.roll_correction)
     g_pitch_correction = float(args.pitch_correction)
     g_yaw_correction = float(args.yaw_correction)
+    g_z_correction = float(args.z_correction)
     
     g_bbox_scale_l = float(args.bbox_scale_length)
     g_bbox_scale_w = float(args.bbox_scale_width)
