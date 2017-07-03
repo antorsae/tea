@@ -50,6 +50,16 @@ def rtk_position_to_numpy(msg):
         return np.array([p.x, p.y, p.z])
     else:
         raise ValueError
+    
+def rtk_orientation_to_numpy(msg):
+    if isinstance(msg, Odometry):
+        p = msg.pose.pose.orientation
+        return np.array([p.x, p.y, p.z, p.w])
+    elif isinstance(msg, PoseStamped) or isinstance(msg, NavSatFix):
+        p = msg.pose.orientation
+        return np.array([p.x, p.y, p.z, p.w])
+    else:
+        raise ValueError
 
 
 def get_yaw(p1, p2):
@@ -128,14 +138,45 @@ def handle_msg_car(msg, who):
         
         
 def handle_msg_ped(msg, who):
+    if who == 'current_pose':
+        position = rtk_position_to_numpy(msg)
+        orientation = rtk_orientation_to_numpy(msg)
+        
+        br = tf.TransformBroadcaster()
+        br.sendTransform(position, (0,0,0,1), rospy.Time.now(), 'world', 'fx')
+        
+        # publish obstacle bounding box
+        marker = Marker()
+        marker.header.frame_id = "world"
+        marker.header.stamp = rospy.Time.now()
+        marker.type = Marker.ARROW
+        marker.action = Marker.ADD
+        marker.pose.orientation = msg.pose.orientation
+        marker.scale.x = 5
+        marker.scale.y = 1
+        marker.scale.z = 1
+        marker.color.r = 0.2
+        marker.color.g = 0.5
+        marker.color.b = 0.2
+        marker.color.a = 0.5
+        marker.lifetime = rospy.Duration()
+        pub = rospy.Publisher("arrow", Marker, queue_size=10)
+        pub.publish(marker)
+        
+        return
+    
+    #tf_listener.lookupTransform('velodyne')
+    
     # from bag_to_kitti.py
     ped_radius = 0.8
     ped_height = 1.708
     
     ped_cnt = rtk_position_to_numpy(msg) - (0, 0, ped_height/2)
+    #ped_cnt = rotMatZ(np.deg2rad(0)).dot(ped_cnt)
 
     br = tf.TransformBroadcaster()
     br.sendTransform(tuple(ped_cnt), (0,0,0,1), rospy.Time.now(), 'ped_cnt', 'world')
+    
     
     # publish obstacle bounding box
     marker = Marker()
@@ -194,7 +235,8 @@ if __name__ == '__main__':
                              obj)
     else:
         obj_topics = {
-            'ped': ('/obstacle/ped/pose', PoseStamped)
+            'ped': ('/obstacle/ped/pose', PoseStamped),
+            'current_pose': ('/current_pose', PoseStamped),
             }
         
         for obj in obj_topics:
@@ -203,6 +245,7 @@ if __name__ == '__main__':
                              handle_msg_ped,
                              obj)
     
+    tf_listener = tf.TransformListener()
 
     rospy.spin()
 

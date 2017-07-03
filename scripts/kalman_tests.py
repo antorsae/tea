@@ -141,14 +141,18 @@ def analyze_ukf(radar_obss, lidar_obss):
 
     # --------- PLOTS -----------
 
-    var = 'x'
+    var = 'ax'
     o_i = FusionUKF.state_var_map[var]
-    radar_obss_var = [o.__dict__[var] for o in radar_obss]
+    if var in ['x', 'y', 'vx', 'vy']:
+        radar_obss_var = [o.__dict__[var] for o in radar_obss]
     radar_obss_t = [o.timestamp for o in radar_obss]
-    lidar_obss_var = [o.__dict__[var] for o in lidar_obss]
+    if var in ['x', 'y', 'z']:
+        lidar_obss_var = [o.__dict__[var] for o in lidar_obss]
     lidar_obss_t = [o.timestamp for o in lidar_obss]
     means = [s[o_i] for s in state_means]
-    covs = [o[o_i, o_i] for o in state_covs]
+    covs_0 = [o[o_i, o_i] for o in state_covs]
+    covs_1 = [o[o_i+1, o_i+1] for o in state_covs]
+    covs_2 = [o[o_i+2, o_i+2] for o in state_covs]
 
     state_timestamps = np.array(state_timestamps)
     radar_obss_t = np.array(radar_obss_t)
@@ -159,15 +163,23 @@ def analyze_ukf(radar_obss, lidar_obss):
     lidar_obss_t -= big_num
 
     fig, ax1 = plt.subplots(figsize=(16, 8))
-    ax1.plot(radar_obss_t, radar_obss_var, 'go')
-    ax1.plot(lidar_obss_t, lidar_obss_var, 'ro')
-    ax1.plot(state_timestamps, means, 'b', linewidth=2)
-    plt.legend(['%s_radar' % var, '%s_lidar' % var, '%s_filtered' % var], loc=2)
+    legend = []
+    if var in ['x', 'y', 'vx', 'vy']:
+        ax1.plot(radar_obss_t, radar_obss_var, 'go')
+        legend += ['%s_radar' % var]
+    if var in ['x', 'y', 'z']:
+        ax1.plot(lidar_obss_t, lidar_obss_var, 'ro')
+        legend += ['%s_lidar' % var]
+    ax1.plot(state_timestamps, means, 'bo', linewidth=2)
+    legend += ['%s_filtered' % var]
+    plt.legend(legend, loc=2)
 
     ax2 = ax1.twinx()
-    ax2.plot(state_timestamps, covs, 'black')
+    ax2.plot(state_timestamps, covs_0)
+    #ax2.plot(state_timestamps, covs_1)
+    #ax2.plot(state_timestamps, covs_2)
 
-    plt.legend(['%s covariance' % var])
+    plt.legend(['%s cov' % var]) #, '%s\' cov' % var, '%s\'\' cov' % var])
     plt.grid(True)
 
     fig.tight_layout()
@@ -204,10 +216,10 @@ def analyze_bbox():
     plt.grid(True)
     plt.show()
 
-bag_no = 3
+bag_no = 7
 #odometry_obss = process_odometry_csv_file('../odometry_ford0{}.bag.csv'.format(bag_no))
 radar_obss = process_radar_csv_file('../radar_pred_ford0{}.bag.csv'.format(bag_no))
 lidar_obss, bbox_obss = process_lidar_csv_file('../lidar_pred_ford0{}.bag.csv'.format(bag_no))
 
-#analyze_ukf(radar_obss, lidar_obss)
-analyze_bbox()
+analyze_ukf(radar_obss, lidar_obss)
+#analyze_bbox()
