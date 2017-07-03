@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-<!-- Generated with -sm /home/antor/didi-ext/pointnet/lidarnet-car-r3-x135-d45-seg-rings_12_28-sectors_32-epoch20-val_class_acc0.9992.hdf5 -lm /home/antor/didi-ext/pointnet/././lidarnet-car-r2-fs-di-yawbalance-loc-rings_12_28-epoch00-val_loss0.0299.hdf5 -di -rfp -lpt 3 -b /home/antor/didi-ext/didi-data/release3/Data-points/testing/ford02.bag -->
+<!-- Generated with -sm /home/antor/didi-ext/pointnet/lidarnet-car-r3-x135-d45-seg-rings_12_28-sectors_32-epoch20-val_class_acc0.9992.hdf5 -lm /home/antor/didi-ext/pointnet/lidarnet-car-r2-fs-di-yawbalance-loc-rings_12_28-epoch10-val_loss0.0333.hdf5 -di -rfp -lpt 3 -b /home/antor/didi-ext/didi-data/release3/Data-points/testing/ford02.bag -->
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="9">
 <tracklets class_id="0" tracking_level="0" version="0">
@@ -7,21 +7,21 @@
 	<item_version>1</item_version> 
 	<item class_id="1" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>4</first_frame>
 		<poses class_id="2" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 4 -->
 			<item class_id="3" tracking_level="0" version="2">
-				<tx>1.845604</tx>
-				<ty>8.272665</ty>
-				<tz>-0.815764</tz>
+				<tx>1.692787</tx>
+				<ty>8.158013</ty>
+				<tz>-0.713628</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.647915</rz>
+				<rz>0.700482</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -34,12 +34,12 @@
 			</item>
 			<!-- frame 5 -->
 			<item>
-				<tx>1.846466</tx>
-				<ty>8.272425</ty>
-				<tz>-0.815764</tz>
+				<tx>1.693138</tx>
+				<ty>8.157657</ty>
+				<tz>-0.713628</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.647915</rz>
+				<rz>0.700482</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -52,12 +52,12 @@
 			</item>
 			<!-- frame 6 -->
 			<item>
-				<tx>1.847330</tx>
-				<ty>8.272184</ty>
-				<tz>-0.815764</tz>
+				<tx>1.693489</tx>
+				<ty>8.157300</ty>
+				<tz>-0.713628</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.647915</rz>
+				<rz>0.700482</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -73,21 +73,21 @@
 	</item>
 	<item class_id="6" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>7</first_frame>
 		<poses class_id="7" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 7 -->
 			<item class_id="8" tracking_level="0" version="2">
-				<tx>1.842112</tx>
-				<ty>8.294032</ty>
-				<tz>-0.809339</tz>
+				<tx>1.685705</tx>
+				<ty>8.150331</ty>
+				<tz>-0.698156</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.653987</rz>
+				<rz>0.700049</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -100,12 +100,12 @@
 			</item>
 			<!-- frame 8 -->
 			<item>
-				<tx>1.841855</tx>
-				<ty>8.297884</ty>
-				<tz>-0.809339</tz>
+				<tx>1.684551</tx>
+				<ty>8.148745</ty>
+				<tz>-0.698156</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.653987</rz>
+				<rz>0.700049</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -121,21 +121,21 @@
 	</item>
 	<item class_id="10" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>9</first_frame>
 		<poses class_id="11" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 9 -->
 			<item class_id="12" tracking_level="0" version="2">
-				<tx>1.695161</tx>
-				<ty>8.274357</ty>
-				<tz>-0.770193</tz>
+				<tx>1.697548</tx>
+				<ty>8.138664</ty>
+				<tz>-0.667725</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.658392</rz>
+				<rz>0.695424</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -148,12 +148,12 @@
 			</item>
 			<!-- frame 10 -->
 			<item>
-				<tx>1.668207</tx>
-				<ty>8.273246</ty>
-				<tz>-0.770193</tz>
+				<tx>1.698962</tx>
+				<ty>8.135522</ty>
+				<tz>-0.667725</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.658392</rz>
+				<rz>0.695424</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -169,21 +169,21 @@
 	</item>
 	<item class_id="14" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>11</first_frame>
 		<poses class_id="15" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 11 -->
 			<item class_id="16" tracking_level="0" version="2">
-				<tx>1.848844</tx>
-				<ty>8.246221</ty>
-				<tz>-0.765076</tz>
+				<tx>1.743419</tx>
+				<ty>8.128223</ty>
+				<tz>-0.660348</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.640468</rz>
+				<rz>0.692004</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -196,12 +196,12 @@
 			</item>
 			<!-- frame 12 -->
 			<item>
-				<tx>1.854293</tx>
-				<ty>8.240939</ty>
-				<tz>-0.765076</tz>
+				<tx>1.751708</tx>
+				<ty>8.124371</ty>
+				<tz>-0.660348</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.640468</rz>
+				<rz>0.692004</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -214,12 +214,12 @@
 			</item>
 			<!-- frame 13 -->
 			<item>
-				<tx>1.860071</tx>
-				<ty>8.235557</ty>
-				<tz>-0.765076</tz>
+				<tx>1.760134</tx>
+				<ty>8.120488</ty>
+				<tz>-0.660348</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.640468</rz>
+				<rz>0.692004</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -235,21 +235,21 @@
 	</item>
 	<item class_id="19" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>14</first_frame>
 		<poses class_id="20" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 14 -->
 			<item class_id="21" tracking_level="0" version="2">
-				<tx>1.619868</tx>
-				<ty>8.283220</ty>
-				<tz>-0.797411</tz>
+				<tx>1.561142</tx>
+				<ty>8.179679</ty>
+				<tz>-0.698331</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.672330</rz>
+				<rz>0.711383</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -262,12 +262,12 @@
 			</item>
 			<!-- frame 15 -->
 			<item>
-				<tx>1.596686</tx>
-				<ty>8.284004</ty>
-				<tz>-0.797411</tz>
+				<tx>1.544903</tx>
+				<ty>8.183308</ty>
+				<tz>-0.698331</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.672330</rz>
+				<rz>0.711383</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -283,21 +283,21 @@
 	</item>
 	<item class_id="23" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>16</first_frame>
 		<poses class_id="24" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 16 -->
 			<item class_id="25" tracking_level="0" version="2">
-				<tx>1.573131</tx>
-				<ty>8.284867</ty>
-				<tz>-0.797411</tz>
+				<tx>1.528189</tx>
+				<ty>8.187098</ty>
+				<tz>-0.698331</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.672330</rz>
+				<rz>0.711383</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -310,12 +310,12 @@
 			</item>
 			<!-- frame 17 -->
 			<item>
-				<tx>1.548901</tx>
-				<ty>8.285817</ty>
-				<tz>-0.797411</tz>
+				<tx>1.510789</tx>
+				<ty>8.191098</ty>
+				<tz>-0.698331</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.672330</rz>
+				<rz>0.711383</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -328,12 +328,12 @@
 			</item>
 			<!-- frame 18 -->
 			<item>
-				<tx>1.524120</tx>
-				<ty>8.286852</ty>
-				<tz>-0.797411</tz>
+				<tx>1.492789</tx>
+				<ty>8.195289</ty>
+				<tz>-0.698331</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.672330</rz>
+				<rz>0.711383</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -349,21 +349,21 @@
 	</item>
 	<item class_id="28" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>19</first_frame>
 		<poses class_id="29" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 19 -->
 			<item class_id="30" tracking_level="0" version="2">
-				<tx>1.498850</tx>
-				<ty>8.287968</ty>
-				<tz>-0.797411</tz>
+				<tx>1.474234</tx>
+				<ty>8.199660</ty>
+				<tz>-0.698331</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.672330</rz>
+				<rz>0.711383</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -376,12 +376,12 @@
 			</item>
 			<!-- frame 20 -->
 			<item>
-				<tx>1.472891</tx>
-				<ty>8.289173</ty>
-				<tz>-0.797411</tz>
+				<tx>1.454976</tx>
+				<ty>8.204245</ty>
+				<tz>-0.698331</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.672330</rz>
+				<rz>0.711383</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -397,21 +397,21 @@
 	</item>
 	<item class_id="32" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>26</first_frame>
 		<poses class_id="33" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 26 -->
 			<item class_id="34" tracking_level="0" version="2">
-				<tx>29.770277</tx>
-				<ty>-1.048714</ty>
-				<tz>-0.845813</tz>
+				<tx>29.654783</tx>
+				<ty>-1.004045</ty>
+				<tz>-0.850609</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.074401</rz>
+				<rz>-0.022983</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -424,12 +424,12 @@
 			</item>
 			<!-- frame 27 -->
 			<item>
-				<tx>29.770289</tx>
-				<ty>-1.048131</ty>
-				<tz>-0.845813</tz>
+				<tx>29.654902</tx>
+				<ty>-1.003168</ty>
+				<tz>-0.850609</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.074401</rz>
+				<rz>-0.022983</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -445,21 +445,21 @@
 	</item>
 	<item class_id="36" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>28</first_frame>
 		<poses class_id="37" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 28 -->
 			<item class_id="38" tracking_level="0" version="2">
-				<tx>29.716901</tx>
-				<ty>-1.045117</ty>
-				<tz>-0.838011</tz>
+				<tx>29.569663</tx>
+				<ty>-0.889151</ty>
+				<tz>-0.837121</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.072128</rz>
+				<rz>0.002934</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -472,12 +472,12 @@
 			</item>
 			<!-- frame 29 -->
 			<item>
-				<tx>29.705276</tx>
-				<ty>-1.044002</ty>
-				<tz>-0.838011</tz>
+				<tx>29.551182</tx>
+				<ty>-0.863617</ty>
+				<tz>-0.837121</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.072128</rz>
+				<rz>0.002934</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -490,12 +490,12 @@
 			</item>
 			<!-- frame 30 -->
 			<item>
-				<tx>29.693543</tx>
-				<ty>-1.042879</ty>
-				<tz>-0.838011</tz>
+				<tx>29.532526</tx>
+				<ty>-0.837846</ty>
+				<tz>-0.837121</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.072128</rz>
+				<rz>0.002934</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -511,21 +511,21 @@
 	</item>
 	<item class_id="41" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>31</first_frame>
 		<poses class_id="42" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 31 -->
 			<item class_id="43" tracking_level="0" version="2">
-				<tx>29.654253</tx>
-				<ty>-1.113040</ty>
-				<tz>-0.807307</tz>
+				<tx>29.417366</tx>
+				<ty>-0.812023</ty>
+				<tz>-0.818607</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.078607</rz>
+				<rz>0.040928</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -538,12 +538,12 @@
 			</item>
 			<!-- frame 32 -->
 			<item>
-				<tx>29.637911</tx>
-				<ty>-1.123498</ty>
-				<tz>-0.807307</tz>
+				<tx>29.382817</tx>
+				<ty>-0.785969</ty>
+				<tz>-0.818607</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.078607</rz>
+				<rz>0.040928</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -559,21 +559,21 @@
 	</item>
 	<item class_id="45" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>33</first_frame>
 		<poses class_id="46" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 33 -->
 			<item class_id="47" tracking_level="0" version="2">
-				<tx>29.252003</tx>
-				<ty>-0.948227</ty>
-				<tz>-0.880627</tz>
+				<tx>29.152018</tx>
+				<ty>-0.986928</ty>
+				<tz>-0.864956</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.026710</rz>
+				<rz>-0.042248</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -586,12 +586,12 @@
 			</item>
 			<!-- frame 34 -->
 			<item>
-				<tx>29.175628</tx>
-				<ty>-0.929973</ty>
-				<tz>-0.880627</tz>
+				<tx>29.083628</tx>
+				<ty>-0.995170</ty>
+				<tz>-0.864956</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.026710</rz>
+				<rz>-0.042248</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -607,21 +607,21 @@
 	</item>
 	<item class_id="49" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>35</first_frame>
 		<poses class_id="50" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 35 -->
 			<item class_id="51" tracking_level="0" version="2">
-				<tx>29.144328</tx>
-				<ty>-1.200703</ty>
-				<tz>-0.903103</tz>
+				<tx>29.095857</tx>
+				<ty>-1.192086</ty>
+				<tz>-0.877672</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.050146</rz>
+				<rz>-0.013114</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -634,12 +634,12 @@
 			</item>
 			<!-- frame 36 -->
 			<item>
-				<tx>29.075179</tx>
-				<ty>-1.222536</ty>
-				<tz>-0.903103</tz>
+				<tx>29.039917</tx>
+				<ty>-1.227094</ty>
+				<tz>-0.877672</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.050146</rz>
+				<rz>-0.013114</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -652,12 +652,12 @@
 			</item>
 			<!-- frame 37 -->
 			<item>
-				<tx>29.004922</tx>
-				<ty>-1.245197</ty>
-				<tz>-0.903103</tz>
+				<tx>28.983378</tx>
+				<ty>-1.263446</ty>
+				<tz>-0.877672</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.050146</rz>
+				<rz>-0.013114</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -673,21 +673,21 @@
 	</item>
 	<item class_id="54" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>38</first_frame>
 		<poses class_id="55" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 38 -->
 			<item class_id="56" tracking_level="0" version="2">
-				<tx>28.851817</tx>
-				<ty>-1.491491</ty>
-				<tz>-0.923118</tz>
+				<tx>28.787605</tx>
+				<ty>-1.375754</ty>
+				<tz>-0.900124</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.091361</rz>
+				<rz>-0.027594</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -700,12 +700,12 @@
 			</item>
 			<!-- frame 39 -->
 			<item>
-				<tx>28.765688</tx>
-				<ty>-1.543850</ty>
-				<tz>-0.923118</tz>
+				<tx>28.710172</tx>
+				<ty>-1.425852</ty>
+				<tz>-0.900124</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.091361</rz>
+				<rz>-0.027594</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -721,21 +721,21 @@
 	</item>
 	<item class_id="58" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>40</first_frame>
 		<poses class_id="59" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 40 -->
 			<item class_id="60" tracking_level="0" version="2">
-				<tx>28.668319</tx>
-				<ty>-1.621943</ty>
-				<tz>-0.935410</tz>
+				<tx>28.567812</tx>
+				<ty>-1.440128</ty>
+				<tz>-0.917019</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.096905</rz>
+				<rz>-0.025506</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -748,12 +748,12 @@
 			</item>
 			<!-- frame 41 -->
 			<item>
-				<tx>28.581637</tx>
-				<ty>-1.678758</ty>
-				<tz>-0.935410</tz>
+				<tx>28.483295</tx>
+				<ty>-1.486868</ty>
+				<tz>-0.917019</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.096905</rz>
+				<rz>-0.025506</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -766,12 +766,12 @@
 			</item>
 			<!-- frame 42 -->
 			<item>
-				<tx>28.493649</tx>
-				<ty>-1.737429</ty>
-				<tz>-0.935410</tz>
+				<tx>28.397383</tx>
+				<ty>-1.534948</ty>
+				<tz>-0.917019</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.096905</rz>
+				<rz>-0.025506</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -787,21 +787,21 @@
 	</item>
 	<item class_id="63" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>43</first_frame>
 		<poses class_id="64" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 43 -->
 			<item class_id="65" tracking_level="0" version="2">
-				<tx>28.366432</tx>
-				<ty>-1.845679</ty>
-				<tz>-0.939578</tz>
+				<tx>28.281868</tx>
+				<ty>-1.659364</ty>
+				<tz>-0.920553</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.123247</rz>
+				<rz>-0.088601</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -814,12 +814,12 @@
 			</item>
 			<!-- frame 44 -->
 			<item>
-				<tx>28.265497</tx>
-				<ty>-1.917721</ty>
-				<tz>-0.939578</tz>
+				<tx>28.184091</tx>
+				<ty>-1.722212</ty>
+				<tz>-0.920553</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.123247</rz>
+				<rz>-0.088601</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -835,21 +835,21 @@
 	</item>
 	<item class_id="67" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>45</first_frame>
 		<poses class_id="68" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 45 -->
 			<item class_id="69" tracking_level="0" version="2">
-				<tx>28.191092</tx>
-				<ty>-1.895242</ty>
-				<tz>-0.929979</tz>
+				<tx>28.090202</tx>
+				<ty>-1.696441</ty>
+				<tz>-0.912912</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.076266</rz>
+				<rz>-0.021211</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -862,12 +862,12 @@
 			</item>
 			<!-- frame 46 -->
 			<item>
-				<tx>28.094345</tx>
-				<ty>-1.957018</ty>
-				<tz>-0.929979</tz>
+				<tx>27.993674</tx>
+				<ty>-1.749396</ty>
+				<tz>-0.912912</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.076266</rz>
+				<rz>-0.021211</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -883,21 +883,21 @@
 	</item>
 	<item class_id="71" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>47</first_frame>
 		<poses class_id="72" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 47 -->
 			<item class_id="73" tracking_level="0" version="2">
-				<tx>27.825266</tx>
-				<ty>-1.851617</ty>
-				<tz>-0.955188</tz>
+				<tx>27.701602</tx>
+				<ty>-1.871130</ty>
+				<tz>-0.939449</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.025117</rz>
+				<rz>-0.039539</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -910,12 +910,12 @@
 			</item>
 			<!-- frame 48 -->
 			<item>
-				<tx>27.704030</tx>
-				<ty>-1.895556</ty>
-				<tz>-0.955188</tz>
+				<tx>27.577362</tx>
+				<ty>-1.935154</ty>
+				<tz>-0.939449</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.025117</rz>
+				<rz>-0.039539</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -928,12 +928,12 @@
 			</item>
 			<!-- frame 49 -->
 			<item>
-				<tx>27.572586</tx>
-				<ty>-1.942811</ty>
-				<tz>-0.955188</tz>
+				<tx>27.442389</tx>
+				<ty>-2.004950</ty>
+				<tz>-0.939449</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.025117</rz>
+				<rz>-0.039539</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -949,21 +949,21 @@
 	</item>
 	<item class_id="76" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>50</first_frame>
 		<poses class_id="77" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 50 -->
 			<item class_id="78" tracking_level="0" version="2">
-				<tx>27.437342</tx>
-				<ty>-2.116390</ty>
-				<tz>-0.937810</tz>
+				<tx>27.334133</tx>
+				<ty>-1.899288</ty>
+				<tz>-0.913769</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.127030</rz>
+				<rz>-0.022996</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -976,12 +976,12 @@
 			</item>
 			<!-- frame 51 -->
 			<item>
-				<tx>27.306213</tx>
-				<ty>-2.176339</ty>
-				<tz>-0.937810</tz>
+				<tx>27.202326</tx>
+				<ty>-1.950449</ty>
+				<tz>-0.913769</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.127030</rz>
+				<rz>-0.022996</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -997,21 +997,21 @@
 	</item>
 	<item class_id="80" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>52</first_frame>
 		<poses class_id="81" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 52 -->
 			<item class_id="82" tracking_level="0" version="2">
-				<tx>27.111079</tx>
-				<ty>-2.242497</ty>
-				<tz>-0.943685</tz>
+				<tx>26.972448</tx>
+				<ty>-2.164203</ty>
+				<tz>-0.919292</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.079343</rz>
+				<rz>-0.035346</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1024,12 +1024,12 @@
 			</item>
 			<!-- frame 53 -->
 			<item>
-				<tx>26.967621</tx>
-				<ty>-2.305474</ty>
-				<tz>-0.943685</tz>
+				<tx>26.824095</tx>
+				<ty>-2.235669</ty>
+				<tz>-0.919292</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.079343</rz>
+				<rz>-0.035346</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1042,12 +1042,12 @@
 			</item>
 			<!-- frame 54 -->
 			<item>
-				<tx>26.812041</tx>
-				<ty>-2.373726</ty>
-				<tz>-0.943685</tz>
+				<tx>26.662952</tx>
+				<ty>-2.313416</ty>
+				<tz>-0.919292</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.079343</rz>
+				<rz>-0.035346</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1063,21 +1063,21 @@
 	</item>
 	<item class_id="85" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>55</first_frame>
 		<poses class_id="86" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 55 -->
 			<item class_id="87" tracking_level="0" version="2">
-				<tx>26.405186</tx>
-				<ty>-2.381980</ty>
-				<tz>-0.950678</tz>
+				<tx>25.993130</tx>
+				<ty>-2.464544</ty>
+				<tz>-0.928612</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.041450</rz>
+				<rz>-0.254162</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1090,12 +1090,12 @@
 			</item>
 			<!-- frame 56 -->
 			<item>
-				<tx>26.225698</tx>
-				<ty>-2.443637</ty>
-				<tz>-0.950678</tz>
+				<tx>25.781982</tx>
+				<ty>-2.549431</ty>
+				<tz>-0.928612</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.041450</rz>
+				<rz>-0.254162</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1111,21 +1111,21 @@
 	</item>
 	<item class_id="89" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>57</first_frame>
 		<poses class_id="90" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 57 -->
 			<item class_id="91" tracking_level="0" version="2">
-				<tx>25.939499</tx>
-				<ty>-2.537561</ty>
-				<tz>-0.956780</tz>
+				<tx>25.547293</tx>
+				<ty>-2.623129</ty>
+				<tz>-0.935419</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.050667</rz>
+				<rz>-0.097967</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1138,12 +1138,12 @@
 			</item>
 			<!-- frame 58 -->
 			<item>
-				<tx>25.740916</tx>
-				<ty>-2.604627</ty>
-				<tz>-0.956780</tz>
+				<tx>25.323248</tx>
+				<ty>-2.710683</ty>
+				<tz>-0.935419</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.050667</rz>
+				<rz>-0.097967</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1159,21 +1159,21 @@
 	</item>
 	<item class_id="93" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>59</first_frame>
 		<poses class_id="94" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 59 -->
 			<item class_id="95" tracking_level="0" version="2">
-				<tx>25.576543</tx>
-				<ty>-2.740653</ty>
-				<tz>-0.964526</tz>
+				<tx>25.097847</tx>
+				<ty>-2.908470</ty>
+				<tz>-0.943007</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.052984</rz>
+				<rz>-0.363465</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1186,12 +1186,12 @@
 			</item>
 			<!-- frame 60 -->
 			<item>
-				<tx>25.385172</tx>
-				<ty>-2.812788</ty>
-				<tz>-0.964526</tz>
+				<tx>24.877067</tx>
+				<ty>-3.005491</ty>
+				<tz>-0.943007</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.052984</rz>
+				<rz>-0.363465</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1204,12 +1204,12 @@
 			</item>
 			<!-- frame 61 -->
 			<item>
-				<tx>25.177431</tx>
-				<ty>-2.890912</ty>
-				<tz>-0.964526</tz>
+				<tx>24.636896</tx>
+				<ty>-3.111028</ty>
+				<tz>-0.943007</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.052984</rz>
+				<rz>-0.363465</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1225,21 +1225,21 @@
 	</item>
 	<item class_id="98" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>62</first_frame>
 		<poses class_id="99" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 62 -->
 			<item class_id="100" tracking_level="0" version="2">
-				<tx>25.079835</tx>
-				<ty>-2.936982</ty>
-				<tz>-0.967063</tz>
+				<tx>24.771273</tx>
+				<ty>-3.049289</ty>
+				<tz>-0.947411</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.061487</rz>
+				<rz>-0.063031</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1252,12 +1252,12 @@
 			</item>
 			<!-- frame 63 -->
 			<item>
-				<tx>24.874041</tx>
-				<ty>-3.014878</ty>
-				<tz>-0.967063</tz>
+				<tx>24.554832</tx>
+				<ty>-3.144144</ty>
+				<tz>-0.947411</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.061487</rz>
+				<rz>-0.063031</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1273,21 +1273,21 @@
 	</item>
 	<item class_id="102" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>64</first_frame>
 		<poses class_id="103" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 64 -->
 			<item class_id="104" tracking_level="0" version="2">
-				<tx>24.877919</tx>
-				<ty>-3.077043</ty>
-				<tz>-0.970618</tz>
+				<tx>24.697177</tx>
+				<ty>-3.198773</ty>
+				<tz>-0.951118</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.064781</rz>
+				<rz>-0.060928</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1300,12 +1300,12 @@
 			</item>
 			<!-- frame 65 -->
 			<item>
-				<tx>24.696749</tx>
-				<ty>-3.151082</ty>
-				<tz>-0.970618</tz>
+				<tx>24.518939</tx>
+				<ty>-3.287451</ty>
+				<tz>-0.951118</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.064781</rz>
+				<rz>-0.060928</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1318,12 +1318,12 @@
 			</item>
 			<!-- frame 66 -->
 			<item>
-				<tx>24.501472</tx>
-				<ty>-3.230843</ty>
-				<tz>-0.970618</tz>
+				<tx>24.326950</tx>
+				<ty>-3.383166</ty>
+				<tz>-0.951118</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.064781</rz>
+				<rz>-0.060928</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1339,21 +1339,21 @@
 	</item>
 	<item class_id="107" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>67</first_frame>
 		<poses class_id="108" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 67 -->
 			<item class_id="109" tracking_level="0" version="2">
-				<tx>24.393591</tx>
-				<ty>-3.390623</ty>
-				<tz>-0.976945</tz>
+				<tx>24.282447</tx>
+				<ty>-3.515833</ty>
+				<tz>-0.953694</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.076830</rz>
+				<rz>-0.065017</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1366,12 +1366,12 @@
 			</item>
 			<!-- frame 68 -->
 			<item>
-				<tx>24.198707</tx>
-				<ty>-3.479802</ty>
-				<tz>-0.976945</tz>
+				<tx>24.096233</tx>
+				<ty>-3.618273</ty>
+				<tz>-0.953694</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.076830</rz>
+				<rz>-0.065017</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1387,21 +1387,21 @@
 	</item>
 	<item class_id="111" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>69</first_frame>
 		<poses class_id="112" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 69 -->
 			<item class_id="113" tracking_level="0" version="2">
-				<tx>24.002556</tx>
-				<ty>-3.712803</ty>
-				<tz>-0.979516</tz>
+				<tx>23.954462</tx>
+				<ty>-3.762518</ty>
+				<tz>-0.954804</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.106448</rz>
+				<rz>-0.069666</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1414,12 +1414,12 @@
 			</item>
 			<!-- frame 70 -->
 			<item>
-				<tx>23.801106</tx>
-				<ty>-3.818088</ty>
-				<tz>-0.979516</tz>
+				<tx>23.766486</tx>
+				<ty>-3.872571</ty>
+				<tz>-0.954804</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.106448</rz>
+				<rz>-0.069666</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1435,21 +1435,21 @@
 	</item>
 	<item class_id="115" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>71</first_frame>
 		<poses class_id="116" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 71 -->
 			<item class_id="117" tracking_level="0" version="2">
-				<tx>23.606349</tx>
-				<ty>-3.896896</ty>
-				<tz>-0.982266</tz>
+				<tx>23.556993</tx>
+				<ty>-3.892286</ty>
+				<tz>-0.956845</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.110305</rz>
+				<rz>-0.068680</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1462,12 +1462,12 @@
 			</item>
 			<!-- frame 72 -->
 			<item>
-				<tx>23.400258</tx>
-				<ty>-4.003154</ty>
-				<tz>-0.982266</tz>
+				<tx>23.362688</tx>
+				<ty>-3.997561</ty>
+				<tz>-0.956845</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.110305</rz>
+				<rz>-0.068680</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1480,12 +1480,12 @@
 			</item>
 			<!-- frame 73 -->
 			<item>
-				<tx>23.191584</tx>
-				<ty>-4.111033</ty>
-				<tz>-0.982266</tz>
+				<tx>23.166173</tx>
+				<ty>-4.104315</ty>
+				<tz>-0.956845</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.110305</rz>
+				<rz>-0.068680</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1501,21 +1501,21 @@
 	</item>
 	<item class_id="120" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>74</first_frame>
 		<poses class_id="121" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 74 -->
 			<item class_id="122" tracking_level="0" version="2">
-				<tx>22.933374</tx>
-				<ty>-4.182732</ty>
-				<tz>-0.981852</tz>
+				<tx>22.918652</tx>
+				<ty>-4.170956</ty>
+				<tz>-0.955895</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.117681</rz>
+				<rz>-0.079914</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1528,12 +1528,12 @@
 			</item>
 			<!-- frame 75 -->
 			<item>
-				<tx>22.715094</tx>
-				<ty>-4.291370</ty>
-				<tz>-0.981852</tz>
+				<tx>22.713181</tx>
+				<ty>-4.277890</ty>
+				<tz>-0.955895</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.117681</rz>
+				<rz>-0.079914</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1549,21 +1549,21 @@
 	</item>
 	<item class_id="124" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>76</first_frame>
 		<poses class_id="125" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 76 -->
 			<item class_id="126" tracking_level="0" version="2">
-				<tx>22.452371</tx>
-				<ty>-4.306714</ty>
-				<tz>-0.981834</tz>
+				<tx>22.427864</tx>
+				<ty>-4.350169</ty>
+				<tz>-0.954604</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.114787</rz>
+				<rz>-0.093538</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1576,12 +1576,12 @@
 			</item>
 			<!-- frame 77 -->
 			<item>
-				<tx>22.223832</tx>
-				<ty>-4.411306</ty>
-				<tz>-0.981834</tz>
+				<tx>22.209996</tx>
+				<ty>-4.457610</ty>
+				<tz>-0.954604</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.114787</rz>
+				<rz>-0.093538</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1594,12 +1594,12 @@
 			</item>
 			<!-- frame 78 -->
 			<item>
-				<tx>21.991870</tx>
-				<ty>-4.517526</ty>
-				<tz>-0.981834</tz>
+				<tx>21.989024</tx>
+				<ty>-4.566667</ty>
+				<tz>-0.954604</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.114787</rz>
+				<rz>-0.093538</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1615,21 +1615,21 @@
 	</item>
 	<item class_id="129" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>79</first_frame>
 		<poses class_id="130" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 79 -->
 			<item class_id="131" tracking_level="0" version="2">
-				<tx>21.751107</tx>
-				<ty>-4.590386</ty>
-				<tz>-0.980309</tz>
+				<tx>21.718126</tx>
+				<ty>-4.649334</ty>
+				<tz>-0.952578</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.126049</rz>
+				<rz>-0.101548</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1642,12 +1642,12 @@
 			</item>
 			<!-- frame 80 -->
 			<item>
-				<tx>21.512367</tx>
-				<ty>-4.697130</ty>
-				<tz>-0.980309</tz>
+				<tx>21.488005</tx>
+				<ty>-4.759390</ty>
+				<tz>-0.952578</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.126049</rz>
+				<rz>-0.101548</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1663,21 +1663,21 @@
 	</item>
 	<item class_id="133" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>81</first_frame>
 		<poses class_id="134" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 81 -->
 			<item class_id="135" tracking_level="0" version="2">
-				<tx>21.264967</tx>
-				<ty>-4.742870</ty>
-				<tz>-0.978616</tz>
+				<tx>21.257407</tx>
+				<ty>-4.795372</ty>
+				<tz>-0.950828</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.125870</rz>
+				<rz>-0.102249</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1690,12 +1690,12 @@
 			</item>
 			<!-- frame 82 -->
 			<item>
-				<tx>21.019558</tx>
-				<ty>-4.847573</ty>
-				<tz>-0.978616</tz>
+				<tx>21.021686</tx>
+				<ty>-4.902365</ty>
+				<tz>-0.950828</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.125870</rz>
+				<rz>-0.102249</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1711,21 +1711,21 @@
 	</item>
 	<item class_id="137" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>83</first_frame>
 		<poses class_id="138" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 83 -->
 			<item class_id="139" tracking_level="0" version="2">
-				<tx>20.787717</tx>
-				<ty>-4.910669</ty>
-				<tz>-0.976036</tz>
+				<tx>20.767036</tx>
+				<ty>-4.965430</ty>
+				<tz>-0.947319</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.132377</rz>
+				<rz>-0.109592</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1738,12 +1738,12 @@
 			</item>
 			<!-- frame 84 -->
 			<item>
-				<tx>20.537460</tx>
-				<ty>-5.014484</ty>
-				<tz>-0.976036</tz>
+				<tx>20.524324</tx>
+				<ty>-5.071294</ty>
+				<tz>-0.947319</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.132377</rz>
+				<rz>-0.109592</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1756,12 +1756,12 @@
 			</item>
 			<!-- frame 85 -->
 			<item>
-				<tx>20.283813</tx>
-				<ty>-5.119620</ty>
-				<tz>-0.976036</tz>
+				<tx>20.278404</tx>
+				<ty>-5.178448</ty>
+				<tz>-0.947319</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.132377</rz>
+				<rz>-0.109592</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1777,21 +1777,21 @@
 	</item>
 	<item class_id="142" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>86</first_frame>
 		<poses class_id="143" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 86 -->
 			<item class_id="144" tracking_level="0" version="2">
-				<tx>20.113084</tx>
-				<ty>-5.138842</ty>
-				<tz>-0.973393</tz>
+				<tx>20.074912</tx>
+				<ty>-5.140334</ty>
+				<tz>-0.942237</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.152103</rz>
+				<rz>-0.110850</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1804,12 +1804,12 @@
 			</item>
 			<!-- frame 87 -->
 			<item>
-				<tx>19.858106</tx>
-				<ty>-5.240826</ty>
-				<tz>-0.973393</tz>
+				<tx>19.825243</tx>
+				<ty>-5.240201</ty>
+				<tz>-0.942237</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.152103</rz>
+				<rz>-0.110850</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1825,21 +1825,21 @@
 	</item>
 	<item class_id="146" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>88</first_frame>
 		<poses class_id="147" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 88 -->
 			<item class_id="148" tracking_level="0" version="2">
-				<tx>19.648821</tx>
-				<ty>-5.188192</ty>
-				<tz>-0.965750</tz>
+				<tx>19.575202</tx>
+				<ty>-5.221974</ty>
+				<tz>-0.934764</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.122198</rz>
+				<rz>-0.115849</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1852,12 +1852,12 @@
 			</item>
 			<!-- frame 89 -->
 			<item>
-				<tx>19.391407</tx>
-				<ty>-5.280765</ty>
-				<tz>-0.965750</tz>
+				<tx>19.319873</tx>
+				<ty>-5.314886</ty>
+				<tz>-0.934764</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.122198</rz>
+				<rz>-0.115849</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1870,12 +1870,12 @@
 			</item>
 			<!-- frame 90 -->
 			<item>
-				<tx>19.131570</tx>
-				<ty>-5.373946</ty>
-				<tz>-0.965750</tz>
+				<tx>19.062137</tx>
+				<ty>-5.408340</ty>
+				<tz>-0.934764</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.122198</rz>
+				<rz>-0.115849</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1891,21 +1891,21 @@
 	</item>
 	<item class_id="151" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>91</first_frame>
 		<poses class_id="152" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 91 -->
 			<item class_id="153" tracking_level="0" version="2">
-				<tx>18.902451</tx>
-				<ty>-5.407982</ty>
-				<tz>-0.959700</tz>
+				<tx>18.868351</tx>
+				<ty>-5.461599</ty>
+				<tz>-0.926365</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.142396</rz>
+				<rz>-0.118859</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1918,12 +1918,12 @@
 			</item>
 			<!-- frame 92 -->
 			<item>
-				<tx>18.638199</tx>
-				<ty>-5.499100</ty>
-				<tz>-0.959700</tz>
+				<tx>18.608414</tx>
+				<ty>-5.554099</ty>
+				<tz>-0.926365</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.142396</rz>
+				<rz>-0.118859</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1939,21 +1939,21 @@
 	</item>
 	<item class_id="155" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>93</first_frame>
 		<poses class_id="156" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 93 -->
 			<item class_id="157" tracking_level="0" version="2">
-				<tx>18.429676</tx>
-				<ty>-5.446765</ty>
-				<tz>-0.960373</tz>
+				<tx>18.341063</tx>
+				<ty>-5.423559</ty>
+				<tz>-0.924549</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.133499</rz>
+				<rz>-0.125192</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1966,12 +1966,12 @@
 			</item>
 			<!-- frame 94 -->
 			<item>
-				<tx>18.163712</tx>
-				<ty>-5.529014</ty>
-				<tz>-0.960373</tz>
+				<tx>18.075037</tx>
+				<ty>-5.501426</ty>
+				<tz>-0.924549</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.133499</rz>
+				<rz>-0.125192</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -1987,21 +1987,21 @@
 	</item>
 	<item class_id="159" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>95</first_frame>
 		<poses class_id="160" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 95 -->
 			<item class_id="161" tracking_level="0" version="2">
-				<tx>17.971368</tx>
-				<ty>-5.539966</ty>
-				<tz>-0.958130</tz>
+				<tx>17.834716</tx>
+				<ty>-5.525004</ty>
+				<tz>-0.920719</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.145633</rz>
+				<rz>-0.127115</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2014,12 +2014,12 @@
 			</item>
 			<!-- frame 96 -->
 			<item>
-				<tx>17.706156</tx>
-				<ty>-5.617620</ty>
-				<tz>-0.958130</tz>
+				<tx>17.565834</tx>
+				<ty>-5.599210</ty>
+				<tz>-0.920719</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.145633</rz>
+				<rz>-0.127115</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2032,12 +2032,12 @@
 			</item>
 			<!-- frame 97 -->
 			<item>
-				<tx>17.437899</tx>
-				<ty>-5.695719</ty>
-				<tz>-0.958130</tz>
+				<tx>17.293781</tx>
+				<ty>-5.673714</ty>
+				<tz>-0.920719</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.145633</rz>
+				<rz>-0.127115</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2053,21 +2053,21 @@
 	</item>
 	<item class_id="164" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>98</first_frame>
 		<poses class_id="165" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 98 -->
 			<item class_id="166" tracking_level="0" version="2">
-				<tx>17.212571</tx>
-				<ty>-5.660132</ty>
-				<tz>-0.956666</tz>
+				<tx>17.097203</tx>
+				<ty>-5.661378</ty>
+				<tz>-0.916987</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.153422</rz>
+				<rz>-0.138633</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2080,12 +2080,12 @@
 			</item>
 			<!-- frame 99 -->
 			<item>
-				<tx>16.941582</tx>
-				<ty>-5.731717</ty>
-				<tz>-0.956666</tz>
+				<tx>16.824255</tx>
+				<ty>-5.730798</ty>
+				<tz>-0.916987</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.153422</rz>
+				<rz>-0.138633</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2101,21 +2101,21 @@
 	</item>
 	<item class_id="168" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>100</first_frame>
 		<poses class_id="169" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 100 -->
 			<item class_id="170" tracking_level="0" version="2">
-				<tx>16.742179</tx>
-				<ty>-5.669856</ty>
-				<tz>-0.957551</tz>
+				<tx>16.605906</tx>
+				<ty>-5.687795</ty>
+				<tz>-0.917462</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.140294</rz>
+				<rz>-0.139486</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2128,12 +2128,12 @@
 			</item>
 			<!-- frame 101 -->
 			<item>
-				<tx>16.471016</tx>
-				<ty>-5.732509</ty>
-				<tz>-0.957551</tz>
+				<tx>16.331460</tx>
+				<ty>-5.749547</ty>
+				<tz>-0.917462</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.140294</rz>
+				<rz>-0.139486</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2146,12 +2146,12 @@
 			</item>
 			<!-- frame 102 -->
 			<item>
-				<tx>16.197447</tx>
-				<ty>-5.795095</ty>
-				<tz>-0.957551</tz>
+				<tx>16.054510</tx>
+				<ty>-5.811163</ty>
+				<tz>-0.917462</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.140294</rz>
+				<rz>-0.139486</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2167,21 +2167,21 @@
 	</item>
 	<item class_id="173" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>103</first_frame>
 		<poses class_id="174" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 103 -->
 			<item class_id="175" tracking_level="0" version="2">
-				<tx>15.946819</tx>
-				<ty>-5.710620</ty>
-				<tz>-0.961741</tz>
+				<tx>15.818807</tx>
+				<ty>-5.750319</ty>
+				<tz>-0.921788</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.153791</rz>
+				<rz>-0.152782</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2194,12 +2194,12 @@
 			</item>
 			<!-- frame 104 -->
 			<item>
-				<tx>15.669872</tx>
-				<ty>-5.764059</ty>
-				<tz>-0.961741</tz>
+				<tx>15.539412</tx>
+				<ty>-5.804168</ty>
+				<tz>-0.921788</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.153791</rz>
+				<rz>-0.152782</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2215,21 +2215,21 @@
 	</item>
 	<item class_id="177" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>105</first_frame>
 		<poses class_id="178" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 105 -->
 			<item class_id="179" tracking_level="0" version="2">
-				<tx>15.490598</tx>
-				<ty>-5.645791</ty>
-				<tz>-0.965662</tz>
+				<tx>15.327440</tx>
+				<ty>-5.696176</ty>
+				<tz>-0.925262</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.147155</rz>
+				<rz>-0.154999</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2242,12 +2242,12 @@
 			</item>
 			<!-- frame 106 -->
 			<item>
-				<tx>15.199956</tx>
-				<ty>-5.689414</ty>
-				<tz>-0.965662</tz>
+				<tx>15.031890</tx>
+				<ty>-5.740868</ty>
+				<tz>-0.925262</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.147155</rz>
+				<rz>-0.154999</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2263,21 +2263,21 @@
 	</item>
 	<item class_id="181" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>107</first_frame>
 		<poses class_id="182" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 107 -->
 			<item class_id="183" tracking_level="0" version="2">
-				<tx>15.021297</tx>
-				<ty>-5.552316</ty>
-				<tz>-0.968569</tz>
+				<tx>14.873794</tx>
+				<ty>-5.609576</ty>
+				<tz>-0.927186</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.154040</rz>
+				<rz>-0.163053</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2290,12 +2290,12 @@
 			</item>
 			<!-- frame 108 -->
 			<item>
-				<tx>14.747356</tx>
-				<ty>-5.580213</ty>
-				<tz>-0.968569</tz>
+				<tx>14.596735</tx>
+				<ty>-5.638793</ty>
+				<tz>-0.927186</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.154040</rz>
+				<rz>-0.163053</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2308,12 +2308,12 @@
 			</item>
 			<!-- frame 109 -->
 			<item>
-				<tx>14.471307</tx>
-				<ty>-5.607307</ty>
-				<tz>-0.968569</tz>
+				<tx>14.317488</tx>
+				<ty>-5.667194</ty>
+				<tz>-0.927186</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.154040</rz>
+				<rz>-0.163053</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2329,21 +2329,21 @@
 	</item>
 	<item class_id="186" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>110</first_frame>
 		<poses class_id="187" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 110 -->
 			<item class_id="188" tracking_level="0" version="2">
-				<tx>14.322791</tx>
-				<ty>-5.464500</ty>
-				<tz>-0.968777</tz>
+				<tx>14.205988</tx>
+				<ty>-5.524747</ty>
+				<tz>-0.925494</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.169880</rz>
+				<rz>-0.164014</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2356,12 +2356,12 @@
 			</item>
 			<!-- frame 111 -->
 			<item>
-				<tx>14.050247</tx>
-				<ty>-5.479663</ty>
-				<tz>-0.968777</tz>
+				<tx>13.932550</tx>
+				<ty>-5.541137</ty>
+				<tz>-0.925494</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.169880</rz>
+				<rz>-0.164014</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2377,21 +2377,21 @@
 	</item>
 	<item class_id="190" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>112</first_frame>
 		<poses class_id="191" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 112 -->
 			<item class_id="192" tracking_level="0" version="2">
-				<tx>13.854104</tx>
-				<ty>-5.342429</ty>
-				<tz>-0.966101</tz>
+				<tx>13.753635</tx>
+				<ty>-5.337793</ty>
+				<tz>-0.921993</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.157644</rz>
+				<rz>-0.153106</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2404,12 +2404,12 @@
 			</item>
 			<!-- frame 113 -->
 			<item>
-				<tx>13.583268</tx>
-				<ty>-5.345377</ty>
-				<tz>-0.966101</tz>
+				<tx>13.483071</tx>
+				<ty>-5.337432</ty>
+				<tz>-0.921993</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.157644</rz>
+				<rz>-0.153106</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2422,12 +2422,12 @@
 			</item>
 			<!-- frame 114 -->
 			<item>
-				<tx>13.309732</tx>
-				<ty>-5.347077</ty>
-				<tz>-0.966101</tz>
+				<tx>13.209809</tx>
+				<ty>-5.335700</ty>
+				<tz>-0.921993</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.157644</rz>
+				<rz>-0.153106</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2443,21 +2443,21 @@
 	</item>
 	<item class_id="195" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>115</first_frame>
 		<poses class_id="196" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 115 -->
 			<item class_id="197" tracking_level="0" version="2">
-				<tx>13.068263</tx>
-				<ty>-5.147048</ty>
-				<tz>-0.963987</tz>
+				<tx>12.942585</tx>
+				<ty>-5.116349</ty>
+				<tz>-0.917827</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.125796</rz>
+				<rz>-0.141150</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2470,12 +2470,12 @@
 			</item>
 			<!-- frame 116 -->
 			<item>
-				<tx>12.794309</tx>
-				<ty>-5.134325</ty>
-				<tz>-0.963987</tz>
+				<tx>12.667361</tx>
+				<ty>-5.099046</ty>
+				<tz>-0.917827</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.125796</rz>
+				<rz>-0.141150</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2491,21 +2491,21 @@
 	</item>
 	<item class_id="199" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>117</first_frame>
 		<poses class_id="200" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 117 -->
 			<item class_id="201" tracking_level="0" version="2">
-				<tx>12.595577</tx>
-				<ty>-5.051811</ty>
-				<tz>-0.962729</tz>
+				<tx>12.451776</tx>
+				<ty>-5.015846</ty>
+				<tz>-0.916379</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.162712</rz>
+				<rz>-0.163578</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2518,12 +2518,12 @@
 			</item>
 			<!-- frame 118 -->
 			<item>
-				<tx>12.321628</tx>
-				<ty>-5.031467</ty>
-				<tz>-0.962729</tz>
+				<tx>12.175458</tx>
+				<ty>-4.990895</ty>
+				<tz>-0.916379</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.162712</rz>
+				<rz>-0.163578</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2539,21 +2539,21 @@
 	</item>
 	<item class_id="203" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>119</first_frame>
 		<poses class_id="204" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 119 -->
 			<item class_id="205" tracking_level="0" version="2">
-				<tx>12.143752</tx>
-				<ty>-4.836977</ty>
-				<tz>-0.958227</tz>
+				<tx>11.994176</tx>
+				<ty>-4.790547</ty>
+				<tz>-0.909817</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.086726</rz>
+				<rz>-0.097077</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2566,12 +2566,12 @@
 			</item>
 			<!-- frame 120 -->
 			<item>
-				<tx>11.873897</tx>
-				<ty>-4.801578</ty>
-				<tz>-0.958227</tz>
+				<tx>11.721780</tx>
+				<ty>-4.750220</ty>
+				<tz>-0.909817</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.086726</rz>
+				<rz>-0.097077</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2584,12 +2584,12 @@
 			</item>
 			<!-- frame 121 -->
 			<item>
-				<tx>11.602108</tx>
-				<ty>-4.764249</ty>
-				<tz>-0.958227</tz>
+				<tx>11.447389</tx>
+				<ty>-4.707827</ty>
+				<tz>-0.909817</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.086726</rz>
+				<rz>-0.097077</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2605,21 +2605,21 @@
 	</item>
 	<item class_id="208" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>122</first_frame>
 		<poses class_id="209" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 122 -->
 			<item class_id="210" tracking_level="0" version="2">
-				<tx>11.365226</tx>
-				<ty>-4.563322</ty>
-				<tz>-0.961927</tz>
+				<tx>11.246609</tx>
+				<ty>-4.602017</ty>
+				<tz>-0.910930</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.076628</rz>
+				<rz>-0.085224</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2632,12 +2632,12 @@
 			</item>
 			<!-- frame 123 -->
 			<item>
-				<tx>11.091608</tx>
-				<ty>-4.512364</ty>
-				<tz>-0.961927</tz>
+				<tx>10.972598</tx>
+				<ty>-4.551749</ty>
+				<tz>-0.910930</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.076628</rz>
+				<rz>-0.085224</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2653,21 +2653,21 @@
 	</item>
 	<item class_id="212" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>124</first_frame>
 		<poses class_id="213" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 124 -->
 			<item class_id="214" tracking_level="0" version="2">
-				<tx>10.901950</tx>
-				<ty>-4.409756</ty>
-				<tz>-0.960242</tz>
+				<tx>10.786077</tx>
+				<ty>-4.504730</ty>
+				<tz>-0.908522</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.077080</rz>
+				<rz>-0.111537</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2680,12 +2680,12 @@
 			</item>
 			<!-- frame 125 -->
 			<item>
-				<tx>10.631486</tx>
-				<ty>-4.351444</ty>
-				<tz>-0.960242</tz>
+				<tx>10.515443</tx>
+				<ty>-4.450731</ty>
+				<tz>-0.908522</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.077080</rz>
+				<rz>-0.111537</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2698,12 +2698,12 @@
 			</item>
 			<!-- frame 126 -->
 			<item>
-				<tx>10.359067</tx>
-				<ty>-4.290836</ty>
-				<tz>-0.960242</tz>
+				<tx>10.242852</tx>
+				<ty>-4.394526</ty>
+				<tz>-0.908522</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.077080</rz>
+				<rz>-0.111537</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2719,21 +2719,21 @@
 	</item>
 	<item class_id="217" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>127</first_frame>
 		<poses class_id="218" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 127 -->
 			<item class_id="219" tracking_level="0" version="2">
-				<tx>10.113910</tx>
-				<ty>-4.154609</ty>
-				<tz>-0.961792</tz>
+				<tx>10.027116</tx>
+				<ty>-4.295963</ty>
+				<tz>-0.908916</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.063949</rz>
+				<rz>-0.065071</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2746,12 +2746,12 @@
 			</item>
 			<!-- frame 128 -->
 			<item>
-				<tx>9.841610</tx>
-				<ty>-4.085642</ty>
-				<tz>-0.961792</tz>
+				<tx>9.756379</tx>
+				<ty>-4.233487</ty>
+				<tz>-0.908916</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.063949</rz>
+				<rz>-0.065071</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2767,21 +2767,21 @@
 	</item>
 	<item class_id="221" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>129</first_frame>
 		<poses class_id="222" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 129 -->
 			<item class_id="223" tracking_level="0" version="2">
-				<tx>9.722450</tx>
-				<ty>-4.107070</ty>
-				<tz>-0.962508</tz>
+				<tx>9.594444</tx>
+				<ty>-4.223127</ty>
+				<tz>-0.908747</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.094907</rz>
+				<rz>-0.085473</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2794,12 +2794,12 @@
 			</item>
 			<!-- frame 130 -->
 			<item>
-				<tx>9.455708</tx>
-				<ty>-4.039159</ty>
-				<tz>-0.962508</tz>
+				<tx>9.326445</tx>
+				<ty>-4.159487</ty>
+				<tz>-0.908747</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.094907</rz>
+				<rz>-0.085473</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2815,21 +2815,21 @@
 	</item>
 	<item class_id="225" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>131</first_frame>
 		<poses class_id="226" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 131 -->
 			<item class_id="227" tracking_level="0" version="2">
-				<tx>9.227189</tx>
-				<ty>-3.963495</ty>
-				<tz>-0.962592</tz>
+				<tx>9.137911</tx>
+				<ty>-4.098253</ty>
+				<tz>-0.907820</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.073255</rz>
+				<rz>-0.065964</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2842,12 +2842,12 @@
 			</item>
 			<!-- frame 132 -->
 			<item>
-				<tx>8.962231</tx>
-				<ty>-3.891302</ty>
-				<tz>-0.962592</tz>
+				<tx>8.874462</tx>
+				<ty>-4.031134</ty>
+				<tz>-0.907820</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.073255</rz>
+				<rz>-0.065964</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2860,12 +2860,12 @@
 			</item>
 			<!-- frame 133 -->
 			<item>
-				<tx>8.696031</tx>
-				<ty>-3.816931</ty>
-				<tz>-0.962592</tz>
+				<tx>8.609808</tx>
+				<ty>-3.961925</ty>
+				<tz>-0.907820</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.073255</rz>
+				<rz>-0.065964</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2881,21 +2881,21 @@
 	</item>
 	<item class_id="230" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>134</first_frame>
 		<poses class_id="231" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 134 -->
 			<item class_id="232" tracking_level="0" version="2">
-				<tx>8.495293</tx>
-				<ty>-3.833117</ty>
-				<tz>-0.962211</tz>
+				<tx>8.394361</tx>
+				<ty>-3.922451</ty>
+				<tz>-0.907086</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.098768</rz>
+				<rz>-0.077395</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2908,12 +2908,12 @@
 			</item>
 			<!-- frame 135 -->
 			<item>
-				<tx>8.230919</tx>
-				<ty>-3.759986</ty>
-				<tz>-0.962211</tz>
+				<tx>8.130638</tx>
+				<ty>-3.851035</ty>
+				<tz>-0.907086</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.098768</rz>
+				<rz>-0.077395</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2929,21 +2929,21 @@
 	</item>
 	<item class_id="234" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>136</first_frame>
 		<poses class_id="235" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 136 -->
 			<item class_id="236" tracking_level="0" version="2">
-				<tx>7.973491</tx>
-				<ty>-3.777577</ty>
-				<tz>-0.962787</tz>
+				<tx>7.864995</tx>
+				<ty>-3.861555</ty>
+				<tz>-0.907004</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.079505</rz>
+				<rz>-0.069017</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2956,12 +2956,12 @@
 			</item>
 			<!-- frame 137 -->
 			<item>
-				<tx>7.707499</tx>
-				<ty>-3.706440</ty>
-				<tz>-0.962787</tz>
+				<tx>7.599103</tx>
+				<ty>-3.791570</ty>
+				<tz>-0.907004</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.079505</rz>
+				<rz>-0.069017</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2974,12 +2974,12 @@
 			</item>
 			<!-- frame 138 -->
 			<item>
-				<tx>7.440253</tx>
-				<ty>-3.633347</ty>
-				<tz>-0.962787</tz>
+				<tx>7.331959</tx>
+				<ty>-3.719622</ty>
+				<tz>-0.907004</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.079505</rz>
+				<rz>-0.069017</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -2995,21 +2995,21 @@
 	</item>
 	<item class_id="239" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>139</first_frame>
 		<poses class_id="240" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 139 -->
 			<item class_id="241" tracking_level="0" version="2">
-				<tx>7.254979</tx>
-				<ty>-3.671526</ty>
-				<tz>-0.962685</tz>
+				<tx>7.148216</tx>
+				<ty>-3.713645</ty>
+				<tz>-0.905495</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.013434</rz>
+				<rz>-0.054471</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3022,12 +3022,12 @@
 			</item>
 			<!-- frame 140 -->
 			<item>
-				<tx>6.990654</tx>
-				<ty>-3.601283</ty>
-				<tz>-0.962685</tz>
+				<tx>6.884081</tx>
+				<ty>-3.641887</ty>
+				<tz>-0.905495</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.013434</rz>
+				<rz>-0.054471</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3043,21 +3043,21 @@
 	</item>
 	<item class_id="243" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>141</first_frame>
 		<poses class_id="244" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 141 -->
 			<item class_id="245" tracking_level="0" version="2">
-				<tx>6.769799</tx>
-				<ty>-3.670949</ty>
-				<tz>-0.962632</tz>
+				<tx>6.678376</tx>
+				<ty>-3.680764</ty>
+				<tz>-0.902800</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.061906</rz>
+				<rz>-0.055218</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3070,12 +3070,12 @@
 			</item>
 			<!-- frame 142 -->
 			<item>
-				<tx>6.506909</tx>
-				<ty>-3.606491</ty>
-				<tz>-0.962632</tz>
+				<tx>6.416653</tx>
+				<ty>-3.612770</ty>
+				<tz>-0.902800</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.061906</rz>
+				<rz>-0.055218</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3091,21 +3091,21 @@
 	</item>
 	<item class_id="247" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>143</first_frame>
 		<poses class_id="248" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 143 -->
 			<item class_id="249" tracking_level="0" version="2">
-				<tx>6.275621</tx>
-				<ty>-3.650829</ty>
-				<tz>-0.961711</tz>
+				<tx>6.155834</tx>
+				<ty>-3.622190</ty>
+				<tz>-0.901057</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.030923</rz>
+				<rz>-0.054321</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3118,12 +3118,12 @@
 			</item>
 			<!-- frame 144 -->
 			<item>
-				<tx>6.012559</tx>
-				<ty>-3.590623</ty>
-				<tz>-0.961711</tz>
+				<tx>5.891901</tx>
+				<ty>-3.556098</ty>
+				<tz>-0.901057</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.030923</rz>
+				<rz>-0.054321</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3136,12 +3136,12 @@
 			</item>
 			<!-- frame 145 -->
 			<item>
-				<tx>5.749316</tx>
-				<ty>-3.529180</ty>
-				<tz>-0.961711</tz>
+				<tx>5.627769</tx>
+				<ty>-3.488628</ty>
+				<tz>-0.901057</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.030923</rz>
+				<rz>-0.054321</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3157,21 +3157,21 @@
 	</item>
 	<item class_id="252" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>146</first_frame>
 		<poses class_id="253" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 146 -->
 			<item class_id="254" tracking_level="0" version="2">
-				<tx>5.542976</tx>
-				<ty>-3.568781</ty>
-				<tz>-0.961927</tz>
+				<tx>5.411080</tx>
+				<ty>-3.509194</ty>
+				<tz>-0.897496</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.017249</rz>
+				<rz>-0.028798</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3184,12 +3184,12 @@
 			</item>
 			<!-- frame 147 -->
 			<item>
-				<tx>5.281396</tx>
-				<ty>-3.510610</ty>
-				<tz>-0.961927</tz>
+				<tx>5.148008</tx>
+				<ty>-3.443923</ty>
+				<tz>-0.897496</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.017249</rz>
+				<rz>-0.028798</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3205,21 +3205,21 @@
 	</item>
 	<item class_id="256" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>148</first_frame>
 		<poses class_id="257" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 148 -->
 			<item class_id="258" tracking_level="0" version="2">
-				<tx>5.042151</tx>
-				<ty>-3.361532</ty>
-				<tz>-0.966349</tz>
+				<tx>4.894459</tx>
+				<ty>-3.434348</ty>
+				<tz>-0.897673</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.001244</rz>
+				<rz>-0.035288</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3232,12 +3232,12 @@
 			</item>
 			<!-- frame 149 -->
 			<item>
-				<tx>4.780551</tx>
-				<ty>-3.294993</ty>
-				<tz>-0.966349</tz>
+				<tx>4.630465</tx>
+				<ty>-3.369954</ty>
+				<tz>-0.897673</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.001244</rz>
+				<rz>-0.035288</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3250,12 +3250,12 @@
 			</item>
 			<!-- frame 150 -->
 			<item>
-				<tx>4.518737</tx>
-				<ty>-3.227203</ty>
-				<tz>-0.966349</tz>
+				<tx>4.366211</tx>
+				<ty>-3.304345</ty>
+				<tz>-0.897673</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.001244</rz>
+				<rz>-0.035288</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3271,21 +3271,21 @@
 	</item>
 	<item class_id="261" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>151</first_frame>
 		<poses class_id="262" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 151 -->
 			<item class_id="263" tracking_level="0" version="2">
-				<tx>4.234564</tx>
-				<ty>-3.211377</ty>
-				<tz>-0.969115</tz>
+				<tx>4.076907</tx>
+				<ty>-3.361180</ty>
+				<tz>-0.893443</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.019439</rz>
+				<rz>-0.037129</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3298,12 +3298,12 @@
 			</item>
 			<!-- frame 152 -->
 			<item>
-				<tx>3.969132</tx>
-				<ty>-3.143692</ty>
-				<tz>-0.969115</tz>
+				<tx>3.808767</tx>
+				<ty>-3.299883</ty>
+				<tz>-0.893443</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.019439</rz>
+				<rz>-0.037129</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3319,21 +3319,21 @@
 	</item>
 	<item class_id="265" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>153</first_frame>
 		<poses class_id="266" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 153 -->
 			<item class_id="267" tracking_level="0" version="2">
-				<tx>3.738902</tx>
-				<ty>-3.132634</ty>
-				<tz>-0.971584</tz>
+				<tx>3.521116</tx>
+				<ty>-3.230112</ty>
+				<tz>-0.894354</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.003584</rz>
+				<rz>-0.045754</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3346,12 +3346,12 @@
 			</item>
 			<!-- frame 154 -->
 			<item>
-				<tx>3.474282</tx>
-				<ty>-3.066067</ty>
-				<tz>-0.971584</tz>
+				<tx>3.250126</tx>
+				<ty>-3.165961</ty>
+				<tz>-0.894354</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.003584</rz>
+				<rz>-0.045754</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3367,21 +3367,21 @@
 	</item>
 	<item class_id="269" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>155</first_frame>
 		<poses class_id="270" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 155 -->
 			<item class_id="271" tracking_level="0" version="2">
-				<tx>3.196284</tx>
-				<ty>-3.096766</ty>
-				<tz>-0.969498</tz>
+				<tx>3.045622</tx>
+				<ty>-3.251637</ty>
+				<tz>-0.892620</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.040459</rz>
+				<rz>-0.035798</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3394,12 +3394,12 @@
 			</item>
 			<!-- frame 156 -->
 			<item>
-				<tx>2.928669</tx>
-				<ty>-3.034256</ty>
-				<tz>-0.969498</tz>
+				<tx>2.776811</tx>
+				<ty>-3.195214</ty>
+				<tz>-0.892620</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.040459</rz>
+				<rz>-0.035798</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3412,12 +3412,12 @@
 			</item>
 			<!-- frame 157 -->
 			<item>
-				<tx>2.663205</tx>
-				<ty>-2.971338</ty>
-				<tz>-0.969498</tz>
+				<tx>2.510152</tx>
+				<ty>-3.138433</ty>
+				<tz>-0.892620</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.040459</rz>
+				<rz>-0.035798</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3433,21 +3433,21 @@
 	</item>
 	<item class_id="274" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>158</first_frame>
 		<poses class_id="275" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 158 -->
 			<item class_id="276" tracking_level="0" version="2">
-				<tx>2.263867</tx>
-				<ty>-3.064022</ty>
-				<tz>-0.966591</tz>
+				<tx>2.209166</tx>
+				<ty>-3.177265</ty>
+				<tz>-0.890541</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.012050</rz>
+				<rz>-0.000436</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3460,12 +3460,12 @@
 			</item>
 			<!-- frame 159 -->
 			<item>
-				<tx>1.987985</tx>
-				<ty>-3.007943</ty>
-				<tz>-0.966591</tz>
+				<tx>1.937948</tx>
+				<ty>-3.124030</ty>
+				<tz>-0.890541</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.012050</rz>
+				<rz>-0.000436</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3481,21 +3481,21 @@
 	</item>
 	<item class_id="278" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>160</first_frame>
 		<poses class_id="279" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 160 -->
 			<item class_id="280" tracking_level="0" version="2">
-				<tx>1.768966</tx>
-				<ty>-3.084145</ty>
-				<tz>-0.966013</tz>
+				<tx>1.719185</tx>
+				<ty>-3.253982</ty>
+				<tz>-0.889839</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.031119</rz>
+				<rz>-0.003055</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3508,12 +3508,12 @@
 			</item>
 			<!-- frame 161 -->
 			<item>
-				<tx>1.495485</tx>
-				<ty>-3.035068</ty>
-				<tz>-0.966013</tz>
+				<tx>1.450300</tx>
+				<ty>-3.211138</ty>
+				<tz>-0.889839</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.031119</rz>
+				<rz>-0.003055</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3526,12 +3526,12 @@
 			</item>
 			<!-- frame 162 -->
 			<item>
-				<tx>1.220796</tx>
-				<ty>-2.985232</ty>
-				<tz>-0.966013</tz>
+				<tx>1.180324</tx>
+				<ty>-3.167657</ty>
+				<tz>-0.889839</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.031119</rz>
+				<rz>-0.003055</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3547,21 +3547,21 @@
 	</item>
 	<item class_id="283" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>163</first_frame>
 		<poses class_id="284" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 163 -->
 			<item class_id="285" tracking_level="0" version="2">
-				<tx>0.936151</tx>
-				<ty>-3.163441</ty>
-				<tz>-0.965084</tz>
+				<tx>0.767241</tx>
+				<ty>-3.345653</ty>
+				<tz>-0.887205</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.035209</rz>
+				<rz>0.007352</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3574,12 +3574,12 @@
 			</item>
 			<!-- frame 164 -->
 			<item>
-				<tx>0.664828</tx>
-				<ty>-3.126311</ty>
-				<tz>-0.965084</tz>
+				<tx>0.493143</tx>
+				<ty>-3.314594</ty>
+				<tz>-0.887205</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.035209</rz>
+				<rz>0.007352</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3595,21 +3595,21 @@
 	</item>
 	<item class_id="287" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>165</first_frame>
 		<poses class_id="288" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 165 -->
 			<item class_id="289" tracking_level="0" version="2">
-				<tx>-0.081521</tx>
-				<ty>-3.336035</ty>
-				<tz>-0.961630</tz>
+				<tx>-0.141584</tx>
+				<ty>-3.382819</ty>
+				<tz>-0.886601</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.087544</rz>
+				<rz>0.199527</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3622,12 +3622,12 @@
 			</item>
 			<!-- frame 166 -->
 			<item>
-				<tx>-0.390330</tx>
-				<ty>-3.313452</ty>
-				<tz>-0.961630</tz>
+				<tx>-0.445918</tx>
+				<ty>-3.357054</ty>
+				<tz>-0.886601</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.087544</rz>
+				<rz>0.199527</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3643,21 +3643,21 @@
 	</item>
 	<item class_id="291" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>167</first_frame>
 		<poses class_id="292" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 167 -->
 			<item class_id="293" tracking_level="0" version="2">
-				<tx>-0.927049</tx>
-				<ty>-3.435886</ty>
-				<tz>-0.958569</tz>
+				<tx>-0.946034</tx>
+				<ty>-3.401775</ty>
+				<tz>-0.884111</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.011413</rz>
+				<rz>0.003548</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3670,12 +3670,12 @@
 			</item>
 			<!-- frame 168 -->
 			<item>
-				<tx>-1.253567</tx>
-				<ty>-3.423118</ty>
-				<tz>-0.958569</tz>
+				<tx>-1.265704</tx>
+				<ty>-3.380566</ty>
+				<tz>-0.884111</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.011413</rz>
+				<rz>0.003548</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3688,12 +3688,12 @@
 			</item>
 			<!-- frame 169 -->
 			<item>
-				<tx>-1.581654</tx>
-				<ty>-3.410542</ty>
-				<tz>-0.958569</tz>
+				<tx>-1.586795</tx>
+				<ty>-3.359336</ty>
+				<tz>-0.884111</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.011413</rz>
+				<rz>0.003548</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3709,21 +3709,21 @@
 	</item>
 	<item class_id="296" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>170</first_frame>
 		<poses class_id="297" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 170 -->
 			<item class_id="298" tracking_level="0" version="2">
-				<tx>-1.959328</tx>
-				<ty>-3.414833</ty>
-				<tz>-0.956109</tz>
+				<tx>-1.990930</tx>
+				<ty>-3.350634</ty>
+				<tz>-0.881817</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.029430</rz>
+				<rz>-0.026406</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3736,12 +3736,12 @@
 			</item>
 			<!-- frame 171 -->
 			<item>
-				<tx>-2.293831</tx>
-				<ty>-3.403610</ty>
-				<tz>-0.956109</tz>
+				<tx>-2.320120</tx>
+				<ty>-3.330075</ty>
+				<tz>-0.881817</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.029430</rz>
+				<rz>-0.026406</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3757,21 +3757,21 @@
 	</item>
 	<item class_id="300" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>172</first_frame>
 		<poses class_id="301" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 172 -->
 			<item class_id="302" tracking_level="0" version="2">
-				<tx>-2.500376</tx>
-				<ty>-3.330891</ty>
-				<tz>-0.954575</tz>
+				<tx>-2.582245</tx>
+				<ty>-3.310264</ty>
+				<tz>-0.879779</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.003548</rz>
+				<rz>-0.017813</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3784,12 +3784,12 @@
 			</item>
 			<!-- frame 173 -->
 			<item>
-				<tx>-2.829424</tx>
-				<ty>-3.316085</ty>
-				<tz>-0.954575</tz>
+				<tx>-2.909744</tx>
+				<ty>-3.289760</ty>
+				<tz>-0.879779</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.003548</rz>
+				<rz>-0.017813</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3802,12 +3802,12 @@
 			</item>
 			<!-- frame 174 -->
 			<item>
-				<tx>-3.160746</tx>
-				<ty>-3.301366</ty>
-				<tz>-0.954575</tz>
+				<tx>-3.239494</tx>
+				<ty>-3.269199</ty>
+				<tz>-0.879779</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.003548</rz>
+				<rz>-0.017813</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3823,21 +3823,21 @@
 	</item>
 	<item class_id="305" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>175</first_frame>
 		<poses class_id="306" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 175 -->
 			<item class_id="307" tracking_level="0" version="2">
-				<tx>-3.245549</tx>
-				<ty>-3.242129</ty>
-				<tz>-0.953586</tz>
+				<tx>-3.358226</tx>
+				<ty>-3.260188</ty>
+				<tz>-0.878548</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.069372</rz>
+				<rz>-0.022488</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3850,12 +3850,12 @@
 			</item>
 			<!-- frame 176 -->
 			<item>
-				<tx>-3.566587</tx>
-				<ty>-3.224999</ty>
-				<tz>-0.953586</tz>
+				<tx>-3.679720</tx>
+				<ty>-3.240212</ty>
+				<tz>-0.878548</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.069372</rz>
+				<rz>-0.022488</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3871,21 +3871,21 @@
 	</item>
 	<item class_id="309" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>177</first_frame>
 		<poses class_id="310" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 177 -->
 			<item class_id="311" tracking_level="0" version="2">
-				<tx>-3.624695</tx>
-				<ty>-3.256640</ty>
-				<tz>-0.954007</tz>
+				<tx>-3.761975</tx>
+				<ty>-3.300989</ty>
+				<tz>-0.877258</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.020781</rz>
+				<rz>-0.026745</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3898,12 +3898,12 @@
 			</item>
 			<!-- frame 178 -->
 			<item>
-				<tx>-3.930794</tx>
-				<ty>-3.242812</ty>
-				<tz>-0.954007</tz>
+				<tx>-4.070113</tx>
+				<ty>-3.286271</ty>
+				<tz>-0.877258</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.020781</rz>
+				<rz>-0.026745</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3919,21 +3919,21 @@
 	</item>
 	<item class_id="313" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>179</first_frame>
 		<poses class_id="314" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 179 -->
 			<item class_id="315" tracking_level="0" version="2">
-				<tx>-3.971610</tx>
-				<ty>-3.330149</ty>
-				<tz>-0.954116</tz>
+				<tx>-4.184431</tx>
+				<ty>-3.348032</ty>
+				<tz>-0.876239</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.065582</rz>
+				<rz>0.011023</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3946,12 +3946,12 @@
 			</item>
 			<!-- frame 180 -->
 			<item>
-				<tx>-4.263008</tx>
-				<ty>-3.323411</ty>
-				<tz>-0.954116</tz>
+				<tx>-4.482872</tx>
+				<ty>-3.338681</ty>
+				<tz>-0.876239</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.065582</rz>
+				<rz>0.011023</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3964,12 +3964,12 @@
 			</item>
 			<!-- frame 181 -->
 			<item>
-				<tx>-4.552306</tx>
-				<ty>-3.317016</ty>
-				<tz>-0.954116</tz>
+				<tx>-4.779314</tx>
+				<ty>-3.329642</ty>
+				<tz>-0.876239</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.065582</rz>
+				<rz>0.011023</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -3985,21 +3985,21 @@
 	</item>
 	<item class_id="318" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>182</first_frame>
 		<poses class_id="319" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 182 -->
 			<item class_id="320" tracking_level="0" version="2">
-				<tx>-4.830923</tx>
-				<ty>-3.285795</ty>
-				<tz>-0.955035</tz>
+				<tx>-4.984303</tx>
+				<ty>-3.351811</ty>
+				<tz>-0.875968</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.051303</rz>
+				<rz>-0.048905</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4012,12 +4012,12 @@
 			</item>
 			<!-- frame 183 -->
 			<item>
-				<tx>-5.121189</tx>
-				<ty>-3.278467</ty>
-				<tz>-0.955035</tz>
+				<tx>-5.277275</tx>
+				<ty>-3.345040</ty>
+				<tz>-0.875968</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.051303</rz>
+				<rz>-0.048905</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4033,21 +4033,21 @@
 	</item>
 	<item class_id="322" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>184</first_frame>
 		<poses class_id="323" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 184 -->
 			<item class_id="324" tracking_level="0" version="2">
-				<tx>-5.454883</tx>
-				<ty>-3.271454</ty>
-				<tz>-0.955163</tz>
+				<tx>-5.576498</tx>
+				<ty>-3.344625</ty>
+				<tz>-0.876131</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.050353</rz>
+				<rz>-0.054699</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4060,12 +4060,12 @@
 			</item>
 			<!-- frame 185 -->
 			<item>
-				<tx>-5.749435</tx>
-				<ty>-3.264619</ty>
-				<tz>-0.955163</tz>
+				<tx>-5.871452</tx>
+				<ty>-3.338779</ty>
+				<tz>-0.876131</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.050353</rz>
+				<rz>-0.054699</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4078,12 +4078,12 @@
 			</item>
 			<!-- frame 186 -->
 			<item>
-				<tx>-6.043697</tx>
-				<ty>-3.258053</ty>
-				<tz>-0.955163</tz>
+				<tx>-6.166123</tx>
+				<ty>-3.333225</ty>
+				<tz>-0.876131</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.050353</rz>
+				<rz>-0.054699</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4099,21 +4099,21 @@
 	</item>
 	<item class_id="327" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>187</first_frame>
 		<poses class_id="328" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 187 -->
 			<item class_id="329" tracking_level="0" version="2">
-				<tx>-6.457519</tx>
-				<ty>-3.295566</ty>
-				<tz>-0.954587</tz>
+				<tx>-6.505959</tx>
+				<ty>-3.357525</ty>
+				<tz>-0.876114</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.059203</rz>
+				<rz>-0.064986</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4126,12 +4126,12 @@
 			</item>
 			<!-- frame 188 -->
 			<item>
-				<tx>-6.759943</tx>
-				<ty>-3.292044</ty>
-				<tz>-0.954587</tz>
+				<tx>-6.804481</tx>
+				<ty>-3.354242</ty>
+				<tz>-0.876114</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.059203</rz>
+				<rz>-0.064986</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4147,21 +4147,21 @@
 	</item>
 	<item class_id="331" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>189</first_frame>
 		<poses class_id="332" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 189 -->
 			<item class_id="333" tracking_level="0" version="2">
-				<tx>-7.052347</tx>
-				<ty>-3.334080</ty>
-				<tz>-0.952271</tz>
+				<tx>-7.070943</tx>
+				<ty>-3.396332</ty>
+				<tz>-0.875434</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.039047</rz>
+				<rz>-0.070340</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4174,12 +4174,12 @@
 			</item>
 			<!-- frame 190 -->
 			<item>
-				<tx>-7.355854</tx>
-				<ty>-3.334092</ty>
-				<tz>-0.952271</tz>
+				<tx>-7.368950</tx>
+				<ty>-3.396589</ty>
+				<tz>-0.875434</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.039047</rz>
+				<rz>-0.070340</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4195,21 +4195,21 @@
 	</item>
 	<item class_id="335" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>191</first_frame>
 		<poses class_id="336" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 191 -->
 			<item class_id="337" tracking_level="0" version="2">
-				<tx>-7.663289</tx>
-				<ty>-3.410136</ty>
-				<tz>-0.950484</tz>
+				<tx>-7.685013</tx>
+				<ty>-3.405305</ty>
+				<tz>-0.874129</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.003782</rz>
+				<rz>-0.081569</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4222,12 +4222,12 @@
 			</item>
 			<!-- frame 192 -->
 			<item>
-				<tx>-7.969828</tx>
-				<ty>-3.416046</ty>
-				<tz>-0.950484</tz>
+				<tx>-7.986761</tx>
+				<ty>-3.406872</ty>
+				<tz>-0.874129</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.003782</rz>
+				<rz>-0.081569</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4240,12 +4240,12 @@
 			</item>
 			<!-- frame 193 -->
 			<item>
-				<tx>-8.275120</tx>
-				<ty>-3.422401</ty>
-				<tz>-0.950484</tz>
+				<tx>-8.287197</tx>
+				<ty>-3.408819</ty>
+				<tz>-0.874129</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.003782</rz>
+				<rz>-0.081569</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4261,21 +4261,21 @@
 	</item>
 	<item class_id="340" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>194</first_frame>
 		<poses class_id="341" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 194 -->
 			<item class_id="342" tracking_level="0" version="2">
-				<tx>-8.586888</tx>
-				<ty>-3.444209</ty>
-				<tz>-0.950178</tz>
+				<tx>-8.659639</tx>
+				<ty>-3.428134</ty>
+				<tz>-0.874107</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.027838</rz>
+				<rz>-0.009320</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4288,12 +4288,12 @@
 			</item>
 			<!-- frame 195 -->
 			<item>
-				<tx>-8.894817</tx>
-				<ty>-3.452433</ty>
-				<tz>-0.950178</tz>
+				<tx>-8.966389</tx>
+				<ty>-3.431872</ty>
+				<tz>-0.874107</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.027838</rz>
+				<rz>-0.009320</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4309,21 +4309,21 @@
 	</item>
 	<item class_id="344" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>196</first_frame>
 		<poses class_id="345" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 196 -->
 			<item class_id="346" tracking_level="0" version="2">
-				<tx>-9.160591</tx>
-				<ty>-3.666727</ty>
-				<tz>-0.950876</tz>
+				<tx>-9.157616</tx>
+				<ty>-3.423512</ty>
+				<tz>-0.871788</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.054406</rz>
+				<rz>0.012925</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4336,12 +4336,12 @@
 			</item>
 			<!-- frame 197 -->
 			<item>
-				<tx>-9.467163</tx>
-				<ty>-3.689376</ty>
-				<tz>-0.950876</tz>
+				<tx>-9.458196</tx>
+				<ty>-3.427258</ty>
+				<tz>-0.871788</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.054406</rz>
+				<rz>0.012925</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4354,12 +4354,12 @@
 			</item>
 			<!-- frame 198 -->
 			<item>
-				<tx>-9.775151</tx>
-				<ty>-3.712882</ty>
-				<tz>-0.950876</tz>
+				<tx>-9.760060</tx>
+				<ty>-3.431408</ty>
+				<tz>-0.871788</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.054406</rz>
+				<rz>0.012925</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4375,21 +4375,21 @@
 	</item>
 	<item class_id="349" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>199</first_frame>
 		<poses class_id="350" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 199 -->
 			<item class_id="351" tracking_level="0" version="2">
-				<tx>-9.995405</tx>
-				<ty>-3.731975</ty>
-				<tz>-0.954445</tz>
+				<tx>-10.058065</tx>
+				<ty>-3.486303</ty>
+				<tz>-0.873558</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.086962</rz>
+				<rz>0.071540</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4402,12 +4402,12 @@
 			</item>
 			<!-- frame 200 -->
 			<item>
-				<tx>-10.299166</tx>
-				<ty>-3.756743</ty>
-				<tz>-0.954445</tz>
+				<tx>-10.360373</tx>
+				<ty>-3.494173</ty>
+				<tz>-0.873558</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.086962</rz>
+				<rz>0.071540</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4423,21 +4423,21 @@
 	</item>
 	<item class_id="353" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>201</first_frame>
 		<poses class_id="354" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 201 -->
 			<item class_id="355" tracking_level="0" version="2">
-				<tx>-10.569719</tx>
-				<ty>-3.663907</ty>
-				<tz>-0.958670</tz>
+				<tx>-10.526229</tx>
+				<ty>-3.506162</ty>
+				<tz>-0.876314</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.071520</rz>
+				<rz>0.014601</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4450,12 +4450,12 @@
 			</item>
 			<!-- frame 202 -->
 			<item>
-				<tx>-10.870827</tx>
-				<ty>-3.682489</ty>
-				<tz>-0.958670</tz>
+				<tx>-10.819211</tx>
+				<ty>-3.515140</ty>
+				<tz>-0.876314</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.071520</rz>
+				<rz>0.014601</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4471,21 +4471,21 @@
 	</item>
 	<item class_id="357" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>203</first_frame>
 		<poses class_id="358" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 203 -->
 			<item class_id="359" tracking_level="0" version="2">
-				<tx>-11.218624</tx>
-				<ty>-3.615036</ty>
-				<tz>-0.960503</tz>
+				<tx>-11.183504</tx>
+				<ty>-3.522078</ty>
+				<tz>-0.878061</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.016832</rz>
+				<rz>-0.011211</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4498,12 +4498,12 @@
 			</item>
 			<!-- frame 204 -->
 			<item>
-				<tx>-11.525052</tx>
-				<ty>-3.629048</ty>
-				<tz>-0.960503</tz>
+				<tx>-11.483143</tx>
+				<ty>-3.531846</ty>
+				<tz>-0.878061</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.016832</rz>
+				<rz>-0.011211</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4516,12 +4516,12 @@
 			</item>
 			<!-- frame 205 -->
 			<item>
-				<tx>-11.850624</tx>
-				<ty>-3.644445</ty>
-				<tz>-0.960503</tz>
+				<tx>-11.801385</tx>
+				<ty>-3.542705</ty>
+				<tz>-0.878061</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.016832</rz>
+				<rz>-0.011211</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4537,21 +4537,21 @@
 	</item>
 	<item class_id="362" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>206</first_frame>
 		<poses class_id="363" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 206 -->
 			<item class_id="364" tracking_level="0" version="2">
-				<tx>-12.163090</tx>
-				<ty>-3.617944</ty>
-				<tz>-0.959822</tz>
+				<tx>-12.099782</tx>
+				<ty>-3.513520</ty>
+				<tz>-0.880667</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.014098</rz>
+				<rz>0.002063</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4564,12 +4564,12 @@
 			</item>
 			<!-- frame 207 -->
 			<item>
-				<tx>-12.473693</tx>
-				<ty>-3.631076</ty>
-				<tz>-0.959822</tz>
+				<tx>-12.402766</tx>
+				<ty>-3.522374</ty>
+				<tz>-0.880667</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>-0.014098</rz>
+				<rz>0.002063</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4585,21 +4585,21 @@
 	</item>
 	<item class_id="366" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>208</first_frame>
 		<poses class_id="367" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 208 -->
 			<item class_id="368" tracking_level="0" version="2">
-				<tx>-12.782968</tx>
-				<ty>-3.598874</ty>
-				<tz>-0.958805</tz>
+				<tx>-12.696540</tx>
+				<ty>-3.526052</ty>
+				<tz>-0.881242</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.002443</rz>
+				<rz>0.005286</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4612,12 +4612,12 @@
 			</item>
 			<!-- frame 209 -->
 			<item>
-				<tx>-13.092923</tx>
-				<ty>-3.609830</ty>
-				<tz>-0.958805</tz>
+				<tx>-12.998154</tx>
+				<ty>-3.535309</ty>
+				<tz>-0.881242</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.002443</rz>
+				<rz>0.005286</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4630,12 +4630,12 @@
 			</item>
 			<!-- frame 210 -->
 			<item>
-				<tx>-13.421895</tx>
-				<ty>-3.621842</ty>
-				<tz>-0.958805</tz>
+				<tx>-13.318137</tx>
+				<ty>-3.545549</ty>
+				<tz>-0.881242</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.002443</rz>
+				<rz>0.005286</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4651,21 +4651,21 @@
 	</item>
 	<item class_id="371" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>211</first_frame>
 		<poses class_id="372" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 211 -->
 			<item class_id="373" tracking_level="0" version="2">
-				<tx>-13.623225</tx>
-				<ty>-3.536077</ty>
-				<tz>-0.958184</tz>
+				<tx>-13.475173</tx>
+				<ty>-3.472355</ty>
+				<tz>-0.880653</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.026972</rz>
+				<rz>0.012930</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4678,12 +4678,12 @@
 			</item>
 			<!-- frame 212 -->
 			<item>
-				<tx>-13.932206</tx>
-				<ty>-3.542578</ty>
-				<tz>-0.958184</tz>
+				<tx>-13.773195</tx>
+				<ty>-3.478050</ty>
+				<tz>-0.880653</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.026972</rz>
+				<rz>0.012930</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4699,21 +4699,21 @@
 	</item>
 	<item class_id="375" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>213</first_frame>
 		<poses class_id="376" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>2</item_version>
 			<!-- frame 213 -->
 			<item class_id="377" tracking_level="0" version="2">
-				<tx>-14.099275</tx>
-				<ty>-3.831628</ty>
-				<tz>-0.961182</tz>
+				<tx>-13.946816</tx>
+				<ty>-3.526601</ty>
+				<tz>-0.883064</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.130359</rz>
+				<rz>0.050770</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4726,12 +4726,12 @@
 			</item>
 			<!-- frame 214 -->
 			<item>
-				<tx>-14.398746</tx>
-				<ty>-3.856925</ty>
-				<tz>-0.961182</tz>
+				<tx>-14.236147</tx>
+				<ty>-3.535626</ty>
+				<tz>-0.883064</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.130359</rz>
+				<rz>0.050770</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4744,12 +4744,12 @@
 			</item>
 			<!-- frame 215 -->
 			<item>
-				<tx>-14.698400</tx>
-				<ty>-3.882866</ty>
-				<tz>-0.961182</tz>
+				<tx>-14.525501</tx>
+				<ty>-3.545005</ty>
+				<tz>-0.883064</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.130359</rz>
+				<rz>0.050770</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4765,21 +4765,21 @@
 	</item>
 	<item class_id="380" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>216</first_frame>
 		<poses class_id="381" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 216 -->
 			<item class_id="382" tracking_level="0" version="2">
-				<tx>-14.949543</tx>
-				<ty>-4.049189</ty>
-				<tz>-0.963780</tz>
+				<tx>-14.749827</tx>
+				<ty>-3.628343</ty>
+				<tz>-0.884423</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.154897</rz>
+				<rz>0.154163</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4792,12 +4792,12 @@
 			</item>
 			<!-- frame 217 -->
 			<item>
-				<tx>-15.245871</tx>
-				<ty>-4.084429</ty>
-				<tz>-0.963780</tz>
+				<tx>-15.034622</tx>
+				<ty>-3.642659</ty>
+				<tz>-0.884423</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.154897</rz>
+				<rz>0.154163</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4813,21 +4813,21 @@
 	</item>
 	<item class_id="384" tracking_level="0" version="1">
 		<objectType>Car</objectType>
-		<h>1.499416</h>
-		<w>1.724325</w>
-		<l>4.521843</l>
+		<h>1.497319</h>
+		<w>1.720088</w>
+		<l>4.630261</l>
 		<first_frame>218</first_frame>
 		<poses class_id="385" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>2</item_version>
 			<!-- frame 218 -->
 			<item class_id="386" tracking_level="0" version="2">
-				<tx>-15.090521</tx>
-				<ty>-4.313384</ty>
-				<tz>-0.965843</tz>
+				<tx>-15.123948</tx>
+				<ty>-3.791017</ty>
+				<tz>-0.886616</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.456157</rz>
+				<rz>0.351536</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>
@@ -4840,12 +4840,12 @@
 			</item>
 			<!-- frame 219 -->
 			<item>
-				<tx>-15.359529</tx>
-				<ty>-4.362931</ty>
-				<tz>-0.965843</tz>
+				<tx>-15.397580</tx>
+				<ty>-3.814941</ty>
+				<tz>-0.886616</tz>
 				<rx>0.000000</rx>
 				<ry>0.000000</ry>
-				<rz>0.456157</rz>
+				<rz>0.351536</rz>
 				<state>0</state>
 				<occlusion>-1</occlusion>
 				<occlusion_kf>-1</occlusion_kf>

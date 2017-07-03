@@ -61,6 +61,7 @@ g_fusion_lock = threading.Lock()
 g_pitch_correction = 0.
 g_roll_correction = 0.
 g_yaw_correction = 0.
+g_z_correction = 0.
 
 g_scale_bbox = False
 
@@ -459,7 +460,8 @@ def handle_velodyne_msg(msg, arg=None):
         Ry = rotYMat(np.deg2rad(g_pitch_correction))
         Rz = rotZMat(np.deg2rad(g_yaw_correction))
 
-        pose = Rz.dot(Ry.dot(Rx.dot([pose[0], pose[1], pose[2]])))
+        pose     = Rz.dot(Ry.dot(Rx.dot([pose[0], pose[1], pose[2]])))
+        pose[2] += g_z_correction
     
         # scale bbox size
         if g_scale_bbox:
@@ -638,6 +640,7 @@ if __name__ == '__main__':
     parser.add_argument('-sbb', '--scale-bbox', action='store_true', help='scale bbox when uncertain about its size')
     parser.add_argument('-rc', '--roll-correction', default=0., help='apply constant roll rotation to predicted pose')
     parser.add_argument('-yc', '--yaw-correction', default=0., help='apply constant yaw rotation to predicted pose')
+    parser.add_argument('-zc', '--z-correction', default=0., help='apply constant z offset to predicted pose')
     parser.add_argument('-fmrr', '--fusion-min-radar-radius', default=FUSION_MIN_RADAR_RADIUS_DEFAULT, help='fuse radar scans not closer than this value [meters]')
     parser.add_argument('-fmtj', '--fusion-max-timejump', default=FUSION_MAX_TIMEJUMP_DEFAULT, help='reset fusion if msg time diff is greater than this [s]')
 
@@ -683,6 +686,8 @@ if __name__ == '__main__':
     g_roll_correction = float(args.roll_correction)
     g_pitch_correction = float(args.pitch_correction)
     g_yaw_correction = float(args.yaw_correction)
+    g_z_correction = float(args.z_correction)
+
     g_scale_bbox = args.scale_bbox
     
     g_fusion_min_radar_radius = float(args.fusion_min_radar_radius)
