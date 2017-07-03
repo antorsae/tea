@@ -365,13 +365,10 @@ class FusionUKF:
                 # need two observations to get a filtered state
                 self.last_obs = obs
 
-                return self.NOT_INITED
+                self.last_state_mean = self.obs_as_state(self.last_obs)
+                self.last_state_covar = self.initial_state_covariance
 
-            last_state_mean = self.obs_as_state(self.last_obs)
-            last_state_covar = self.initial_state_covariance
-        else:
-            last_state_mean = self.last_state_mean
-            last_state_covar = self.last_state_covar
+                return self.OK
 
         dt = obs.timestamp - self.last_obs.timestamp
 
@@ -413,8 +410,8 @@ class FusionUKF:
         try:
             self.last_state_mean, self.last_state_covar =\
                 self.kf.filter_update(
-                    last_state_mean,
-                    last_state_covar,
+                    self.last_state_mean,
+                    self.last_state_covar,
                     self.obs_as_kf_obs(obs),
                     transition_function,
                     transition_covariance,
