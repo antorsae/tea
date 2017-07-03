@@ -57,6 +57,7 @@ g_fusion_lock = threading.Lock()
 
 g_pitch_correction = 0.
 g_roll_correction = 0.
+g_yaw_correction = 0.
 
 g_scale_bbox = False
 
@@ -144,8 +145,8 @@ def rotXMat(a):
         [0.,  cos, -sin],
         [0.,  sin,  cos],
     ])
-    
-    
+
+
 def rotYMat(a):
     cos = np.cos(a)
     sin = np.sin(a)
@@ -154,8 +155,17 @@ def rotYMat(a):
         [ 0.,    1.,   0.],
         [-sin,   0.,  cos],
     ])
-    
-    
+
+def rotZMat(a):
+    cos = np.cos(a)
+    sin = np.sin(a)
+    return np.array([
+        [ cos,   -sin,  0.],
+        [ sin,    cos,  0.],
+        [0.,   0.,  1.],
+    ])
+
+
 def bbox_size_factor(r):
     max_r = 40
     k = 0.2
@@ -419,7 +429,7 @@ def handle_velodyne_msg(msg, arg=None):
 
         pose += segmented_and_aligned_points_mean
         pose  = point_utils.rotZ(pose, -angle)
-        yaw       = point_utils.remove_orientation(yaw + angle)
+        yaw   = point_utils.remove_orientation(yaw + angle)
 
         pose_angle = np.arctan2(pose[1], pose[0])
         angle_diff = angle_at_edge - pose_angle
@@ -438,10 +448,15 @@ def handle_velodyne_msg(msg, arg=None):
         if verbose: print(angle_at_edge, pose_angle, angle_diff)
         if verbose: print(pose, box_size, yaw, delta_time)
 
+        if delta_time < 0:
+            print(angle_at_edge, pose_angle, angle_diff, delta_time)
+
         # fix lidar static tilt
         Rx = rotXMat(np.deg2rad(g_roll_correction))
         Ry = rotYMat(np.deg2rad(g_pitch_correction))
-        pose = Ry.dot(Rx.dot([pose[0], pose[1], pose[2]]))
+        Rz = rotZMat(np.deg2rad(g_yaw_correction))
+
+        pose = Rz.dot(Ry.dot(Rx.dot([pose[0], pose[1], pose[2]])))
     
         # scale bbox size
         if g_scale_bbox:
@@ -619,6 +634,8 @@ if __name__ == '__main__':
     parser.add_argument('-pc', '--pitch-correction', default=0., help='apply constant pitch rotation to predicted pose')
     parser.add_argument('-sbb', '--scale-bbox', action='store_true', help='scale bbox when uncertain about its size')
     parser.add_argument('-rc', '--roll-correction', default=0., help='apply constant roll rotation to predicted pose')
+    parser.add_argument('-yc', '--yaw-correction', default=0., help='apply constant yaw rotation to predicted pose')
+
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
 
     args = parser.parse_args()
@@ -652,6 +669,7 @@ if __name__ == '__main__':
     
     g_roll_correction = float(args.roll_correction)
     g_pitch_correction = float(args.pitch_correction)
+    g_yaw_correction = float(args.yaw_correction)
     g_scale_bbox = args.scale_bbox
 
 
