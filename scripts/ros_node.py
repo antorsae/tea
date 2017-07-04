@@ -63,6 +63,7 @@ g_roll_correction = 0.
 g_yaw_correction = 0.
 g_z_correction = 0.
 
+
 g_bbox_scale_l = 1.
 g_bbox_scale_w = 1.
 g_bbox_scale_h = 1.
@@ -286,7 +287,7 @@ def handle_velodyne_msg(msg, arg=None):
                 dyn_threshold -= 0.1
 
             class_predictions_by_angle_idx = np.argwhere(class_predictions_by_angle_thresholded)
-            print(dyn_threshold + 0.1, number_of_segmented_points)
+            # print(dyn_threshold + 0.1, number_of_segmented_points)
         else:
             #for prob in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]:
             #    print(prob, np.sum(class_predictions_by_angle >= prob))
@@ -451,7 +452,7 @@ def handle_velodyne_msg(msg, arg=None):
         # observation_time = msg.header.stamp.to_sec() - delta_time
         # observation_time = msg.header.stamp.to_sec() + 100 msecs - delta_time
 
-        delta_time = 100. * angle_diff / (2*np.pi)
+        delta_time = 0.1 * angle_diff / (2*np.pi)
         if verbose: print(angle_at_edge, pose_angle, angle_diff)
         if verbose: print(pose, box_size, yaw, delta_time)
 
@@ -473,7 +474,7 @@ def handle_velodyne_msg(msg, arg=None):
 
         last_known_position = pose
         last_known_box_size = box_size
-        
+
         # FUSION
         with g_fusion_lock:
             observation = LidarObservation(msg.header.stamp.to_sec(), pose[0], pose[1], pose[2], yaw)
@@ -804,8 +805,9 @@ if __name__ == '__main__':
                 elif topic == '/radar/tracks': # 20HZ
                     # use last kalman_lidar|kalman_radar estimation to extract radar points of the object; 
                     # update kalman_radar;
-                    observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR, CAR_SIZE[1] * 0.5)
-                    
+#                    observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR, CAR_SIZE[1] * 0.5)
+                    observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR, CAR_SIZE[0] * 0.5 )
+
                     # do we have any estimation?
                     if fusion.last_state_mean is not None:
                         pose = fusion.lidar_observation_function(fusion.last_state_mean)
