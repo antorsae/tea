@@ -181,6 +181,8 @@ def bbox_size_factor(r):
 
 
 def handle_velodyne_msg(msg, arg=None):
+    t_start = time.time()
+    
     global tf_segmenter_graph
     global last_known_position, last_known_box_size, last_known_yaw
 
@@ -199,13 +201,15 @@ def handle_velodyne_msg(msg, arg=None):
     # PERFORMANCE WARNING START
     # this preparation code is super slow b/c it uses generator, ideally the code should receive 3 arrays:
     # lidar_d lidar_h lidar_i already preprocessed in C++
-    points = 0
-    for x, y, z, intensity, ring in pc2.read_points(msg):
-        cloud[points] = x, y, z, intensity, ring
-        points += 1
+    # points = 0
+    # for x, y, z, intensity, ring in pc2.read_points(msg):
+    #     cloud[points] = x, y, z, intensity, ring
+    #     points += 1
+    cloud = pcl.msg2cloud(msg)
 
     lidar, lidar_int, angle_at_edge = DidiTracklet.filter_lidar_rings(
-        cloud[:points],
+        #cloud[:points],
+        cloud,
         rings, points_per_ring,
         clip=CLIP_DIST,
         clip_h=CLIP_HEIGHT,
@@ -483,7 +487,7 @@ def handle_velodyne_msg(msg, arg=None):
     
 
     # publish car prediction data as separate regular ROS messages just for vizualization (dunno how to visualize custom messages in rviz)
-    publish_rviz_topics = True
+    publish_rviz_topics = False
     
     if publish_rviz_topics and detection > 0:
         # point cloud
@@ -524,6 +528,7 @@ def handle_velodyne_msg(msg, arg=None):
                       data_class=PointCloud2,
                       queue_size=1).publish(fil_points_msg)
                     
+    print "TIME: ", time.time() - t_start
                       
     return {'detection': detection, 
             'x': pose[0], 
