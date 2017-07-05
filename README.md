@@ -71,7 +71,7 @@ $ ./ped.sh \
 
 The pipeline makes predictions in less that 100 msecs:
 
-[whole pipeline real time performance](https://s3.amazonaws.com/team-tea-udacitydidi/team-tea-pipeline-peformance.png)
+![whole pipeline real time performance](https://s3.amazonaws.com/team-tea-udacitydidi/team-tea-pipeline-peformance.png)
 
 This has been tested in an Intel(R) Core(TM) i5-4690K CPU @ 3.50GHz and Geforce GTX 1080 Ti.
 
