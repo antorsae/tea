@@ -35,7 +35,6 @@ from generate_tracklet import *
 
 
 # =============== MAGIC NUMBERS ====================== #
-CAR_SIZE = [4.358, 1.823, 1.484] # https://en.wikipedia.org/wiki/Ford_Focus_(third_generation)
 PEDESTRIAN_SIZE = [0.85, 0.85, 1.708]
 
 RADAR_TO_LIDAR = [1.5494 - 3.8, 0., 1.27] # as per mkz.urdf.xacro
@@ -50,7 +49,7 @@ g_fusion_min_radar_radius = FUSION_MIN_RADAR_RADIUS_DEFAULT
 g_fusion_max_timejump = FUSION_MAX_TIMEJUMP_DEFAULT
 
 def create_fusion():
-    fus = FusionUKF(CAR_SIZE[0] * 0.5)
+    fus = FusionUKF(2.179)
     fus.set_min_radar_radius(g_fusion_min_radar_radius)
     fus.set_max_timejump(g_fusion_max_timejump)
     return fus
@@ -546,10 +545,10 @@ def handle_radar_msg(msg, dont_fuse):
         if g_fusion.last_state_mean is not None:
             pose = g_fusion.lidar_observation_function(g_fusion.last_state_mean)
     
-            observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR, CAR_SIZE[1] * 0.5)
+            observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR, 0.9115)
             
             # find nearest observation to current object position estimation
-            distance_threshold = CAR_SIZE[0]
+            distance_threshold = 4.4
             nearest = None
             nearest_dist = 1e9
             for o in observations:
@@ -728,7 +727,6 @@ if __name__ == '__main__':
                                 first_frame = -1)
             
             def finalize_tracklet(tracklet):
-#                car_size = CAR_SIZE
                 car_size = last_bbox
                 object_size = PEDESTRIAN_SIZE if is_ped else car_size
                 tracklet.l = object_size[0]
@@ -804,14 +802,14 @@ if __name__ == '__main__':
                 elif topic == '/radar/tracks': # 20HZ
                     # use last kalman_lidar|kalman_radar estimation to extract radar points of the object; 
                     # update kalman_radar;
-                    observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR, CAR_SIZE[1] * 0.5)
+                    observations = RadarObservation.from_msg(msg, RADAR_TO_LIDAR, 0.91)
                     
                     # do we have any estimation?
                     if fusion.last_state_mean is not None:
                         pose = fusion.lidar_observation_function(fusion.last_state_mean)
                 
                         # find nearest observation to current object position estimation
-                        distance_threshold = CAR_SIZE[0]
+                        distance_threshold = 4.4
                         nearest = None
                         nearest_dist = 1e9
                         for o in observations:
