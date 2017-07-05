@@ -36,7 +36,7 @@ from generate_tracklet import *
 
 # =============== MAGIC NUMBERS ====================== #
 CAR_SIZE = [4.358, 1.823, 1.484] # https://en.wikipedia.org/wiki/Ford_Focus_(third_generation)
-PEDESTRIAN_SIZE = [0.8, 0.8, 1.708]
+PEDESTRIAN_SIZE = [0.85, 0.85, 1.708]
 
 RADAR_TO_LIDAR = [1.5494 - 3.8, 0., 1.27] # as per mkz.urdf.xacro
 
