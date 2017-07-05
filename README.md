@@ -65,25 +65,50 @@ $ ./ped.sh \
 
 ### Qualitative analysis
 
-Here's a fragment of the visualization of the pedestrian test bag:
+[Here's a fragment](https://youtu.be/HlxnaiGQzmE) of the visualization of one of the car bags. Note that is an early video and the final tracklets accomplish much better peformance. 
 
-(click here for the full version)
+## Real-time performance
 
-and here's a fragment of visualizations for each of the car bags:
+The pipeline makes predictions in less that 100 msecs:
 
-(click here for full version)
+[whole pipeline real time performance](https://s3.amazonaws.com/team-tea-udacitydidi/team-tea-pipeline-peformance.png)
 
-## Performance
-
-The pipeline makes predictions in less that 100 msecs. 
+This has been tested in an Intel(R) Core(TM) i5-4690K CPU @ 3.50GHz and Geforce GTX 1080 Ti.
 
 ## Pipeline explanation
 
-The pipeline roughly consists of the following steps
+The pipeline roughly consists of the following steps:
 
-1. * Lidar segmentation* A deep recurrent neural network that takes the lidar point cloud processed in a special way and segments lidar points outputting the probably of each point being an obstacle or not. We've coined this part `lidarnet-segmenter`. 
+1. **Lidar segmentation** A deep recurrent neural network that takes the lidar point cloud processed in a special way and segments lidar points outputting the probably of each point being an obstacle or not. We've coined this part `lidarnet-segmenter`. 
 
-We've used a novel approach 
+We've used a novel approach where instead of taking the lidar point cloud and create image-like features, we take the readings of the lidar as 64 1-dimensional signals, 2 signals (distance and intensity) for each of the 32 lidar rings:
+
+![lidar visualized](http://www.mdpi.com/remotesensing/remotesensing-07-10480/article_deploy/html/images/remotesensing-07-10480-g001-1024.png)
+
+For this top-view of the lidar cloud:
+
+![lidar top view](https://s3.amazonaws.com/team-tea-udacitydidi/lidar-topview.png)
+
+...where the obstacle has a blue bounding box, we generate the following signals:
+
+![lidar rings](https://s3.amazonaws.com/team-tea-udacitydidi/lidar-rings.png)
+
+the X axis goes from -Pi to Pi, and the Y axis is the distance for each ring. In the image above each lidar ring (the HDL-32e has 32 but we are only using some of them) is painted with a different color for clarity. There's an equivalent signal for the lidar intensities but is not shown here. We've just painted the angle of the bounding box as seen by the lidar as vertical dotted lines. 
+
+We trained a recurrent neural network to predict each point of each ring that belongs to an obstacle:
+
 ![lidarnet segmenter](https://s3.amazonaws.com/team-tea-udacitydidi/segmenter.gif)
 
+The left image is the ground truth where the obstacle is in red, and the right image shows the predictions (note this video is from an early test and is not representative of the final model we used).
 
+2. **Clustering and filtering** We use simple false positive rejections by rejecting points that are too far away from the next prediction location.
+
+3. **Lidar points localization** If/when we have a points that are segmented as obstacle points, we infer the bounding box centroid, size and yaw using a [Pointnet](https://arxiv.org/abs/1612.00593) inspired point cloud regressor. We've coined this part `lidarnet-localizer`. 
+
+4. **Unscented kalman filter processing** We fuse radar measurements and *lidarnet provided* bounding box position to make predictions upon camera messages.
+
+5. **Post-processing** Because we did not have time to polish the round 2 ground truth and had to train the `lidarnet-segmenter` using data from release 2 (round 1) which had even fewer vehicle sizes we adjust bounding box size and small lidar misalignments with contant parameters.
+
+## Future work
+
+The pipeline meets the requirements of the Didi-Udacity competition but it doesnt stop there. The *lidarnet segmenter* is able to detect multiple objects, thanks to the way training works (see `lidarnet.py`). Furthermore, we could use a phased-LSTM instead of GRU to further optimize training and avoid interpolation (and de-interpolation). We also did not have time to fine-tune the unscented kalman filter including a better state model for *yaw*. 
